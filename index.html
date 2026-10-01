@@ -477,6 +477,38 @@ body[data-theme="light"] .lockToggle.locked{background:#f7ecfb !important;border
 .scheduleError{border-left:3px solid #d45a5a}
 </style>
 
+
+<style id="v31-loading-and-drafts">
+#appLoadingScreen{
+  position:fixed;
+  inset:0;
+  z-index:100000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--bg);
+  color:var(--text);
+}
+#appLoadingCard{
+  width:min(340px,calc(100% - 36px));
+  border:1px solid var(--line);
+  background:var(--panel);
+  border-radius:12px;
+  padding:24px;
+  text-align:center;
+}
+#appLoadingSpinner{
+  width:30px;height:30px;margin:0 auto 14px;
+  border-radius:50%;
+  border:3px solid var(--line);
+  border-top-color:var(--text);
+  animation:v31spin .8s linear infinite;
+}
+#appLoadingText{font-size:13px;color:var(--muted)}
+@keyframes v31spin{to{transform:rotate(360deg)}}
+.draftStatus{border-left:3px solid #d6a645}
+</style>
+
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -493,6 +525,15 @@ body[data-theme="light"] .lockToggle.locked{background:#f7ecfb !important;border
 </script>
 </head>
 <body>
+
+<div id="appLoadingScreen">
+  <div id="appLoadingCard">
+    <div id="appLoadingSpinner"></div>
+    <strong style="display:block;margin-bottom:6px">Programación</strong>
+    <div id="appLoadingText">Sincronizando con Supabase…</div>
+  </div>
+</div>
+
   <!-- =========================
      LOGIN SUPABASE
 ========================= -->
@@ -648,7 +689,7 @@ body[data-theme="light"] .lockToggle.locked{background:#f7ecfb !important;border
 <button data-p="imgs" data-tip="Imágenes"><span class="ico">▧</span><span class="label">Imágenes</span></button>
 <button data-p="settings" data-tip="Configuración"><span class="ico">⚙</span><span class="label">Configuración</span></button>
 </div><div class="sidebarFooter"><button id="themeToggle" class="sideAction" title="Cambiar tema" aria-label="Cambiar tema"><span class="ico">◐</span></button><button id="collapseSide" class="sideAction" title="Plegar menú" aria-label="Plegar menú"><span class="ico">‹</span></button></div></aside>
-<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V30 · PROGRAMACIÓN SUPABASE</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
+<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V31 · AUTOGUARDADO + ROTACIÓN</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
 
 <section id="home" class="panel active">
   <div class="card">
@@ -693,7 +734,7 @@ body[data-theme="light"] .lockToggle.locked{background:#f7ecfb !important;border
   </div>
 </section>
 
-<section id="worship" class="panel"><div class="card"><div class="row"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto"><button id="wg" class="btn secondary">Generar fechas</button></div></div><div class="row" style="margin-top:12px"><button id="wf" class="btn primary">Rellenar Alabanza del mes</button><button id="wr" class="btn secondary">Reequilibrar</button><button id="wLockResp" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Responsables</button><button id="wLockSongs" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Canciones</button><button id="wc" class="btn success">Confirmar Alabanza</button><button id="we" class="btn secondary">Añadir extra</button></div><div class="worshipLockHint">Puedes fijar músicos o canciones por separado. “Rellenar” solo cambiará las columnas que estén desbloqueadas.</div><div class="worshipMixNote">Mezcla automática: 1 Rápida + 1 Media + 2 Lentas, o 2 Rápidas + 1 Media + 1 Lenta. La canción Media cuenta dentro del bloque más dinámico.</div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div></div></section>
+<section id="worship" class="panel"><div class="card"><div class="row"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto"><button id="wg" class="btn secondary">Generar fechas</button></div></div><div class="row" style="margin-top:12px"><button id="wf" class="btn primary">Rellenar Alabanza del mes</button><button id="wr" class="btn secondary">Reequilibrar</button><button id="wLockResp" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Responsables</button><button id="wLockSongs" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Canciones</button><button id="wc" class="btn success">Confirmar Alabanza</button><button id="we" class="btn secondary">Añadir extra</button></div><div class="worshipLockHint">Puedes fijar músicos o canciones por separado. “Rellenar” solo cambiará las columnas que estén desbloqueadas.</div><div class="worshipMixNote">Mezcla automática: 2 Rápidas + 2 Lentas, 1 Rápida + 1 Media + 2 Lentas, o 2 Rápidas + 1 Media + 1 Lenta. El orden también se mezcla aleatoriamente.</div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div></div></section>
 
 <section id="youth" class="panel">
 <div class="card">
@@ -1043,11 +1084,11 @@ function add(s,n){let d=dObj(s);d.setUTCDate(d.getUTCDate()+n);return iso(d.getU
 const unavailable=(n,d,mod)=>(mod==="w"?uw:um).some(x=>x.name===n&&x.date===d);
 const cand=r=>volunteers.filter(v=>v.active&&(v.primary===r||v.secondary.includes(r)));
 
-function genW(){wmonth=getDates(+wy.value,+wm.value,[0]).map((d,i)=>({date:d,extra:false,name:"Servicio dominical",santa:i===0,assign:[],songs:[]}));renderW();updateHome()}
+function genW(){wmonth=getDates(+wy.value,+wm.value,[0]).map((d,i)=>({date:d,extra:false,name:"Servicio dominical",santa:i===0,assign:[],songs:[]}));renderW();updateHome();queueScheduleDraftSave("alabanza")}
 
 function genJ(){
  jmonth=getDates(+jy.value,+jm.value,[6]).map(d=>({date:d,extra:false,name:"Jóvenes",santa:false,assign:[],songs:[]}));
- renderJ();updateHome()
+ renderJ();updateHome();queueScheduleDraftSave("jovenes")
 }
 function fillJ(){
  let counts={};
@@ -1055,73 +1096,164 @@ function fillJ(){
  let previousNames=seedPreviousVolunteerNames("Alabanza Jóvenes",firstDate);
  const monthSongCounts={};
  const lastSongUsed=seedSongHistory();
+
  jmonth.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(s=>{
+   const previousSongNames=new Set((s.songs||[]).filter(Boolean).map(x=>cleanHistorySongName(x.name)));
    let used=[],a=[];
+
    [["Voz principal",1],["Coros",2],["Piano",1],["Guitarra",2],["Bajo",1],["Batería",1]].forEach(([r,n])=>{
      for(let i=0;i<n;i++){
        let p=choose(r,counts,s.date,used,previousNames);
        if(!p&&r!=="Batería")p=choose(r,counts,s.date,[],previousNames);
        a.push({role:r,name:p?p.name:"⚠ FALTA"});
-       if(p){used.push(p.name);counts[p.name]=(counts[p.name]||0)+1}
+       if(p){
+         used.push(p.name);
+         counts[p.name]=(counts[p.name]||0)+1;
+       }
      }
    });
+
    s.assign=a;
    previousNames=new Set(a.filter(x=>x.name&&x.name!=="⚠ FALTA").map(x=>x.name));
+
    const singer=a.find(x=>x.role==="Voz principal")?.name||"";
    const usedS=new Set();
    s.songs=[];
-   ["Alabanza","Alabanza","Adoración","Adoración"].forEach(group=>{
-     const song=chooseSongForService(group,singer,s.date,usedS,monthSongCounts,lastSongUsed);
+
+   chooseYouthSongPattern().forEach(category=>{
+     const song=chooseSongByCategoryForService(
+       category,
+       singer,
+       s.date,
+       usedS,
+       monthSongCounts,
+       lastSongUsed,
+       previousSongNames
+     );
+
      if(song){
        const clean=cleanHistorySongName(song.name);
        s.songs.push({...song,key:toneFor(song,singer)});
-       usedS.add(clean);monthSongCounts[clean]=(monthSongCounts[clean]||0)+1;lastSongUsed.set(clean,s.date);
+       usedS.add(clean);
+       monthSongCounts[clean]=(monthSongCounts[clean]||0)+1;
+       lastSongUsed.set(clean,s.date);
+     }else{
+       s.songs.push(null);
      }
    });
  });
- renderJ();jstatus.innerHTML='<div class="note">Tentativa de Jóvenes generada con rotación de personas y canciones.</div>';updateHome()
+
+ renderJ();
+ jstatus.innerHTML='<div class="note">Tentativa de Jóvenes generada: 3 canciones por servicio, con mezcla aleatoria de categorías y rotación de repertorio.</div>';
+ updateHome();
+ queueScheduleDraftSave("jovenes");
 }
 function renderJ(){
  jbody.innerHTML="";
  jmonth.sort((a,b)=>a.date.localeCompare(b.date));
+
  jmonth.forEach((s,si)=>{
    let spec=[["Voz principal",1],["Coros",2],["Piano",1],["Guitarra",2],["Bajo",1],["Batería",1]],rows=8,ri=0;
+
    spec.forEach(([r,n])=>{
      for(let k=0;k<n;k++){
-       let tr=document.createElement("tr");if(si%2)tr.classList.add("alt");
+       let tr=document.createElement("tr");
+       if(si%2)tr.classList.add("alt");
+
        if(ri===0){
-         let td=document.createElement("td");td.rowSpan=rows;td.className="date";
+         let td=document.createElement("td");
+         td.rowSpan=rows;
+         td.className="date";
          td.innerHTML=`<b>${short(s.date)}</b>${s.extra?'<br><small>EVENTO EXTRA</small>':""}<br><small>JÓVENES</small>`;
-         tr.appendChild(td)
+         tr.appendChild(td);
        }
-       let rl=document.createElement("td");rl.className="role";
-       let map={"Voz principal":"VOZ PRINCIPAL🎙️:","Coros":"COROS🎤:","Piano":"PIANO🎹:","Guitarra":"GUITARRA🎸:","Bajo":"BAJO🪕:","Batería":"BATERÍA🥁:"};
-       rl.textContent=map[r];tr.appendChild(rl);
-       let pt=document.createElement("td");pt.className="person",sel=document.createElement("select");
+
+       let rl=document.createElement("td");
+       rl.className="role";
+       let map={
+         "Voz principal":"VOZ PRINCIPAL🎙️:",
+         "Coros":"COROS🎤:",
+         "Piano":"PIANO🎹:",
+         "Guitarra":"GUITARRA🎸:",
+         "Bajo":"BAJO🪕:",
+         "Batería":"BATERÍA🥁:"
+       };
+       rl.textContent=map[r];
+       tr.appendChild(rl);
+
+       let pt=document.createElement("td");
+       pt.className="person";
+       let sel=document.createElement("select");
        ["⚠ FALTA",...cand(r).map(v=>v.name)].forEach(nm=>sel.add(new Option(nm,nm)));
-       let cur=s.assign.filter(x=>x.role===r)[k];sel.value=cur?.name||"⚠ FALTA";
-       sel.onchange=()=>{let arr=s.assign.filter(x=>x.role===r);if(arr[k])arr[k].name=sel.value;else s.assign.push({role:r,name:sel.value})};
-       pt.appendChild(sel);tr.appendChild(pt);
-       if(ri===0){
-         let st=document.createElement("td");st.rowSpan=rows;st.className="songs";
-         for(let i=0;i<4;i++){
-           let ss=document.createElement("select");ss.style.marginBottom="5px";ss.add(new Option("— seleccionar canción —",""));
-           songs.filter(x=>x.cat!=="Santa Cena").forEach((x,j)=>{
-             let originalIndex=songs.indexOf(x);ss.add(new Option(`${x.name} (${x.artist})`,originalIndex))
+
+       let cur=s.assign.filter(x=>x.role===r)[k];
+       sel.value=cur?.name||"⚠ FALTA";
+       sel.onchange=()=>{
+         let arr=s.assign.filter(x=>x.role===r);
+         if(arr[k])arr[k].name=sel.value;
+         else s.assign.push({role:r,name:sel.value});
+
+         if(r==="Voz principal"){
+           const lead=sel.value;
+           s.songs=(s.songs||[]).map(saved=>{
+             if(!saved)return saved;
+             const clean=cleanHistorySongName(saved.name);
+             const source=songs.find(x=>cleanHistorySongName(x.name)===clean)||saved;
+             return {...saved,key:toneFor(source,lead)};
            });
-           let cur=s.songs[i];if(cur){let ix=songs.findIndex(x=>x.name===cur.name);if(ix>=0)ss.value=ix}
-           ss.onchange=()=>{if(ss.value===""){s.songs[i]=null}else{let d={...songs[+ss.value]};let lead=s.assign.find(a=>a.role==="Voz principal")?.name||"";d.key=toneFor(d,lead);s.songs[i]=d}};
-           st.appendChild(ss)
          }
-         tr.appendChild(st)
+
+         queueScheduleDraftSave("jovenes");
+       };
+       pt.appendChild(sel);
+       tr.appendChild(pt);
+
+       if(ri===0){
+         let st=document.createElement("td");
+         st.rowSpan=rows;
+         st.className="songs";
+
+         for(let i=0;i<3;i++){
+           let ss=document.createElement("select");
+           ss.style.marginBottom="5px";
+           ss.add(new Option("— seleccionar canción —",""));
+
+           songs.filter(x=>!isSantaCenaSong(x)).forEach(x=>{
+             let originalIndex=songs.indexOf(x);
+             ss.add(new Option(`${x.name} · ${x.category} (${x.artist||"—"})`,originalIndex));
+           });
+
+           let saved=s.songs[i];
+           if(saved){
+             const clean=cleanHistorySongName(saved.name);
+             let ix=songs.findIndex(x=>cleanHistorySongName(x.name)===clean);
+             if(ix>=0)ss.value=ix;
+           }
+
+           ss.onchange=()=>{
+             if(ss.value===""){
+               s.songs[i]=null;
+             }else{
+               let d={...songs[+ss.value]};
+               let lead=s.assign.find(a=>a.role==="Voz principal")?.name||"";
+               d.key=toneFor(d,lead);
+               s.songs[i]=d;
+             }
+             queueScheduleDraftSave("jovenes");
+           };
+           st.appendChild(ss);
+         }
+         tr.appendChild(st);
        }
-       jbody.appendChild(tr);ri++
+
+       jbody.appendChild(tr);
+       ri++;
      }
-   })
- })
+   });
+ });
 }
 
-function genM(){mmonth=getDates(+my.value,+mm.value,[0,3,6]).map(d=>({date:d,extra:false,PC:"",Camara:"",Diapositivas:""}));renderM();updateHome()}
+function genM(){mmonth=getDates(+my.value,+mm.value,[0,3,6]).map(d=>({date:d,extra:false,PC:"",Camara:"",Diapositivas:""}));renderM();updateHome();queueScheduleDraftSave("multimedia")}
 function randomTiny(){return Math.random()*0.75}
 function cleanHistorySongName(name){return String(name||"").replace(/^SANTA CENA:\s*/i,"").trim()}
 function dayDistance(a,b){return Math.abs((dObj(a)-dObj(b))/86400000)}
@@ -1161,6 +1293,10 @@ function seedSongHistory(){
 function chooseSongForService(group,singer,date,usedNames,monthCounts,lastUsed,avoidCurrent=new Set()){
  let candidates=songs.filter(s=>legacyGroupForSong(s)===group&&!usedNames.has(cleanHistorySongName(s.name)));
  if(!candidates.length)return null;
+
+ const changedCandidates=candidates.filter(s=>!avoidCurrent.has(cleanHistorySongName(s.name)));
+ if(changedCandidates.length)candidates=changedCandidates;
+
  const outsideWindow=candidates.filter(s=>{
    const last=lastUsed.get(cleanHistorySongName(s.name));
    return !last||dayDistance(date,last)>=21;
@@ -1193,6 +1329,10 @@ function chooseSongByCategoryForService(category,singer,date,usedNames,monthCoun
  );
  if(!candidates.length)return null;
 
+ // Si existe otra canción de la misma categoría, no conserva la que ya estaba.
+ const changedCandidates=candidates.filter(s=>!avoidCurrent.has(cleanHistorySongName(s.name)));
+ if(changedCandidates.length)candidates=changedCandidates;
+
  const outsideWindow=candidates.filter(s=>{
    const last=lastUsed.get(cleanHistorySongName(s.name));
    return !last||dayDistance(date,last)>=21;
@@ -1214,21 +1354,52 @@ function chooseSongByCategoryForService(category,singer,date,usedNames,monthCoun
  return (pool[Math.floor(Math.random()*pool.length)]||ranked[0])?.s||null;
 }
 
-function chooseRegularWorshipPattern(){
+function shuffleArray(items){
+ const a=items.slice();
+ for(let i=a.length-1;i>0;i--){
+   const j=Math.floor(Math.random()*(i+1));
+   [a[i],a[j]]=[a[j],a[i]];
+ }
+ return a;
+}
+
+function songCategoryCounts(){
  const counts={Rápida:0,Media:0,Lenta:0};
  songs.forEach(s=>{
-   if(!isSantaCenaSong(s)&&Object.prototype.hasOwnProperty.call(counts,s.category))counts[s.category]++;
+   if(!isSantaCenaSong(s)&&Object.prototype.hasOwnProperty.call(counts,s.category)){
+     counts[s.category]++;
+   }
  });
- const patterns=[
-   ["Rápida","Media","Lenta","Lenta"],
-   ["Rápida","Rápida","Media","Lenta"]
- ];
+ return counts;
+}
+
+function chooseFeasibleCategoryPattern(patterns){
+ const counts=songCategoryCounts();
  const feasible=patterns.filter(pattern=>{
    const need=pattern.reduce((o,c)=>(o[c]=(o[c]||0)+1,o),{});
    return Object.entries(need).every(([cat,n])=>(counts[cat]||0)>=n);
  });
  const pool=feasible.length?feasible:patterns;
- return pool[Math.floor(Math.random()*pool.length)].slice();
+ const chosen=pool[Math.floor(Math.random()*pool.length)].slice();
+ return shuffleArray(chosen);
+}
+
+function chooseRegularWorshipPattern(){
+ // Alabanza: siempre 4 canciones normales.
+ // Las tres combinaciones autorizadas también cambian de orden.
+ return chooseFeasibleCategoryPattern([
+   ["Rápida","Rápida","Lenta","Lenta"],
+   ["Rápida","Media","Lenta","Lenta"],
+   ["Rápida","Rápida","Media","Lenta"]
+ ]);
+}
+
+function chooseYouthSongPattern(){
+ // Jóvenes: siempre 3 canciones.
+ return chooseFeasibleCategoryPattern([
+   ["Rápida","Lenta","Lenta"],
+   ["Rápida","Media","Lenta"]
+ ]);
 }
 
 function songSearchText(song){
@@ -1285,12 +1456,14 @@ function createWorshipSongPicker(service,slotIndex,slotCount){
    service.songs[slotIndex]=copy;
    syncDisplay();
    menu.hidden=true;
+   queueScheduleDraftSave("alabanza");
  }
 
  function clearSong(){
    service.songs[slotIndex]=null;
    syncDisplay();
    menu.hidden=true;
+   queueScheduleDraftSave("alabanza");
  }
 
  function renderResults(query=""){
@@ -1453,8 +1626,9 @@ function fillW(){
  });
  renderW();
  const locked=[];if(worshipLockResponsibilities)locked.push("Responsables");if(worshipLockSongs)locked.push("Canciones");
- wstatus.innerHTML=`<div class="note">Tentativa generada con rotación y variación aleatoria.${locked.length?` Se conservaron: <strong>${locked.join(" y ")}</strong>.`:""} Prioriza disponibilidad, roles principales, mínimos/máximos y evita repetir canciones antes de 3 semanas cuando hay alternativas. La mezcla regular usa aleatoriamente <strong>1 Rápida + 1 Media + 2 Lentas</strong> o <strong>2 Rápidas + 1 Media + 1 Lenta</strong>; nunca genera dos canciones Media en el mismo servicio.</div>`;
+ wstatus.innerHTML=`<div class="note">Tentativa generada con rotación y variación aleatoria.${locked.length?` Se conservaron: <strong>${locked.join(" y ")}</strong>.`:""} Prioriza disponibilidad, roles principales, mínimos/máximos y evita repetir canciones antes de 3 semanas cuando hay alternativas. La mezcla regular usa aleatoriamente <strong>2 Rápidas + 2 Lentas</strong>, <strong>1 Rápida + 1 Media + 2 Lentas</strong> o <strong>2 Rápidas + 1 Media + 1 Lenta</strong>. El orden de las categorías también cambia en cada servicio.</div>`;
  updateHome();
+ queueScheduleDraftSave("alabanza");
 }
 
 function fillM(){
@@ -1478,6 +1652,7 @@ function fillM(){
    previousNames=new Set(used);
  });
  renderM();mstatus.innerHTML='<div class="note">Tentativa mensual generada con reparto equilibrado y rotación entre fechas.</div>';updateHome()
+ queueScheduleDraftSave("multimedia");
 }
 
 function renderW(){
@@ -1539,6 +1714,8 @@ function renderW(){
              return copy;
            });
          }
+
+         queueScheduleDraftSave("alabanza");
        };
        pt.appendChild(sel);
        tr.appendChild(pt);
@@ -1562,7 +1739,7 @@ function renderW(){
    });
  });
 }
-function renderM(){mbody.innerHTML="";mmonth.sort((a,b)=>a.date.localeCompare(b.date));mmonth.forEach(s=>{let tr=document.createElement("tr"),dt=document.createElement("td");dt.textContent=(s.extra?"★ ":"")+days[wd(s.date)]+" "+parts(s.date).D;tr.appendChild(dt);mediaRoles.forEach(fn=>{let td=document.createElement("td"),sel=document.createElement("select");sel.add(new Option("—",""));mediaPool(fn).forEach(n=>sel.add(new Option(n,n)));sel.value=s[fn]||"";sel.onchange=()=>s[fn]=sel.value;td.appendChild(sel);tr.appendChild(td)});mbody.appendChild(tr)})}
+function renderM(){mbody.innerHTML="";mmonth.sort((a,b)=>a.date.localeCompare(b.date));mmonth.forEach(s=>{let tr=document.createElement("tr"),dt=document.createElement("td");dt.textContent=(s.extra?"★ ":"")+days[wd(s.date)]+" "+parts(s.date).D;tr.appendChild(dt);mediaRoles.forEach(fn=>{let td=document.createElement("td"),sel=document.createElement("select");sel.add(new Option("—",""));mediaPool(fn).forEach(n=>sel.add(new Option(n,n)));sel.value=s[fn]||"";sel.onchange=()=>{s[fn]=sel.value;queueScheduleDraftSave("multimedia")};td.appendChild(sel);tr.appendChild(td)});mbody.appendChild(tr)})}
 
 
 
@@ -1583,8 +1760,8 @@ function ensureHomeWeek(){
 function renderHomeRows(dates){
  week.innerHTML="";
  const homeY=+hy.value,homeM=+hm.value;
- const cachedW=typeof getCachedConfirmedMonth==="function"?getCachedConfirmedMonth("alabanza",homeY,homeM):undefined;
- const cachedM=typeof getCachedConfirmedMonth==="function"?getCachedConfirmedMonth("multimedia",homeY,homeM):undefined;
+ const cachedW=typeof getCachedWorkingMonth==="function"?getCachedWorkingMonth("alabanza",homeY,homeM):(typeof getCachedConfirmedMonth==="function"?getCachedConfirmedMonth("alabanza",homeY,homeM):undefined);
+ const cachedM=typeof getCachedWorkingMonth==="function"?getCachedWorkingMonth("multimedia",homeY,homeM):(typeof getCachedConfirmedMonth==="function"?getCachedConfirmedMonth("multimedia",homeY,homeM):undefined);
  const worshipData=cachedW!==undefined?cachedW:((+wy.value===homeY&&+wm.value===homeM)?(cw||wmonth):[]);
  const mediaData=cachedM!==undefined?cachedM:((+my.value===homeY&&+mm.value===homeM)?(cm||mmonth):[]);
 
@@ -2502,6 +2679,157 @@ window.bootstrapAvailabilitySupabase=async function(){
 };
 
 
+
+// =========================================================
+// V31 · BORRADORES AUTOMÁTICOS DE PROGRAMACIÓN
+// Todo cambio de programación se guarda automáticamente.
+// Confirmar sigue marcando la versión oficial.
+// =========================================================
+
+const draftScheduleCache=new Map();
+const draftSaveTimers={};
+
+function scheduleDraftKey(module,Y,M){
+ return `schedule_draft:${module}:${Y}-${String(Number(M)+1).padStart(2,"0")}`;
+}
+
+function moduleScheduleState(module){
+ if(module==="alabanza")return {data:wmonth,Y:+wy.value,M:+wm.value};
+ if(module==="jovenes")return {data:jmonth,Y:+jy.value,M:+jm.value};
+ return {data:mmonth,Y:+my.value,M:+mm.value};
+}
+
+function getCachedWorkingMonth(module,Y,M){
+ const key=scheduleMonthKey(module,Y,M);
+ if(draftScheduleCache.has(key))return draftScheduleCache.get(key);
+ return getCachedConfirmedMonth(module,Y,M);
+}
+
+async function fetchScheduleDraft(module,Y,M){
+ if(!window.supabaseClient)return null;
+
+ const settingKey=scheduleDraftKey(module,Y,M);
+ const {data,error}=await window.supabaseClient
+   .from("app_settings")
+   .select("setting_key,setting_value,updated_at")
+   .eq("setting_key",settingKey)
+   .maybeSingle();
+
+ if(error)throw error;
+ if(!data?.setting_value)return null;
+
+ const value=data.setting_value;
+ if(!Array.isArray(value.data))return null;
+
+ const copy=deepCopy(value.data);
+ draftScheduleCache.set(scheduleMonthKey(module,Y,M),copy);
+
+ return {
+   data:copy,
+   updated_at:data.updated_at||value.updated_at||null
+ };
+}
+
+async function saveScheduleDraft(module,{silent=true}={}){
+ if(!window.supabaseClient||!window.currentProfile)return false;
+
+ // app_settings actualmente está protegido para administrador.
+ // Si más adelante un Editor debe autoguardar, ampliaremos esa política RLS.
+ if(window.currentProfile.app_role!=="admin")return false;
+
+ const {data,Y,M}=moduleScheduleState(module);
+ if(!Array.isArray(data))return false;
+
+ const key=scheduleDraftKey(module,Y,M);
+ const payload={
+   module,
+   year:Y,
+   month:Number(M)+1,
+   updated_at:new Date().toISOString(),
+   data:deepCopy(data)
+ };
+
+ const {error}=await window.supabaseClient
+   .from("app_settings")
+   .upsert({
+     setting_key:key,
+     setting_value:payload,
+     updated_at:new Date().toISOString()
+   },{onConflict:"setting_key"});
+
+ if(error)throw error;
+
+ draftScheduleCache.set(scheduleMonthKey(module,Y,M),deepCopy(data));
+
+ if(!silent){
+   setScheduleStatus(module,"Borrador guardado automáticamente en Supabase.","draft");
+ }
+ return true;
+}
+
+function queueScheduleDraftSave(module,delay=450){
+ clearTimeout(draftSaveTimers[module]);
+ draftSaveTimers[module]=setTimeout(async()=>{
+   try{
+     await saveScheduleDraft(module,{silent:true});
+   }catch(error){
+     console.error(`Error autoguardando ${module}:`,error);
+   }
+ },delay);
+}
+
+async function clearScheduleDraft(module,Y,M){
+ if(!window.supabaseClient||window.currentProfile?.app_role!=="admin")return;
+
+ const key=scheduleDraftKey(module,Y,M);
+ const {error}=await window.supabaseClient
+   .from("app_settings")
+   .delete()
+   .eq("setting_key",key);
+
+ if(error)throw error;
+ draftScheduleCache.delete(scheduleMonthKey(module,Y,M));
+}
+
+async function applySavedMonth(module,Y,M,{silent=false}={}){
+ const draft=await fetchScheduleDraft(module,Y,M);
+
+ if(draft?.data?.length){
+   const data=draft.data;
+
+   if(module==="alabanza"){
+     wmonth=deepCopy(data);
+     renderW();
+   }else if(module==="jovenes"){
+     jmonth=deepCopy(data);
+     renderJ();
+   }else{
+     mmonth=deepCopy(data);
+     renderM();
+   }
+
+   if(!silent){
+     setScheduleStatus(
+       module,
+       `Borrador recuperado desde Supabase${draft.updated_at?` · guardado ${new Date(draft.updated_at).toLocaleString()}`:""}.`,
+       "draft"
+     );
+   }
+
+   updateHome();
+   return data;
+ }
+
+ return applyConfirmedMonth(module,Y,M,{silent});
+}
+
+function setAppLoading(show,text="Sincronizando con Supabase…"){
+ const screen=document.getElementById("appLoadingScreen");
+ const label=document.getElementById("appLoadingText");
+ if(label)label.textContent=text;
+ if(screen)screen.style.display=show?"flex":"none";
+}
+
 // =========================================================
 // V30 · PROGRAMACIÓN MENSUAL EN SUPABASE
 // Confirmar = guardar programación oficial.
@@ -2559,7 +2887,7 @@ function seedPreviousVolunteerNames(label,beforeDate){
 function setScheduleStatus(module,message,type="loaded"){
  const box=module==="alabanza"?wstatus:module==="jovenes"?jstatus:mstatus;
  if(!box)return;
- const cls=type==="saved"?"scheduleSaved":type==="error"?"scheduleError":type==="empty"?"scheduleEmpty":"scheduleLoaded";
+ const cls=type==="saved"?"scheduleSaved":type==="error"?"scheduleError":type==="empty"?"scheduleEmpty":type==="draft"?"draftStatus":"scheduleLoaded";
  box.innerHTML=`<div class="note ${cls}">${message}</div>`;
 }
 
@@ -2923,6 +3251,7 @@ async function confirmW(){
  if(btn){btn.disabled=true;btn.textContent="Guardando…"}
  try{
    const loaded=await saveConfirmedMonth("alabanza",wmonth,+wy.value,+wm.value);
+   await clearScheduleDraft("alabanza",+wy.value,+wm.value);
    wmonth=deepCopy(loaded);cw=deepCopy(loaded);
    renderW();updateHome();
    setScheduleStatus("alabanza",`Alabanza confirmada y guardada en Supabase · ${loaded.length} servicios. Esta es ahora la programación oficial del mes.`,"saved");
@@ -2940,6 +3269,7 @@ async function confirmJ(){
  if(btn){btn.disabled=true;btn.textContent="Guardando…"}
  try{
    const loaded=await saveConfirmedMonth("jovenes",jmonth,+jy.value,+jm.value);
+   await clearScheduleDraft("jovenes",+jy.value,+jm.value);
    jmonth=deepCopy(loaded);cj=deepCopy(loaded);
    renderJ();updateHome();
    setScheduleStatus("jovenes",`Jóvenes confirmado y guardado en Supabase · ${loaded.length} servicios.`,"saved");
@@ -2957,6 +3287,7 @@ async function confirmM(){
  if(btn){btn.disabled=true;btn.textContent="Guardando…"}
  try{
    const loaded=await saveConfirmedMonth("multimedia",mmonth,+my.value,+mm.value);
+   await clearScheduleDraft("multimedia",+my.value,+mm.value);
    mmonth=deepCopy(loaded);cm=deepCopy(loaded);
    renderM();updateHome();
    setScheduleStatus("multimedia",`Multimedia confirmado y guardado en Supabase · ${loaded.length} fechas.`,"saved");
@@ -2971,10 +3302,14 @@ async function confirmM(){
 async function loadHomeConfirmedMonth(){
  const Y=+hy.value,M=+hm.value;
  try{
-   await Promise.all([
-     fetchConfirmedMonth("alabanza",Y,M),
-     fetchConfirmedMonth("multimedia",Y,M)
+   const [wdraft,mdraft]=await Promise.all([
+     fetchScheduleDraft("alabanza",Y,M),
+     fetchScheduleDraft("multimedia",Y,M)
    ]);
+
+   if(!wdraft)await fetchConfirmedMonth("alabanza",Y,M);
+   if(!mdraft)await fetchConfirmedMonth("multimedia",Y,M);
+
    updateHome();
  }catch(error){
    console.error("Error cargando Inicio desde Supabase:",error);
@@ -2992,9 +3327,9 @@ window.bootstrapSchedulesSupabase=async function(){
      await loadConfirmedHistoryFromSupabase();
 
      await Promise.all([
-       applyConfirmedMonth("alabanza",+wy.value,+wm.value,{silent:false}),
-       applyConfirmedMonth("jovenes",+jy.value,+jm.value,{silent:false}),
-       applyConfirmedMonth("multimedia",+my.value,+mm.value,{silent:false})
+       applySavedMonth("alabanza",+wy.value,+wm.value,{silent:false}),
+       applySavedMonth("jovenes",+jy.value,+jm.value,{silent:false}),
+       applySavedMonth("multimedia",+my.value,+mm.value,{silent:false})
      ]);
 
      await loadHomeConfirmedMonth();
@@ -3254,9 +3589,9 @@ menu.onclick=()=>{side.classList.add("open");overlay.classList.add("show")};over
 wg.onclick=genW;wf.onclick=fillW;wr.onclick=fillW;
 wLockResp.onclick=()=>{worshipLockResponsibilities=!worshipLockResponsibilities;localStorage.setItem("worship-lock-responsibilities",worshipLockResponsibilities?"1":"0");updateWorshipLockButtons()};
 wLockSongs.onclick=()=>{worshipLockSongs=!worshipLockSongs;localStorage.setItem("worship-lock-songs",worshipLockSongs?"1":"0");updateWorshipLockButtons()};
-wc.onclick=confirmW;we.onclick=()=>{let d=prompt("Fecha AAAA-MM-DD");if(!d)return;wmonth.push({date:d,extra:true,name:"Servicio especial",santa:false,assign:[],songs:[]});wmonth.sort((a,b)=>a.date.localeCompare(b.date));renderW();updateHome()};
-jg.onclick=genJ;jf.onclick=fillJ;jr.onclick=fillJ;jc.onclick=confirmJ;je.onclick=()=>{let d=prompt("Fecha AAAA-MM-DD");if(!d)return;jmonth.push({date:d,extra:true,name:"Jóvenes especial",santa:false,assign:[],songs:[]});jmonth.sort((a,b)=>a.date.localeCompare(b.date));renderJ();updateHome()};
-mg.onclick=genM;mf.onclick=fillM;mr.onclick=fillM;mc.onclick=confirmM;me.onclick=()=>{let d=prompt("Fecha AAAA-MM-DD");if(!d)return;mmonth.push({date:d,extra:true,PC:"",Camara:"",Diapositivas:""});mmonth.sort((a,b)=>a.date.localeCompare(b.date));renderM();updateHome()};
+wc.onclick=confirmW;we.onclick=()=>{let d=prompt("Fecha AAAA-MM-DD");if(!d)return;wmonth.push({date:d,extra:true,name:"Servicio especial",santa:false,assign:[],songs:[]});wmonth.sort((a,b)=>a.date.localeCompare(b.date));renderW();updateHome();queueScheduleDraftSave("alabanza")};
+jg.onclick=genJ;jf.onclick=fillJ;jr.onclick=fillJ;jc.onclick=confirmJ;je.onclick=()=>{let d=prompt("Fecha AAAA-MM-DD");if(!d)return;jmonth.push({date:d,extra:true,name:"Jóvenes especial",santa:false,assign:[],songs:[]});jmonth.sort((a,b)=>a.date.localeCompare(b.date));renderJ();updateHome();queueScheduleDraftSave("jovenes")};
+mg.onclick=genM;mf.onclick=fillM;mr.onclick=fillM;mc.onclick=confirmM;me.onclick=()=>{let d=prompt("Fecha AAAA-MM-DD");if(!d)return;mmonth.push({date:d,extra:true,PC:"",Camara:"",Diapositivas:""});mmonth.sort((a,b)=>a.date.localeCompare(b.date));renderM();updateHome();queueScheduleDraftSave("multimedia")};
 
 seAddMood.onclick=async()=>{
  let mood=addMoodToCatalog(seNewMood.value);
@@ -3497,8 +3832,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   function mostrarEstadoSesion(session) {
     if (session) {
       loginScreen.style.display = 'none';
+      setAppLoading(true,'Cargando tu programación…');
     } else {
       loginScreen.style.display = 'flex';
+      setAppLoading(false);
       window.currentProfile = null;
       delete document.body.dataset.userRole;
     }
@@ -3520,6 +3857,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (error) {
       console.error('Error cargando perfil:', error);
       window.currentProfile = null;
+      setAppLoading(false);
       return null;
     }
 
@@ -3547,6 +3885,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       await window.bootstrapSchedulesSupabase();
     }
 
+    setAppLoading(false);
     return window.currentProfile;
   }
 
@@ -3561,6 +3900,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (sessionError) {
     console.error('Error comprobando sesión:', sessionError);
+    setAppLoading(false);
   }
 
   mostrarEstadoSesion(session);
@@ -3649,7 +3989,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       if(!window.supabaseClient)return;
       const {data:{session}}=await window.supabaseClient.auth.getSession();
       if(!session)return;
-      try{await applyConfirmedMonth(module,+y.value,+m.value)}
+      try{await applySavedMonth(module,+y.value,+m.value)}
       catch(error){console.error("Error cambiando mes de programación:",error)}
     };
     y?.addEventListener("change",reload);
@@ -3668,7 +4008,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 </script>
 
 <script>
-window.__APP_BUILD = 'V30-PROGRAMACION-SUPABASE';
+window.__APP_BUILD = 'V31-AUTOGUARDADO-ROTACION';
 
 if (typeof persistSongToSupabase === 'function') {
   window.persistSongToSupabase = persistSongToSupabase;
@@ -3676,12 +4016,16 @@ if (typeof persistSongToSupabase === 'function') {
 if (typeof loadSongsFromSupabase === 'function') {
   window.loadSongsFromSupabase = loadSongsFromSupabase;
 }
+window.queueScheduleDraftSave = queueScheduleDraftSave;
+window.saveScheduleDraft = saveScheduleDraft;
+window.applySavedMonth = applySavedMonth;
 
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('APP BUILD:', window.__APP_BUILD);
   console.log('Canciones Supabase cargado:', typeof window.bootstrapSongsSupabase);
   console.log('Disponibilidad Supabase cargada:', typeof window.bootstrapAvailabilitySupabase);
   console.log('Programación Supabase cargada:', typeof window.bootstrapSchedulesSupabase);
+  console.log('Autoguardado de borradores:', typeof window.queueScheduleDraftSave);
 
   try {
     const { data: { session } } = await window.supabaseClient.auth.getSession();
