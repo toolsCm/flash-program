@@ -1705,7 +1705,32 @@ document.addEventListener('DOMContentLoaded', async () => {
       loginScreen.style.display = 'flex';
     }
   }
+async function cargarPerfilUsuario(session) {
 
+  if (!session || !session.user) {
+    window.currentProfile = null;
+    return;
+  }
+
+  const { data, error } = await window.supabaseClient
+    .from('profiles')
+    .select('display_name, app_role')
+    .eq('id', session.user.id)
+    .single();
+
+  if (error) {
+    console.error('Error cargando perfil:', error);
+    return;
+  }
+
+  window.currentProfile = data;
+
+  document.body.dataset.userRole = data.app_role;
+
+  console.log('Usuario:', session.user.email);
+  console.log('Nombre:', data.display_name);
+  console.log('Rol:', data.app_role);
+}
   // Revisar si ya había una sesión iniciada
   const {
     data: { session },
@@ -1717,6 +1742,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   mostrarEstadoSesion(session);
+  if (session) {
+  await cargarPerfilUsuario(session);
+}
 
   // LOGIN
   loginForm.addEventListener('submit', async (event) => {
@@ -1746,14 +1774,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    if (data.session) {
-      loginMessage.textContent = '';
-      loginScreen.style.display = 'none';
+   if (data.session) {
+  loginMessage.textContent = '';
+  loginScreen.style.display = 'none';
 
-      console.log(
-        'Sesión iniciada:',
-        data.user.email
-      );
+  await cargarPerfilUsuario(data.session);
+
+  console.log(
+    'Sesión iniciada:',
+    data.user.email
+  );
     }
 
     loginButton.disabled = false;
