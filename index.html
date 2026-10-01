@@ -4238,9 +4238,29 @@ function imageW(){
 
  imgType="worship"
 }
+function getMediaPosterData(){
+ let data=(Array.isArray(cm)&&cm.length?cm:(Array.isArray(mmonth)?mmonth:[]));
+ if(Array.isArray(data) && data.length)return data;
+
+ const rows=[...document.querySelectorAll("#mbody tr")];
+ if(!rows.length)return [];
+ return rows.map(tr=>{
+   const cells=tr.querySelectorAll("td");
+   const selects=tr.querySelectorAll("select");
+   return {
+     label:(cells[0]?.textContent||"").trim(),
+     PC:(selects[0]?.value||"").trim(),
+     Camara:(selects[1]?.value||"").trim(),
+     Diapositivas:(selects[2]?.value||"").trim()
+   };
+ }).filter(x=>x.label||x.PC||x.Camara||x.Diapositivas);
+}
 function imageM(){
- let data=(Array.isArray(cm)&&cm.length?cm:mmonth);
- if(!data.length)return;
+ let data=getMediaPosterData();
+ if(!data.length){
+   alert("No hay programación de multimedia para generar la imagen.");
+   return;
+ }
 
  const titleH=54;
  const headerH=54;
@@ -4298,7 +4318,8 @@ function imageM(){
    x.textAlign="center";
    x.textBaseline="middle";
    x.font="500 16px Roboto Mono";
-   x.fillText(days[wd(s.date)].toUpperCase()+" "+parts(s.date).D,(cols[0]+cols[1])/2,y+rowH/2);
+   const dateLabel=s.label||((days[wd(s.date)]||"").toUpperCase()+" "+(parts(s.date)?.D||""));
+   x.fillText(dateLabel,(cols[0]+cols[1])/2,y+rowH/2);
    x.fillText((s.PC||"—").toUpperCase(),(cols[1]+cols[2])/2,y+rowH/2);
    x.fillText((s.Camara||"—").toUpperCase(),(cols[2]+cols[3])/2,y+rowH/2);
    x.fillText((s.Diapositivas||"—").toUpperCase(),(cols[3]+cols[4])/2,y+rowH/2);
@@ -4863,7 +4884,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 </script>
 
 <script>
-window.__APP_BUILD = 'V41-MOBILE-UI-FINAL';
+window.__APP_BUILD = 'V42-MULTIMEDIA-RENDER-FIX';
 
 if (typeof persistSongToSupabase === 'function') {
   window.persistSongToSupabase = persistSongToSupabase;
@@ -4877,6 +4898,7 @@ window.applySavedMonth = applySavedMonth;
 window.syncConfirmedMonthToGoogleSheets = syncConfirmedMonthToGoogleSheets;
 window.sendGoogleSheetsBeacon = sendGoogleSheetsBeacon;
 window.sendGoogleSheetsFallback = sendGoogleSheetsFallback;
+window.getMediaPosterData = getMediaPosterData;
 window.GOOGLE_SHEETS_BRIDGE_URL = GOOGLE_SHEETS_BRIDGE_URL;
 
 document.addEventListener('DOMContentLoaded', async () => {
