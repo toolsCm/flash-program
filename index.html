@@ -1020,8 +1020,8 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
 <div id="appLoadingScreen">
   <div id="appLoadingCard">
     <div id="appLoadingSpinner"></div>
-    <strong style="display:block;margin-bottom:6px">Programación</strong>
-    <div id="appLoadingText">Sincronizando con la base de datos…</div>
+    <strong style="display:block;margin-bottom:6px">Cargando</strong>
+    <div id="appLoadingText">Estamos cargando la página.</div>
   </div>
 </div>
 
@@ -1065,7 +1065,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
       A
     </div>
 
-    <h2 style="
+    <h2 id="loginTitle" style="
       margin:0 0 6px;
       color:#f5f5f5;
       font-size:26px;
@@ -1137,6 +1137,35 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
       "
     >
 
+    <div id="signupConfirmWrap" style="display:none">
+      <label for="signupConfirmPassword" style="
+        display:block;
+        color:#aeb4bf;
+        font-size:16px;
+        margin-bottom:6px;
+      ">
+        Confirmar contraseña
+      </label>
+
+      <input
+        id="signupConfirmPassword"
+        type="password"
+        autocomplete="new-password"
+        placeholder="Repite la contraseña"
+        style="
+          width:100%;
+          box-sizing:border-box;
+          background:#20242b;
+          color:#f5f5f5;
+          border:1px solid #343a44;
+          border-radius:7px;
+          padding:11px 12px;
+          margin-bottom:18px;
+          outline:none;
+        "
+      >
+    </div>
+
     <button
       id="loginButton"
       type="submit"
@@ -1153,6 +1182,34 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
     >
       Entrar
     </button>
+
+    <button
+      id="authModeToggle"
+      type="button"
+      style="
+        width:100%;
+        border:1px solid #343a44;
+        border-radius:7px;
+        padding:10px 14px;
+        margin-top:10px;
+        background:transparent;
+        color:#d7dbe2;
+        font-weight:650;
+        cursor:pointer;
+      "
+    >
+      Crear una cuenta
+    </button>
+
+    <div id="authModeHint" style="
+      margin-top:10px;
+      color:#8f96a3;
+      font-size:14px;
+      line-height:1.35;
+      text-align:center;
+    ">
+      ¿Eres nuevo? Crea tu cuenta para poder ingresar después.
+    </div>
 
     <div
       id="loginMessage"
@@ -2356,14 +2413,50 @@ function setHomeView(mode){
  renderWeek()
 }
 function moveHomeWeek(direction){
- const Y=+hy.value,M=+hm.value;
- const sundays=getDates(Y,M,[0]);
+ const hyEl=document.getElementById("hy"),hmEl=document.getElementById("hm");
+ if(!hyEl||!hmEl)return;
+
+ let Y=Number(hyEl.value),M=Number(hmEl.value);
+ let sundays=getDates(Y,M,[0]);
  ensureHomeWeek();
+
  let idx=sundays.indexOf(homeSelectedWeek);
+ if(idx<0)idx=0;
  let next=idx+direction;
+
  if(next>=0&&next<sundays.length){
    homeSelectedWeek=sundays[next];
    renderWeek();
+   return;
+ }
+
+ // Si llega al borde, cambia de mes automáticamente.
+ if(direction<0){
+   M-=1;
+   if(M<0){M=11;Y-=1}
+ }else{
+   M+=1;
+   if(M>11){M=0;Y+=1}
+ }
+
+ hyEl.value=Y;
+ hmEl.value=M;
+
+ const targetSundays=getDates(Y,M,[0]);
+ if(!targetSundays.length){
+   homeSelectedWeek=null;
+   renderWeek();
+   return;
+ }
+
+ homeSelectedWeek=direction<0
+   ? targetSundays[targetSundays.length-1]
+   : targetSundays[0];
+
+ renderWeek();
+
+ if(typeof loadHomeConfirmedMonth==="function"){
+   Promise.resolve(loadHomeConfirmedMonth()).catch(console.error);
  }
 }
 function updateHome(){renderCal();renderWeek()}
@@ -3484,7 +3577,7 @@ async function applySavedMonth(module,Y,M,{silent=false}={}){
  return applyConfirmedMonth(module,Y,M,{silent});
 }
 
-function setAppLoading(show,text="Sincronizando con la base de datos…"){
+function setAppLoading(show,text="Estamos cargando la página."){
  const screen=document.getElementById("appLoadingScreen");
  const label=document.getElementById("appLoadingText");
  if(label)label.textContent=text;
@@ -4286,7 +4379,8 @@ function imageM(){
   const rowH=34;
   const bottomPad=3;
 
-  let c=poster;
+  let c=document.getElementById("poster");
+  if(!c)throw new Error("No se encontró el lienzo de imagen.");
   c.width=1000;
   c.height=titleH+headerH+(rowH*data.length)+bottomPad;
 
@@ -4435,13 +4529,18 @@ songEditForm.addEventListener("submit",saveSongEditor);
 awa.onclick=async()=>{if(!awd.value||!awp.value)return;awa.disabled=true;try{await addAvailabilityToSupabase("alabanza",awp.value,awd.value);awd.value=""}catch(error){console.error(error);alert("No se pudo guardar la indisponibilidad: "+(error.message||error))}finally{awa.disabled=false}};
 ama.onclick=async()=>{if(!amd.value||!amp.value)return;ama.disabled=true;try{await addAvailabilityToSupabase("multimedia",amp.value,amd.value);amd.value=""}catch(error){console.error(error);alert("No se pudo guardar la indisponibilidad: "+(error.message||error))}finally{ama.disabled=false}};
 hr.onclick=history;iw.onclick=imageW;ij.onclick=imageJ;im.onclick=()=>window.imageM();document.getElementById("im")?.addEventListener("click",()=>window.imageM());idown.onclick=()=>{let a=document.createElement("a");a.href=poster.toDataURL("image/png");a.download=`programacion-${imgType}.png`;a.click()};
-hy.onchange=hm.onchange=()=>{homeSelectedWeek=null;renderWeek()};
+document.getElementById("hy")?.addEventListener("change",()=>{homeSelectedWeek=null;renderWeek()});
+document.getElementById("hm")?.addEventListener("change",()=>{homeSelectedWeek=null;renderWeek()});
 
 
-homeWeekViewBtn.onclick=()=>setHomeView("week");
-homeMonthViewBtn.onclick=()=>setHomeView("month");
-prevWeek.onclick=()=>moveHomeWeek(-1);
-nextWeek.onclick=()=>moveHomeWeek(1);
+const homeWeekBtn=document.getElementById("homeWeekViewBtn");
+const homeMonthBtn=document.getElementById("homeMonthViewBtn");
+const prevWeekBtn=document.getElementById("prevWeek");
+const nextWeekBtn=document.getElementById("nextWeek");
+homeWeekBtn?.addEventListener("click",()=>setHomeView("week"));
+homeMonthBtn?.addEventListener("click",()=>setHomeView("month"));
+prevWeekBtn?.addEventListener("click",()=>moveHomeWeek(-1));
+nextWeekBtn?.addEventListener("click",()=>moveHomeWeek(1));
 
 function parseCsvLine(line,delimiter){
  const out=[];let cur="",quoted=false;
@@ -4717,6 +4816,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   const loginPassword = document.getElementById('loginPassword');
   const loginButton = document.getElementById('loginButton');
   const loginMessage = document.getElementById('loginMessage');
+  const loginTitle = document.getElementById('loginTitle');
+  const authModeToggle = document.getElementById('authModeToggle');
+  const authModeHint = document.getElementById('authModeHint');
+  const signupConfirmWrap = document.getElementById('signupConfirmWrap');
+  const signupConfirmPassword = document.getElementById('signupConfirmPassword');
+  let authMode = 'login';
+
+  function setAuthMode(mode){
+    authMode = mode === 'signup' ? 'signup' : 'login';
+    const isSignup = authMode === 'signup';
+    if(loginTitle)loginTitle.textContent = isSignup ? 'Crear cuenta' : 'Iniciar sesión';
+    if(loginButton)loginButton.textContent = isSignup ? 'Crear cuenta' : 'Entrar';
+    if(authModeToggle)authModeToggle.textContent = isSignup ? 'Ya tengo una cuenta' : 'Crear una cuenta';
+    if(authModeHint)authModeHint.textContent = isSignup
+      ? 'Crea tu cuenta con correo y contraseña. Después podrás iniciar sesión normalmente.'
+      : '¿Eres nuevo? Crea tu cuenta para poder ingresar después.';
+    if(signupConfirmWrap)signupConfirmWrap.style.display = isSignup ? 'block' : 'none';
+    if(signupConfirmPassword){
+      signupConfirmPassword.required = isSignup;
+      if(!isSignup)signupConfirmPassword.value = '';
+    }
+    if(loginPassword)loginPassword.autocomplete = isSignup ? 'new-password' : 'current-password';
+    if(loginMessage)loginMessage.textContent = '';
+  }
+
+  authModeToggle?.addEventListener('click',()=>setAuthMode(authMode==='login'?'signup':'login'));
+  setAuthMode('login');
 
   // Perfil actual disponible para toda la aplicación
   window.currentProfile = null;
@@ -4730,7 +4856,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function mostrarEstadoSesion(session) {
     if (session) {
       loginScreen.style.display = 'none';
-      setAppLoading(true,'Cargando tu programación desde la base de datos…');
+      setAppLoading(true,'Estamos cargando la página.');
     } else {
       loginScreen.style.display = 'flex';
       setAppLoading(false);
@@ -4820,41 +4946,77 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     loginMessage.textContent = '';
     loginButton.disabled = true;
-    loginButton.textContent = 'Entrando...';
 
-    const { data, error } =
-      await window.supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
+    try{
+      if(authMode === 'signup'){
+        const confirmPassword = signupConfirmPassword?.value || '';
 
-    if (error) {
+        if(password.length < 6){
+          loginMessage.style.color='#ef7d7d';
+          loginMessage.textContent='La contraseña debe tener al menos 6 caracteres.';
+          return;
+        }
 
-      console.error('Error de inicio de sesión:', error);
+        if(password !== confirmPassword){
+          loginMessage.style.color='#ef7d7d';
+          loginMessage.textContent='Las contraseñas no coinciden.';
+          return;
+        }
 
-      loginMessage.textContent =
-        'Correo o contraseña incorrectos.';
+        loginButton.textContent = 'Creando cuenta...';
 
+        const { data, error } = await window.supabaseClient.auth.signUp({
+          email,
+          password
+        });
+
+        if(error)throw error;
+
+        if(data.session){
+          loginMessage.style.color='#7ddc98';
+          loginMessage.textContent='Cuenta creada. Ingresando...';
+          await cargarPerfilUsuario(data.session);
+          loginScreen.style.display='none';
+        }else{
+          loginMessage.style.color='#7ddc98';
+          loginMessage.textContent='Cuenta creada. Revisa tu correo si se solicita confirmar la cuenta y luego inicia sesión.';
+          setAuthMode('login');
+          loginEmail.value=email;
+        }
+
+      }else{
+        loginButton.textContent = 'Entrando...';
+
+        const { data, error } =
+          await window.supabaseClient.auth.signInWithPassword({
+            email,
+            password
+          });
+
+        if(error)throw error;
+
+        if(data.session){
+          await cargarPerfilUsuario(data.session);
+          loginScreen.style.display = 'none';
+          console.log('Sesión iniciada:', data.session.user.email);
+        }
+      }
+    }catch(error){
+      console.error('Error de autenticación:',error);
+      loginMessage.style.color='#ef7d7d';
+      const msg=String(error?.message||'');
+      if(/already|registered|exists/i.test(msg)){
+        loginMessage.textContent='Ese correo ya tiene una cuenta. Inicia sesión.';
+        setAuthMode('login');
+      }else if(/invalid login|credentials/i.test(msg)){
+        loginMessage.textContent='Correo o contraseña incorrectos.';
+      }else{
+        loginMessage.textContent='No se pudo completar la operación. '+msg;
+      }
+    }finally{
       loginButton.disabled = false;
-      loginButton.textContent = 'Entrar';
-
-      return;
+      loginButton.textContent = authMode === 'signup' ? 'Crear cuenta' : 'Entrar';
     }
-
-    if (data.session) {
-
-      await cargarPerfilUsuario(data.session);
-
-      loginScreen.style.display = 'none';
-
-      console.log(
-        'Sesión iniciada:',
-        data.session.user.email
-      );
-    }
-
-    loginButton.disabled = false;
-    loginButton.textContent = 'Entrar';
   });
 
   // =========================
@@ -4906,7 +5068,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 </script>
 
 <script>
-window.__APP_BUILD = 'V43-MULTIMEDIA-RENDER-ROBUST';
+window.__APP_BUILD = 'V44-AUTH-HOME-LOADING';
 
 if (typeof persistSongToSupabase === 'function') {
   window.persistSongToSupabase = persistSongToSupabase;
@@ -4943,6 +5105,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   } catch (error) {
     console.error('Error en arranque de Canciones Supabase:', error);
+  }
+});
+</script>
+
+
+<script id="v44-critical-bindings">
+document.addEventListener("DOMContentLoaded",()=>{
+  const weekBtn=document.getElementById("homeWeekViewBtn");
+  const monthBtn=document.getElementById("homeMonthViewBtn");
+  const prevBtn=document.getElementById("prevWeek");
+  const nextBtn=document.getElementById("nextWeek");
+  const hyEl=document.getElementById("hy");
+  const hmEl=document.getElementById("hm");
+  const mediaImgBtn=document.getElementById("im");
+
+  weekBtn?.addEventListener("click",(e)=>{e.preventDefault();setHomeView("week")});
+  monthBtn?.addEventListener("click",(e)=>{e.preventDefault();setHomeView("month")});
+  prevBtn?.addEventListener("click",(e)=>{e.preventDefault();moveHomeWeek(-1)});
+  nextBtn?.addEventListener("click",(e)=>{e.preventDefault();moveHomeWeek(1)});
+
+  const refreshHome=()=>{
+    homeSelectedWeek=null;
+    renderWeek();
+  };
+  hyEl?.addEventListener("input",refreshHome);
+  hmEl?.addEventListener("change",refreshHome);
+
+  if(mediaImgBtn){
+    mediaImgBtn.onclick=null;
+    mediaImgBtn.addEventListener("click",(e)=>{
+      e.preventDefault();
+      if(typeof window.imageM==="function")window.imageM();
+      else if(typeof imageM==="function")imageM();
+    });
   }
 });
 </script>
