@@ -4238,9 +4238,27 @@ function imageW(){
 
  imgType="worship"
 }
+function safeMediaDateLabel(s){
+ try{
+   if(s && s.label) return String(s.label).trim();
+   if(s && s.date){
+     const dayName=((days && days[wd(s.date)])?days[wd(s.date)]:"").toUpperCase();
+     const dayNum=(parts(s.date)?.D ?? "").toString();
+     return (dayName+" "+dayNum).trim();
+   }
+ }catch(_){}
+ return "—";
+}
 function getMediaPosterData(){
- let data=(Array.isArray(cm)&&cm.length?cm:(Array.isArray(mmonth)?mmonth:[]));
- if(Array.isArray(data) && data.length)return data;
+ const direct=(Array.isArray(cm)&&cm.length?cm:(Array.isArray(mmonth)?mmonth:[]));
+ if(Array.isArray(direct) && direct.length){
+   return direct.map(item=>({
+     label:safeMediaDateLabel(item),
+     PC:String(item?.PC||"").trim(),
+     Camara:String(item?.Camara||item?.Cámara||"").trim(),
+     Diapositivas:String(item?.Diapositivas||"").trim()
+   }));
+ }
 
  const rows=[...document.querySelectorAll("#mbody tr")];
  if(!rows.length)return [];
@@ -4248,7 +4266,7 @@ function getMediaPosterData(){
    const cells=tr.querySelectorAll("td");
    const selects=tr.querySelectorAll("select");
    return {
-     label:(cells[0]?.textContent||"").trim(),
+     label:(cells[0]?.textContent||"").trim() || "—",
      PC:(selects[0]?.value||"").trim(),
      Camara:(selects[1]?.value||"").trim(),
      Diapositivas:(selects[2]?.value||"").trim()
@@ -4256,99 +4274,103 @@ function getMediaPosterData(){
  }).filter(x=>x.label||x.PC||x.Camara||x.Diapositivas);
 }
 function imageM(){
- let data=getMediaPosterData();
- if(!data.length){
-   alert("No hay programación de multimedia para generar la imagen.");
-   return;
+ try{
+  const data=getMediaPosterData();
+  if(!data.length){
+    alert("No hay programación de multimedia para generar la imagen.");
+    return;
+  }
+
+  const titleH=54;
+  const headerH=54;
+  const rowH=34;
+  const bottomPad=3;
+
+  let c=poster;
+  c.width=1000;
+  c.height=titleH+headerH+(rowH*data.length)+bottomPad;
+
+  let x=c.getContext("2d");
+  x.clearRect(0,0,c.width,c.height);
+  x.fillStyle="#ffffff";
+  x.fillRect(0,0,c.width,c.height);
+
+  const cols=[0,150,360,610,1000];
+
+  x.fillStyle="#d3dde1";
+  x.fillRect(0,0,c.width,titleH);
+  x.fillStyle="#000000";
+  x.textAlign="center";
+  x.textBaseline="middle";
+  x.font="700 24px Roboto Mono";
+  x.fillText("PROGRAMACION  MULTIMEDIA",c.width/2,titleH/2);
+
+  const top=titleH;
+  x.fillStyle="#d3dde1";
+  x.fillRect(0,top,c.width,headerH);
+
+  const headers=["FECHAS  📅","PC  💻","CAMARA  🎥","⏹️ DIAPOSITIVAS\nPREDICAS"];
+  headers.forEach((label,i)=>{
+    x.fillStyle="#000";
+    x.textAlign="center";
+    x.textBaseline="middle";
+    x.font="700 15px Roboto Mono";
+    const cx=(cols[i]+cols[i+1])/2;
+    if(label.includes("\n")){
+      const [a,b]=label.split("\n");
+      x.fillText(a,cx,top+headerH/2-9);
+      x.fillText(b,cx,top+headerH/2+10);
+    }else{
+      x.fillText(label,cx,top+headerH/2);
+    }
+  });
+
+  let y=top+headerH;
+  data.forEach((s,i)=>{
+    x.fillStyle=i%2===0 ? "#9dc284" : "#d9ead3";
+    x.fillRect(0,y,c.width,rowH);
+
+    x.fillStyle="#000";
+    x.textAlign="center";
+    x.textBaseline="middle";
+    x.font="500 16px Roboto Mono";
+    x.fillText((s.label||"—").toUpperCase(),(cols[0]+cols[1])/2,y+rowH/2);
+    x.fillText((s.PC||"—").toUpperCase(),(cols[1]+cols[2])/2,y+rowH/2);
+    x.fillText((s.Camara||"—").toUpperCase(),(cols[2]+cols[3])/2,y+rowH/2);
+    x.fillText((s.Diapositivas||"—").toUpperCase(),(cols[3]+cols[4])/2,y+rowH/2);
+
+    x.strokeStyle="#ffffff";
+    x.lineWidth=2.2;
+    x.beginPath();
+    x.moveTo(0,y);
+    x.lineTo(c.width,y);
+    x.stroke();
+
+    y+=rowH;
+  });
+
+  x.strokeStyle="#ffffff";
+  x.lineWidth=3.2;
+  x.beginPath();
+  x.moveTo(0,titleH); x.lineTo(c.width,titleH);
+  x.moveTo(0,titleH+headerH); x.lineTo(c.width,titleH+headerH);
+  cols.slice(1,-1).forEach(v=>{
+    x.moveTo(v,titleH);
+    x.lineTo(v,c.height-bottomPad);
+  });
+  x.moveTo(c.width-2,titleH);
+  x.lineTo(c.width-2,c.height-bottomPad);
+  x.moveTo(0,c.height-bottomPad);
+  x.lineTo(c.width,c.height-bottomPad);
+  x.stroke();
+
+  imgType="media";
+ }catch(error){
+  console.error("Error generando imagen de multimedia:", error);
+  alert("No se pudo generar la imagen de multimedia: "+(error?.message||error));
  }
-
- const titleH=54;
- const headerH=54;
- const rowH=34;
- const bottomPad=3;
-
- let c=poster;
- c.width=1000;
- c.height=titleH+headerH+(rowH*data.length)+bottomPad;
-
- let x=c.getContext("2d");
- x.clearRect(0,0,c.width,c.height);
- x.fillStyle="#ffffff";
- x.fillRect(0,0,c.width,c.height);
-
- // Columnas más cercanas y compactas
- const cols=[0,150,360,610,1000];
-
- // Título
- x.fillStyle="#d3dde1";
- x.fillRect(0,0,c.width,titleH);
- x.fillStyle="#000000";
- x.textAlign="center";
- x.textBaseline="middle";
- x.font="700 24px Roboto Mono";
- x.fillText("PROGRAMACION  MULTIMEDIA",c.width/2,titleH/2);
-
- // Encabezado
- const top=titleH;
- x.fillStyle="#d3dde1";
- x.fillRect(0,top,c.width,headerH);
-
- const headers=["FECHAS  📅","PC  💻","CAMARA  🎥","⏹️ DIAPOSITIVAS\nPREDICAS"];
- headers.forEach((label,i)=>{
-   x.fillStyle="#000";
-   x.textAlign="center";
-   x.textBaseline="middle";
-   x.font="700 15px Roboto Mono";
-   const cx=(cols[i]+cols[i+1])/2;
-   if(label.includes("\n")){
-     const [a,b]=label.split("\n");
-     x.fillText(a,cx,top+headerH/2-9);
-     x.fillText(b,cx,top+headerH/2+10);
-   }else{
-     x.fillText(label,cx,top+headerH/2);
-   }
- });
-
- let y=top+headerH;
- data.forEach((s,i)=>{
-   x.fillStyle=i%2===0 ? "#9dc284" : "#d9ead3";
-   x.fillRect(0,y,c.width,rowH);
-
-   x.fillStyle="#000";
-   x.textAlign="center";
-   x.textBaseline="middle";
-   x.font="500 16px Roboto Mono";
-   const dateLabel=s.label||((days[wd(s.date)]||"").toUpperCase()+" "+(parts(s.date)?.D||""));
-   x.fillText(dateLabel,(cols[0]+cols[1])/2,y+rowH/2);
-   x.fillText((s.PC||"—").toUpperCase(),(cols[1]+cols[2])/2,y+rowH/2);
-   x.fillText((s.Camara||"—").toUpperCase(),(cols[2]+cols[3])/2,y+rowH/2);
-   x.fillText((s.Diapositivas||"—").toUpperCase(),(cols[3]+cols[4])/2,y+rowH/2);
-
-   x.strokeStyle="#ffffff";
-   x.lineWidth=2.2;
-   x.beginPath();
-   x.moveTo(0,y); x.lineTo(c.width,y);
-   x.stroke();
-
-   y+=rowH;
- });
-
- // Cuadrícula final visible y compacta
- x.strokeStyle="#ffffff";
- x.lineWidth=3.2;
- x.beginPath();
- x.moveTo(0,titleH); x.lineTo(c.width,titleH);
- x.moveTo(0,titleH+headerH); x.lineTo(c.width,titleH+headerH);
- cols.slice(1,-1).forEach(v=>{
-   x.moveTo(v,titleH);
-   x.lineTo(v,c.height-bottomPad);
- });
- x.moveTo(c.width-2,titleH); x.lineTo(c.width-2,c.height-bottomPad);
- x.moveTo(0,c.height-bottomPad); x.lineTo(c.width,c.height-bottomPad);
- x.stroke();
-
- imgType="media"
 }
+window.imageM=imageM;
 const sectionDescriptions={home:["Inicio","Vista semanal y acceso rápido."],worship:["Alabanza","Programación mensual dominical."],youth:["Alabanza Jóvenes","Programación mensual de sábados."],media:["Multimedia","PC, cámara y diapositivas."],vols:["Voluntarios","Personas, roles y edición."],songs:["Canciones","Repertorio y tonos por cantante."],avail:["Disponibilidad","Indisponibilidades por módulo."],hist:["Historial","Participaciones y repertorio."],imgs:["Imágenes","Exportación mensual."],settings:["Configuración","Ajustes generales."]};
 function showSectionToast(id){let info=sectionDescriptions[id]||[id,""];toastTitle.textContent=info[0];toastText.textContent=info[1];sectionToast.classList.add("show");clearTimeout(window.__tt);window.__tt=setTimeout(()=>sectionToast.classList.remove("show"),1700)}
 function showConfirmToast(){
@@ -4412,7 +4434,7 @@ songModalCancel.onclick=closeSongEditor;
 songEditForm.addEventListener("submit",saveSongEditor);
 awa.onclick=async()=>{if(!awd.value||!awp.value)return;awa.disabled=true;try{await addAvailabilityToSupabase("alabanza",awp.value,awd.value);awd.value=""}catch(error){console.error(error);alert("No se pudo guardar la indisponibilidad: "+(error.message||error))}finally{awa.disabled=false}};
 ama.onclick=async()=>{if(!amd.value||!amp.value)return;ama.disabled=true;try{await addAvailabilityToSupabase("multimedia",amp.value,amd.value);amd.value=""}catch(error){console.error(error);alert("No se pudo guardar la indisponibilidad: "+(error.message||error))}finally{ama.disabled=false}};
-hr.onclick=history;iw.onclick=imageW;ij.onclick=imageJ;im.onclick=imageM;idown.onclick=()=>{let a=document.createElement("a");a.href=poster.toDataURL("image/png");a.download=`programacion-${imgType}.png`;a.click()};
+hr.onclick=history;iw.onclick=imageW;ij.onclick=imageJ;im.onclick=()=>window.imageM();document.getElementById("im")?.addEventListener("click",()=>window.imageM());idown.onclick=()=>{let a=document.createElement("a");a.href=poster.toDataURL("image/png");a.download=`programacion-${imgType}.png`;a.click()};
 hy.onchange=hm.onchange=()=>{homeSelectedWeek=null;renderWeek()};
 
 
@@ -4884,7 +4906,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 </script>
 
 <script>
-window.__APP_BUILD = 'V42-MULTIMEDIA-RENDER-FIX';
+window.__APP_BUILD = 'V43-MULTIMEDIA-RENDER-ROBUST';
 
 if (typeof persistSongToSupabase === 'function') {
   window.persistSongToSupabase = persistSongToSupabase;
