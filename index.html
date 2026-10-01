@@ -1022,7 +1022,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
 <button data-p="imgs" data-tip="Imágenes"><span class="ico">▧</span><span class="label">Imágenes</span></button>
 <button data-p="settings" data-tip="Configuración"><span class="ico">⚙</span><span class="label">Configuración</span></button>
 </div><div class="sidebarFooter"><button id="themeToggle" class="sideAction" title="Cambiar tema" aria-label="Cambiar tema"><span class="ico">◐</span></button><button id="collapseSide" class="sideAction" title="Plegar menú" aria-label="Plegar menú"><span class="ico">‹</span></button></div></aside>
-<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V37 · GOOGLE SHEETS POST</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
+<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V40 · IMAGEN ALABANZA Y JÓVENES</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
 
 <section id="home" class="panel active">
   <div class="card">
@@ -1187,9 +1187,9 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
 
 <section id="hist" class="panel"><div class="card"><h2>Historial</h2><div class="row"><div><select id="ht"><option value="person">Personas</option><option value="song">Canciones</option></select></div><div><input id="hq" placeholder="Buscar..."></div><div class="auto"><button id="hr" class="btn primary">Consultar</button></div></div><div id="hout" style="margin-top:10px"></div></div></section>
 
-<section id="imgs" class="panel"><div class="grid"><div class="card s4"><h2>Imágenes mensuales</h2><button id="iw" class="btn primary" style="width:100%;margin-bottom:8px">Generar Alabanza</button><button id="im" class="btn secondary" style="width:100%;margin-bottom:8px">Generar Multimedia</button><button id="idown" class="btn success" style="width:100%">Descargar PNG</button></div><div class="card s8"><canvas id="poster" width="1400" height="1000"></canvas></div></div></section>
+<section id="imgs" class="panel"><div class="grid"><div class="card s4"><h2>Imágenes mensuales</h2><button id="iw" class="btn primary" style="width:100%;margin-bottom:8px">Generar Alabanza</button><button id="ij" class="btn secondary" style="width:100%;margin-bottom:8px">Generar Jóvenes</button><button id="im" class="btn secondary" style="width:100%;margin-bottom:8px">Generar Multimedia</button><button id="idown" class="btn success" style="width:100%">Descargar PNG</button></div><div class="card s8"><canvas id="poster" width="1400" height="1000"></canvas></div></div></section>
 
-<section id="settings" class="panel"><div class="grid"><div class="card s6"><h2>Configuración</h2><label>Google Sheets anual</label><input value="2026 PROGRAMACIÓN ALABANZA Y MEDIA" readonly><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div><div class="card s6"><div class="note"><strong>Google Sheets conectado</strong><br>Al pulsar <strong>Confirmar</strong>, la programación oficial se guarda en la base de datos y también se envía al archivo anual de Google Sheets.</div><div id="googleSheetsConnectionStatus" class="muted" style="margin-top:10px">Puente v2 configurado · envío POST compatible</div></div></div></section>
+<section id="settings" class="panel"><div class="grid"><div class="card s6"><h2>Configuración</h2><label>Google Sheets anual</label><input value="2026 PROGRAMACIÓN ALABANZA Y MEDIA" readonly><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div><div class="card s6"><div class="note"><strong>Google Sheets conectado</strong><br>Al pulsar <strong>Confirmar</strong>, la programación oficial se guarda en la base de datos y también se envía al archivo anual de Google Sheets.</div><div id="googleSheetsConnectionStatus" class="muted" style="margin-top:10px">Puente v2 configurado · envío Beacon</div><div class="muted" style="margin-top:6px">Después de confirmar, el Apps Script registrará el intento en <code>lastSync</code>.</div></div></div></section>
 
 <div id="songEditModal" class="modalBackdrop" aria-hidden="true">
   <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="songEditTitle">
@@ -3107,59 +3107,36 @@ async function getGoogleSheetsAccessToken(){
   return session.access_token;
 }
 
-function postGoogleSheetsViaForm(payload){
-  return new Promise((resolve,reject)=>{
-    try{
-      const iframeName="gsBridgeFrame_"+Date.now()+"_"+Math.random().toString(36).slice(2);
+function sendGoogleSheetsBeacon(payload){
+  const params=new URLSearchParams();
+  params.set("payload",JSON.stringify(payload));
 
-      const iframe=document.createElement("iframe");
-      iframe.name=iframeName;
-      iframe.style.display="none";
-      iframe.setAttribute("aria-hidden","true");
-
-      const form=document.createElement("form");
-      form.method="POST";
-      form.action=GOOGLE_SHEETS_BRIDGE_URL;
-      form.target=iframeName;
-      form.style.display="none";
-
-      const input=document.createElement("input");
-      input.type="hidden";
-      input.name="payload";
-      input.value=JSON.stringify(payload);
-
-      form.appendChild(input);
-      document.body.appendChild(iframe);
-      document.body.appendChild(form);
-
-      let finished=false;
-      const cleanup=()=>{
-        setTimeout(()=>{
-          form.remove();
-          iframe.remove();
-        },500);
-      };
-
-      iframe.addEventListener("load",()=>{
-        if(finished)return;
-        finished=true;
-        cleanup();
-        resolve({ok:true,verified:false,transport:"form"});
-      },{once:true});
-
-      form.submit();
-
-      setTimeout(()=>{
-        if(finished)return;
-        finished=true;
-        cleanup();
-        resolve({ok:true,verified:false,transport:"form-timeout"});
-      },4500);
-
-    }catch(error){
-      reject(error);
+  if(navigator.sendBeacon){
+    const ok=navigator.sendBeacon(GOOGLE_SHEETS_BRIDGE_URL,params);
+    if(ok){
+      return {ok:true,transport:"beacon"};
     }
+  }
+
+  return null;
+}
+
+async function sendGoogleSheetsFallback(payload){
+  const params=new URLSearchParams();
+  params.set("payload",JSON.stringify(payload));
+
+  await fetch(GOOGLE_SHEETS_BRIDGE_URL,{
+    method:"POST",
+    mode:"no-cors",
+    headers:{
+      "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"
+    },
+    body:params.toString(),
+    keepalive:true,
+    redirect:"follow"
   });
+
+  return {ok:true,transport:"fetch-no-cors"};
 }
 
 async function syncConfirmedMonthToGoogleSheets(module,services,year,monthZeroBased){
@@ -3174,16 +3151,24 @@ async function syncConfirmedMonthToGoogleSheets(module,services,year,monthZeroBa
     services:deepCopy(services||[])
   };
 
-  // Google Apps Script redirige las respuestas de los Web Apps y algunos
-  // navegadores bloquean fetch por CORS. El formulario oculto realiza un POST
-  // HTML normal, que sí llega de forma fiable a doPost().
-  const result=await postGoogleSheetsViaForm(payload);
+  const beaconResult=sendGoogleSheetsBeacon(payload);
+
+  if(beaconResult){
+    return {
+      ok:true,
+      verified:false,
+      result:beaconResult,
+      transport:"beacon"
+    };
+  }
+
+  const fallback=await sendGoogleSheetsFallback(payload);
 
   return {
     ok:true,
     verified:false,
-    result,
-    transport:"form"
+    result:fallback,
+    transport:"fetch-no-cors"
   };
 }
 
@@ -3196,7 +3181,7 @@ function sheetsSuccessMessage(module,count,result){
     return `${label} confirmado · ${count} ${unit} · Base de datos + Google Sheets${sheet}.`;
   }
 
-  return `${label} confirmado · ${count} ${unit} · Guardado en base de datos y enviado a Google Sheets.`;
+  return `${label} confirmado · ${count} ${unit} · Guardado en base de datos · envío a Google Sheets iniciado.`;
 }
 
 // =========================================================
@@ -4235,7 +4220,7 @@ songModalCancel.onclick=closeSongEditor;
 songEditForm.addEventListener("submit",saveSongEditor);
 awa.onclick=async()=>{if(!awd.value||!awp.value)return;awa.disabled=true;try{await addAvailabilityToSupabase("alabanza",awp.value,awd.value);awd.value=""}catch(error){console.error(error);alert("No se pudo guardar la indisponibilidad: "+(error.message||error))}finally{awa.disabled=false}};
 ama.onclick=async()=>{if(!amd.value||!amp.value)return;ama.disabled=true;try{await addAvailabilityToSupabase("multimedia",amp.value,amd.value);amd.value=""}catch(error){console.error(error);alert("No se pudo guardar la indisponibilidad: "+(error.message||error))}finally{ama.disabled=false}};
-hr.onclick=history;iw.onclick=imageW;im.onclick=imageM;idown.onclick=()=>{let a=document.createElement("a");a.href=poster.toDataURL("image/png");a.download=`programacion-${imgType}.png`;a.click()};
+hr.onclick=history;iw.onclick=imageW;ij.onclick=imageJ;im.onclick=imageM;idown.onclick=()=>{let a=document.createElement("a");a.href=poster.toDataURL("image/png");a.download=`programacion-${imgType}.png`;a.click()};
 hy.onchange=hm.onchange=()=>{homeSelectedWeek=null;renderWeek()};
 
 
@@ -4397,19 +4382,117 @@ refreshRoles();renderVols();refreshPeople();refreshMediaRoleControl();renderMedi
  document.getElementById('v8Collapse').onclick=()=>setCollapsed(!side.classList.contains('collapsed'));
  document.getElementById('v8Theme').onclick=()=>{document.body.dataset.theme=document.body.dataset.theme==='dark'?'light':'dark';localStorage.setItem('alabanza-theme',document.body.dataset.theme)};
  navButtons.forEach(b=>b.onclick=()=>{document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById(b.dataset.p).classList.add('active');navButtons.forEach(x=>x.classList.toggle('active',x===b));title.textContent=(desc[b.dataset.p]||[''])[0];showToast(b.dataset.p);side.classList.remove('open');overlay.classList.remove('show')});
- // Improve exported Alabanza image while keeping only Sundays/extras.
- window.imageW=function(){
-  let data=cw||wmonth;if(!data.length)return;
-  let c=poster,x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
-  const c1=280,c2=820,hh=96;x.fillStyle='#7ea7b2';x.fillRect(0,0,c.width,hh);x.strokeStyle='#fff';x.lineWidth=3;x.beginPath();x.moveTo(c1,0);x.lineTo(c1,c.height);x.moveTo(c2,0);x.lineTo(c2,c.height);x.stroke();
-  x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';x.font='700 25px Impact';x.fillText('FECHA',c1/2,hh/2);x.fillText('RESPONSABLES',(c1+c2)/2,hh/2);x.fillText('CANCIONES',(c2+c.width)/2,hh/2);
+ // Improve exported Alabanza and Jóvenes images.
+ function spanishKeyLabel(key){
+  let raw=String(key||'').trim();
+  if(!raw)return '';
+  let m=raw.match(/^([A-Ga-g])([#b]?)(.*)$/);
+  if(!m)return raw;
+  let map={C:'do',D:'re',E:'mi',F:'fa',G:'sol',A:'la',B:'si'};
+  let letter=m[1].toUpperCase(),acc=m[2]||'',rest=m[3]||'';
+  let spanish=(map[letter]||letter.toLowerCase())+acc+rest.toLowerCase();
+  return `${raw} (${spanish})`;
+ }
+ function posterSongLabel(song){
+  if(!song)return '';
+  let base='- '+String(song.name||'').trim();
+  if(song.artist)base+=` (${String(song.artist).trim()})`;
+  let key=String(song.key||song.base_key||'').trim();
+  if(key)base+=` - ${spanishKeyLabel(key)}`;
+  return base;
+ }
+ function drawFittedText(ctx,text,x,y,maxWidth,baseSize=17,minSize=14){
+  let size=baseSize;
+  while(size>minSize){
+   ctx.font=`500 ${size}px Comfortaa`;
+   if(ctx.measureText(text).width<=maxWidth)break;
+   size-=1;
+  }
+  ctx.font=`500 ${size}px Comfortaa`;
+  ctx.fillText(text,x,y);
+ }
+ function renderWorshipPoster(data,mode='worship'){
+  if(!data.length)return;
+  let c=poster,x=c.getContext('2d');
+  x.clearRect(0,0,c.width,c.height);
+  x.fillStyle='#fff';
+  x.fillRect(0,0,c.width,c.height);
+  const c1=280,c2=820,hh=96;
+  x.fillStyle='#7ea7b2';
+  x.fillRect(0,0,c.width,hh);
+  x.strokeStyle='#fff';
+  x.lineWidth=3;
+  x.beginPath();
+  x.moveTo(c1,0);x.lineTo(c1,c.height);
+  x.moveTo(c2,0);x.lineTo(c2,c.height);
+  x.stroke();
+  x.fillStyle='#fff';
+  x.textAlign='center';
+  x.textBaseline='middle';
+  x.font='700 25px Impact';
+  x.fillText('FECHA',c1/2,hh/2);
+  x.fillText('RESPONSABLES',(c1+c2)/2,hh/2);
+  x.fillText('CANCIONES',(c2+c.width)/2,hh/2);
+
   let bh=(c.height-hh)/Math.max(1,data.length),y=hh;
-  data.forEach((s,i)=>{x.fillStyle=i%2===0?'#9fc1df':'#c5d9ea';x.fillRect(0,y,c.width,bh);x.strokeStyle='#fff';x.lineWidth=3;x.beginPath();x.moveTo(0,y);x.lineTo(c.width,y);x.stroke();x.fillStyle='#0f172a';let p=parts(s.date);x.textAlign='center';x.font='600 22px Comfortaa';x.fillText(`${p.D} ${months[p.M-1].toLowerCase()}`,c1/2,y+bh/2);
-   let by={};s.assign.forEach(a=>(by[a.role]??=[]).push(a.name));let rows=[['VOZ PRINCIPAL 🎙:',(by['Voz principal']||[]).join(', ')],['COROS 🎤:',(by['Coros']||[]).join(', ')],['PIANO 🎹:',(by['Piano']||[]).join(', ')],['GUITARRA 🎸:',(by['Guitarra']||[]).join(', ')],['BAJO 🪕:',(by['Bajo']||[]).join(', ')],['BATERÍA 🥁:',(by['Batería']||[]).join(', ')]];let lh=Math.min(34,bh/7),sy=y+(bh-rows.length*lh)/2+lh*.65;x.font='500 18px Comfortaa';rows.forEach((r,j)=>{x.textAlign='right';x.fillText(r[0],535,sy+j*lh);x.textAlign='left';x.fillText(r[1]||'—',555,sy+j*lh)});
-   let sl=s.songs.filter(Boolean),sh=Math.min(38,bh/5.4),ssy=y+(bh-sl.length*sh)/2+sh*.7;x.textAlign='left';x.font='500 18px Comfortaa';sl.forEach((sg,j)=>x.fillText('- '+sg.name+(sg.artist?` (${sg.artist})`:''),835,ssy+j*sh));y+=bh;});imgType='worship';
+  data.forEach((s,i)=>{
+   x.fillStyle=i%2===0?'#9fc1df':'#c5d9ea';
+   x.fillRect(0,y,c.width,bh);
+   x.strokeStyle='#fff';
+   x.lineWidth=3;
+   x.beginPath();
+   x.moveTo(0,y);x.lineTo(c.width,y);
+   x.stroke();
+
+   x.fillStyle='#0f172a';
+   let p=parts(s.date);
+   x.textAlign='center';
+   x.textBaseline='middle';
+   x.font='600 22px Comfortaa';
+   x.fillText(`${p.D} ${months[p.M-1].toLowerCase()}`,c1/2,y+bh/2);
+
+   let by={};
+   s.assign.forEach(a=>(by[a.role]??=[]).push(a.name));
+   let rows=[
+     ['VOZ PRINCIPAL 🎙:',(by['Voz principal']||[]).join(', ')],
+     ['COROS 🎤:',(by['Coros']||[]).join(', ')],
+     ['PIANO 🎹:',(by['Piano']||[]).join(', ')],
+     ['GUITARRA 🎸:',(by['Guitarra']||[]).join(', ')],
+     ['BAJO 🪕:',(by['Bajo']||[]).join(', ')],
+     ['BATERÍA 🥁:',(by['Batería']||[]).join(', ')]
+   ];
+   let lh=Math.min(34,bh/7),sy=y+(bh-rows.length*lh)/2+lh*.65;
+   x.font='500 18px Comfortaa';
+   rows.forEach((r,j)=>{
+    x.textAlign='right';
+    x.fillText(r[0],535,sy+j*lh);
+    x.textAlign='left';
+    x.fillText(r[1]||'—',555,sy+j*lh);
+   });
+
+   let sl=s.songs.filter(Boolean).map(posterSongLabel);
+   let sh=Math.min(38,bh/5.4),ssy=y+(bh-sl.length*sh)/2+sh*.7;
+   x.textAlign='left';
+   x.textBaseline='middle';
+   sl.forEach((txt,j)=>{
+    drawFittedText(x,txt,835,ssy+j*sh,540,17,14);
+   });
+
+   y+=bh;
+  });
+  imgType=mode;
+ }
+ window.imageW=function(){
+  let data=cw||wmonth;
+  renderWorshipPoster(data,'worship');
+ };
+ window.imageJ=function(){
+  let data=cj||jmonth;
+  renderWorshipPoster(data,'youth');
  };
  iw.onclick=window.imageW;
-})();
+ ij.onclick=window.imageJ;
+})();;
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
@@ -4609,7 +4692,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 </script>
 
 <script>
-window.__APP_BUILD = 'V37-GOOGLE-SHEETS-POST';
+window.__APP_BUILD = 'V40-IMAGEN-ALABANZA-JOVENES';
 
 if (typeof persistSongToSupabase === 'function') {
   window.persistSongToSupabase = persistSongToSupabase;
@@ -4621,7 +4704,8 @@ window.queueScheduleDraftSave = queueScheduleDraftSave;
 window.saveScheduleDraft = saveScheduleDraft;
 window.applySavedMonth = applySavedMonth;
 window.syncConfirmedMonthToGoogleSheets = syncConfirmedMonthToGoogleSheets;
-window.postGoogleSheetsViaForm = postGoogleSheetsViaForm;
+window.sendGoogleSheetsBeacon = sendGoogleSheetsBeacon;
+window.sendGoogleSheetsFallback = sendGoogleSheetsFallback;
 window.GOOGLE_SHEETS_BRIDGE_URL = GOOGLE_SHEETS_BRIDGE_URL;
 
 document.addEventListener('DOMContentLoaded', async () => {
