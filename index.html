@@ -3,7 +3,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V26-SUPABASE-DISPONIBILIDAD">
-<title>Programación V28 · Filtros + Bloqueos</title>
+<title>Programación V29 · Filtros + Bloqueos</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&display=swap');
 :root{--bg:#0f1115;--panel:#15181e;--panel2:#1b1f26;--panel3:#222831;--text:#f2f4f7;--muted:#9aa4b2;--line:#2b313a;--side:#111419;--hover:#1c222a;--accent:#7c9cf5;--accentSoft:#1c2947;--success:#17351f;--successText:#b9f6c7;--blue:#9ec0df;--blue2:#c2d7ea;--bhead:#7ea7b2;--green:#dfe8dc;--green2:#c8d9c3;--ghead:#d3dde1}
@@ -356,6 +356,119 @@ body[data-theme="light"] .lockToggle.locked{background:#f7ecfb !important;border
 }
 </style>
 
+
+<style id="v29-worship-song-picker">
+.worshipSongPicker{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:6px;
+  align-items:center;
+  margin-bottom:6px;
+}
+.worshipSongSearch{
+  width:100%;
+  min-width:0;
+  min-height:32px !important;
+  padding:5px 8px !important;
+  font-family:'Comfortaa',sans-serif !important;
+  background:#fff !important;
+  color:#111827 !important;
+  border:1px solid #b9c4cf !important;
+}
+.worshipSongCategory{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:58px;
+  min-height:26px;
+  padding:3px 7px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:700;
+  white-space:nowrap;
+  border:1px solid rgba(17,24,39,.15);
+  color:#111827;
+  background:#e5e7eb;
+}
+.worshipSongCategory[data-cat="Rápida"]{background:#dbeafe}
+.worshipSongCategory[data-cat="Media"]{background:#fef3c7}
+.worshipSongCategory[data-cat="Lenta"]{background:#ede9fe}
+.worshipSongCategory.empty{visibility:hidden}
+.worshipSongMenu{
+  position:absolute;
+  left:0;
+  right:0;
+  top:calc(100% + 4px);
+  z-index:120;
+  max-height:250px;
+  overflow:auto;
+  background:#fff;
+  color:#111827;
+  border:1px solid #b9c4cf;
+  border-radius:8px;
+  box-shadow:0 16px 40px rgba(0,0,0,.22);
+  padding:5px;
+}
+.worshipSongMenu[hidden]{display:none}
+.worshipSongOption{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  text-align:left;
+  border:0;
+  background:transparent;
+  color:#111827;
+  padding:8px 9px;
+  border-radius:6px;
+  cursor:pointer;
+}
+.worshipSongOption:hover,.worshipSongOption:focus{background:#eef2f7}
+.worshipSongOptionText{
+  min-width:0;
+  display:block;
+}
+.worshipSongOptionText strong{
+  display:block;
+  font-size:12px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.worshipSongOptionText small{
+  display:block;
+  margin-top:2px;
+  color:#667085;
+  font-size:10px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.worshipSongOption .worshipSongCategory{flex:0 0 auto}
+.worshipSongEmpty{
+  padding:10px;
+  font-size:11px;
+  color:#667085;
+}
+.worshipSongClear{
+  color:#9b1c1c;
+  border-bottom:1px solid #e5e7eb;
+  margin-bottom:4px;
+}
+.worshipMixNote{
+  margin-top:7px;
+  font-size:11px;
+  color:var(--muted);
+}
+@media(max-width:760px){
+  .worshipSongMenu{max-height:220px}
+  .worshipSongSearch{font-size:12px !important}
+  .worshipSongCategory{min-width:54px;font-size:9px}
+}
+</style>
+
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -527,7 +640,7 @@ body[data-theme="light"] .lockToggle.locked{background:#f7ecfb !important;border
 <button data-p="imgs" data-tip="Imágenes"><span class="ico">▧</span><span class="label">Imágenes</span></button>
 <button data-p="settings" data-tip="Configuración"><span class="ico">⚙</span><span class="label">Configuración</span></button>
 </div><div class="sidebarFooter"><button id="themeToggle" class="sideAction" title="Cambiar tema" aria-label="Cambiar tema"><span class="ico">◐</span></button><button id="collapseSide" class="sideAction" title="Plegar menú" aria-label="Plegar menú"><span class="ico">‹</span></button></div></aside>
-<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V28 · FILTROS + BLOQUEOS</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
+<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V29 · CATEGORÍAS + BUSCADOR</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
 
 <section id="home" class="panel active">
   <div class="card">
@@ -572,7 +685,7 @@ body[data-theme="light"] .lockToggle.locked{background:#f7ecfb !important;border
   </div>
 </section>
 
-<section id="worship" class="panel"><div class="card"><div class="row"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto"><button id="wg" class="btn secondary">Generar fechas</button></div></div><div class="row" style="margin-top:12px"><button id="wf" class="btn primary">Rellenar Alabanza del mes</button><button id="wr" class="btn secondary">Reequilibrar</button><button id="wLockResp" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Responsables</button><button id="wLockSongs" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Canciones</button><button id="wc" class="btn success">Confirmar Alabanza</button><button id="we" class="btn secondary">Añadir extra</button></div><div class="worshipLockHint">Puedes fijar músicos o canciones por separado. “Rellenar” solo cambiará las columnas que estén desbloqueadas.</div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div></div></section>
+<section id="worship" class="panel"><div class="card"><div class="row"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto"><button id="wg" class="btn secondary">Generar fechas</button></div></div><div class="row" style="margin-top:12px"><button id="wf" class="btn primary">Rellenar Alabanza del mes</button><button id="wr" class="btn secondary">Reequilibrar</button><button id="wLockResp" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Responsables</button><button id="wLockSongs" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Canciones</button><button id="wc" class="btn success">Confirmar Alabanza</button><button id="we" class="btn secondary">Añadir extra</button></div><div class="worshipLockHint">Puedes fijar músicos o canciones por separado. “Rellenar” solo cambiará las columnas que estén desbloqueadas.</div><div class="worshipMixNote">Mezcla automática: 1 Rápida + 1 Media + 2 Lentas, o 2 Rápidas + 1 Media + 1 Lenta. La canción Media cuenta dentro del bloque más dinámico.</div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div></div></section>
 
 <section id="youth" class="panel">
 <div class="card">
@@ -1067,6 +1180,199 @@ function chooseSongForService(group,singer,date,usedNames,monthCounts,lastUsed,a
  return (pool[Math.floor(Math.random()*pool.length)]||ranked[0])?.s||null;
 }
 
+
+function isSantaCenaSong(song){
+ return (song?.moods||[]).some(m=>moodKey(m)==="santa cena");
+}
+
+function chooseSongByCategoryForService(category,singer,date,usedNames,monthCounts,lastUsed,avoidCurrent=new Set()){
+ let candidates=songs.filter(s=>
+   s.category===category &&
+   !isSantaCenaSong(s) &&
+   !usedNames.has(cleanHistorySongName(s.name))
+ );
+ if(!candidates.length)return null;
+
+ const outsideWindow=candidates.filter(s=>{
+   const last=lastUsed.get(cleanHistorySongName(s.name));
+   return !last||dayDistance(date,last)>=21;
+ });
+ if(outsideWindow.length)candidates=outsideWindow;
+
+ const ranked=candidates.map(s=>{
+   const name=cleanHistorySongName(s.name);
+   const singerBonus=s.singer&&s.singer===singer?-18:0;
+   const usePenalty=(monthCounts[name]||0)*16;
+   const last=lastUsed.get(name);
+   const recentPenalty=last?Math.max(0,28-dayDistance(date,last))*0.8:0;
+   const sameAsPreviousPenalty=avoidCurrent.has(name)?18:0;
+   return {s,score:singerBonus+usePenalty+recentPenalty+sameAsPreviousPenalty+Math.random()*12};
+ }).sort((a,b)=>a.score-b.score);
+
+ const best=ranked[0]?.score??0;
+ const pool=ranked.filter(x=>x.score<=best+14).slice(0,5);
+ return (pool[Math.floor(Math.random()*pool.length)]||ranked[0])?.s||null;
+}
+
+function chooseRegularWorshipPattern(){
+ const counts={Rápida:0,Media:0,Lenta:0};
+ songs.forEach(s=>{
+   if(!isSantaCenaSong(s)&&Object.prototype.hasOwnProperty.call(counts,s.category))counts[s.category]++;
+ });
+ const patterns=[
+   ["Rápida","Media","Lenta","Lenta"],
+   ["Rápida","Rápida","Media","Lenta"]
+ ];
+ const feasible=patterns.filter(pattern=>{
+   const need=pattern.reduce((o,c)=>(o[c]=(o[c]||0)+1,o),{});
+   return Object.entries(need).every(([cat,n])=>(counts[cat]||0)>=n);
+ });
+ const pool=feasible.length?feasible:patterns;
+ return pool[Math.floor(Math.random()*pool.length)].slice();
+}
+
+function songSearchText(song){
+ return [
+   song?.name,
+   song?.artist,
+   song?.category,
+   song?.singer,
+   ...(song?.moods||[])
+ ].filter(Boolean).join(" ").toLocaleLowerCase("es");
+}
+
+function createWorshipSongPicker(service,slotIndex,slotCount){
+ const wrap=document.createElement("div");
+ wrap.className="worshipSongPicker";
+
+ const input=document.createElement("input");
+ input.type="search";
+ input.className="worshipSongSearch";
+ input.placeholder="Buscar canción…";
+ input.autocomplete="off";
+ input.setAttribute("aria-label",`Buscar canción ${slotIndex+1}`);
+
+ const badge=document.createElement("span");
+ badge.className="worshipSongCategory empty";
+
+ const menu=document.createElement("div");
+ menu.className="worshipSongMenu";
+ menu.hidden=true;
+
+ function currentSource(){
+   const saved=service.songs?.[slotIndex];
+   if(!saved)return null;
+   const clean=cleanHistorySongName(saved.name);
+   return songs.find(s=>cleanHistorySongName(s.name)===clean)||saved;
+ }
+
+ function syncDisplay(){
+   const source=currentSource();
+   const saved=service.songs?.[slotIndex];
+   input.value=saved?cleanHistorySongName(saved.name):"";
+   const cat=source?.category||saved?.category||"";
+   badge.textContent=cat;
+   badge.dataset.cat=cat;
+   badge.classList.toggle("empty",!cat);
+ }
+
+ function chooseSong(song){
+   const lead=service.assign?.find(a=>a.role==="Voz principal")?.name||"";
+   const copy={...song,key:toneFor(song,lead)};
+   if(service.santa&&slotIndex===slotCount-1){
+     copy.name="SANTA CENA: "+cleanHistorySongName(copy.name);
+   }
+   service.songs[slotIndex]=copy;
+   syncDisplay();
+   menu.hidden=true;
+ }
+
+ function clearSong(){
+   service.songs[slotIndex]=null;
+   syncDisplay();
+   menu.hidden=true;
+ }
+
+ function renderResults(query=""){
+   menu.innerHTML="";
+
+   const clear=document.createElement("button");
+   clear.type="button";
+   clear.className="worshipSongOption worshipSongClear";
+   clear.innerHTML='<span class="worshipSongOptionText"><strong>— Sin canción —</strong><small>Vaciar este espacio</small></span>';
+   clear.addEventListener("mousedown",e=>e.preventDefault());
+   clear.addEventListener("click",clearSong);
+   menu.appendChild(clear);
+
+   const q=String(query||"").trim().toLocaleLowerCase("es");
+   let pool=songs.filter(s=>!q||songSearchText(s).includes(q));
+
+   // Para el quinto espacio de Santa Cena, las canciones con ese mood aparecen primero,
+   // pero la búsqueda sigue permitiendo ver el resto del repertorio.
+   if(service.santa&&slotIndex===slotCount-1){
+     pool=pool.slice().sort((a,b)=>Number(isSantaCenaSong(b))-Number(isSantaCenaSong(a)));
+   }
+
+   if(!pool.length){
+     const empty=document.createElement("div");
+     empty.className="worshipSongEmpty";
+     empty.textContent="No se encontraron canciones.";
+     menu.appendChild(empty);
+     return;
+   }
+
+   pool.slice(0,60).forEach(song=>{
+     const btn=document.createElement("button");
+     btn.type="button";
+     btn.className="worshipSongOption";
+
+     const text=document.createElement("span");
+     text.className="worshipSongOptionText";
+     const strong=document.createElement("strong");
+     strong.textContent=song.name||"Sin nombre";
+     const small=document.createElement("small");
+     small.textContent=[song.artist,(song.moods||[]).join(" · ")].filter(Boolean).join(" · ")||"—";
+     text.append(strong,small);
+
+     const tag=document.createElement("span");
+     tag.className="worshipSongCategory";
+     tag.dataset.cat=song.category||"";
+     tag.textContent=song.category||"—";
+
+     btn.append(text,tag);
+     btn.addEventListener("mousedown",e=>e.preventDefault());
+     btn.addEventListener("click",()=>chooseSong(song));
+     menu.appendChild(btn);
+   });
+ }
+
+ input.addEventListener("focus",()=>{
+   renderResults(input.value);
+   menu.hidden=false;
+ });
+ input.addEventListener("input",()=>{
+   renderResults(input.value);
+   menu.hidden=false;
+ });
+ input.addEventListener("keydown",e=>{
+   if(e.key==="Escape"){
+     menu.hidden=true;
+     syncDisplay();
+     input.blur();
+   }
+ });
+ input.addEventListener("blur",()=>{
+   setTimeout(()=>{
+     menu.hidden=true;
+     syncDisplay();
+   },140);
+ });
+
+ wrap.append(input,badge,menu);
+ syncDisplay();
+ return wrap;
+}
+
 function updateWorshipLockButtons(){
  const br=document.getElementById("wLockResp"),bs=document.getElementById("wLockSongs");
  if(br){br.classList.toggle("locked",worshipLockResponsibilities);br.textContent=(worshipLockResponsibilities?"🔒 ":"🔓 ")+"Responsables";br.setAttribute("aria-pressed",String(worshipLockResponsibilities))}
@@ -1108,12 +1414,18 @@ function fillW(){
    if(!worshipLockSongs){
      const usedS=new Set();
      s.songs=[];
-     ["Alabanza","Alabanza","Adoración","Adoración"].forEach(group=>{
-       const song=chooseSongForService(group,singer,s.date,usedS,monthSongCounts,lastSongUsed,previousSongNames);
+     const categoryPattern=chooseRegularWorshipPattern();
+     categoryPattern.forEach(category=>{
+       const song=chooseSongByCategoryForService(category,singer,s.date,usedS,monthSongCounts,lastSongUsed,previousSongNames);
        if(song){
          const clean=cleanHistorySongName(song.name);
          s.songs.push({...song,key:toneFor(song,singer)});
-         usedS.add(clean);monthSongCounts[clean]=(monthSongCounts[clean]||0)+1;lastSongUsed.set(clean,s.date);
+         usedS.add(clean);
+         monthSongCounts[clean]=(monthSongCounts[clean]||0)+1;
+         lastSongUsed.set(clean,s.date);
+       }else{
+         // Conserva la posición para no alterar la mezcla solicitada.
+         s.songs.push(null);
        }
      });
      if(s.santa){
@@ -1140,7 +1452,7 @@ function fillW(){
  });
  renderW();
  const locked=[];if(worshipLockResponsibilities)locked.push("Responsables");if(worshipLockSongs)locked.push("Canciones");
- wstatus.innerHTML=`<div class="note">Tentativa generada con rotación y variación aleatoria.${locked.length?` Se conservaron: <strong>${locked.join(" y ")}</strong>.`:""} Prioriza disponibilidad, roles principales, mínimos/máximos y evita repetir canciones antes de 3 semanas cuando hay alternativas.</div>`;
+ wstatus.innerHTML=`<div class="note">Tentativa generada con rotación y variación aleatoria.${locked.length?` Se conservaron: <strong>${locked.join(" y ")}</strong>.`:""} Prioriza disponibilidad, roles principales, mínimos/máximos y evita repetir canciones antes de 3 semanas cuando hay alternativas. La mezcla regular usa aleatoriamente <strong>1 Rápida + 1 Media + 2 Lentas</strong> o <strong>2 Rápidas + 1 Media + 1 Lenta</strong>; nunca genera dos canciones Media en el mismo servicio.</div>`;
  updateHome();
 }
 
@@ -1167,7 +1479,88 @@ function fillM(){
  renderM();mstatus.innerHTML='<div class="note">Tentativa mensual generada con reparto equilibrado y rotación entre fechas.</div>';updateHome()
 }
 
-function renderW(){wbody.innerHTML="";wmonth.sort((a,b)=>a.date.localeCompare(b.date));wmonth.forEach((s,si)=>{let spec=[["Voz principal",1],["Coros",2],["Piano",1],["Guitarra",2],["Bajo",1],["Batería",1]],rows=8,ri=0;spec.forEach(([r,n])=>{for(let k=0;k<n;k++){let tr=document.createElement("tr");if(si%2)tr.classList.add("alt");if(ri===0){let td=document.createElement("td");td.rowSpan=rows;td.className="date";td.innerHTML=`<b>${short(s.date)}</b>${s.extra?'<br><small>EVENTO EXTRA</small>':""}${s.santa?'<br><small>SANTA CENA</small>':""}`;tr.appendChild(td)}let rl=document.createElement("td");rl.className="role";let map={"Voz principal":"VOZ PRINCIPAL🎙️:","Coros":"COROS🎤:","Piano":"PIANO🎹:","Guitarra":"GUITARRA🎸:","Bajo":"BAJO🪕:","Batería":"BATERÍA🥁:"};rl.textContent=map[r];tr.appendChild(rl);let pt=document.createElement("td");pt.className="person";let sel=document.createElement("select");["⚠ FALTA",...cand(r).map(v=>v.name)].forEach(nm=>sel.add(new Option(nm,nm)));let cur=s.assign.filter(x=>x.role===r)[k];sel.value=cur?.name||"⚠ FALTA";sel.onchange=()=>{let arr=s.assign.filter(x=>x.role===r);if(arr[k])arr[k].name=sel.value;else s.assign.push({role:r,name:sel.value})};pt.appendChild(sel);tr.appendChild(pt);if(ri===0){let st=document.createElement("td");st.rowSpan=rows;st.className="songs";let max=s.santa?5:4;for(let i=0;i<max;i++){let ss=document.createElement("select");ss.style.marginBottom="5px";ss.add(new Option("— seleccionar canción —",""));songs.forEach((x,j)=>ss.add(new Option(`${x.name} (${x.artist})`,j)));let cur=s.songs[i];if(cur){let nm=cur.name.replace("SANTA CENA: ","");let ix=songs.findIndex(x=>x.name===nm);if(ix>=0)ss.value=ix}ss.onchange=()=>{if(ss.value==="")s.songs[i]=null;else{let d={...songs[+ss.value]};let lead=s.assign.find(a=>a.role==="Voz principal")?.name||"";d.key=toneFor(d,lead);if(s.santa&&i===max-1)d.name="SANTA CENA: "+d.name;s.songs[i]=d}};st.appendChild(ss)}tr.appendChild(st)}wbody.appendChild(tr);ri++}})})}
+function renderW(){
+ wbody.innerHTML="";
+ wmonth.sort((a,b)=>a.date.localeCompare(b.date));
+
+ wmonth.forEach((s,si)=>{
+   const spec=[["Voz principal",1],["Coros",2],["Piano",1],["Guitarra",2],["Bajo",1],["Batería",1]];
+   const rows=8;
+   let ri=0;
+
+   spec.forEach(([r,n])=>{
+     for(let k=0;k<n;k++){
+       const tr=document.createElement("tr");
+       if(si%2)tr.classList.add("alt");
+
+       if(ri===0){
+         const td=document.createElement("td");
+         td.rowSpan=rows;
+         td.className="date";
+         td.innerHTML=`<b>${short(s.date)}</b>${s.extra?'<br><small>EVENTO EXTRA</small>':""}${s.santa?'<br><small>SANTA CENA</small>':""}`;
+         tr.appendChild(td);
+       }
+
+       const rl=document.createElement("td");
+       rl.className="role";
+       const map={
+         "Voz principal":"VOZ PRINCIPAL🎙️:",
+         "Coros":"COROS🎤:",
+         "Piano":"PIANO🎹:",
+         "Guitarra":"GUITARRA🎸:",
+         "Bajo":"BAJO🪕:",
+         "Batería":"BATERÍA🥁:"
+       };
+       rl.textContent=map[r];
+       tr.appendChild(rl);
+
+       const pt=document.createElement("td");
+       pt.className="person";
+       const sel=document.createElement("select");
+       ["⚠ FALTA",...cand(r).map(v=>v.name)].forEach(nm=>sel.add(new Option(nm,nm)));
+
+       const cur=s.assign.filter(x=>x.role===r)[k];
+       sel.value=cur?.name||"⚠ FALTA";
+       sel.onchange=()=>{
+         const arr=s.assign.filter(x=>x.role===r);
+         if(arr[k])arr[k].name=sel.value;
+         else s.assign.push({role:r,name:sel.value});
+
+         // Si cambia la voz principal, recalcula los tonos del repertorio conservado.
+         if(r==="Voz principal"){
+           const lead=sel.value;
+           s.songs=(s.songs||[]).map(saved=>{
+             if(!saved)return saved;
+             const clean=cleanHistorySongName(saved.name);
+             const source=songs.find(x=>cleanHistorySongName(x.name)===clean)||saved;
+             const copy={...saved,key:toneFor(source,lead)};
+             if(/^SANTA CENA:/i.test(saved.name))copy.name="SANTA CENA: "+clean;
+             return copy;
+           });
+         }
+       };
+       pt.appendChild(sel);
+       tr.appendChild(pt);
+
+       if(ri===0){
+         const st=document.createElement("td");
+         st.rowSpan=rows;
+         st.className="songs";
+
+         const max=s.santa?5:4;
+         for(let i=0;i<max;i++){
+           st.appendChild(createWorshipSongPicker(s,i,max));
+         }
+
+         tr.appendChild(st);
+       }
+
+       wbody.appendChild(tr);
+       ri++;
+     }
+   });
+ });
+}
 function renderM(){mbody.innerHTML="";mmonth.sort((a,b)=>a.date.localeCompare(b.date));mmonth.forEach(s=>{let tr=document.createElement("tr"),dt=document.createElement("td");dt.textContent=(s.extra?"★ ":"")+days[wd(s.date)]+" "+parts(s.date).D;tr.appendChild(dt);mediaRoles.forEach(fn=>{let td=document.createElement("td"),sel=document.createElement("select");sel.add(new Option("—",""));mediaPool(fn).forEach(n=>sel.add(new Option(n,n)));sel.value=s[fn]||"";sel.onchange=()=>s[fn]=sel.value;td.appendChild(sel);tr.appendChild(td)});mbody.appendChild(tr)})}
 
 function confirmW(){cw=JSON.parse(JSON.stringify(wmonth));cw.forEach(s=>{s.assign.forEach(a=>hist.push({type:"person",date:s.date,name:a.name,detail:a.role,module:"Alabanza"}));s.songs.filter(Boolean).forEach(x=>hist.push({type:"song",date:s.date,name:x.name,detail:x.key,module:"Alabanza"}))});wstatus.innerHTML='<div class="note">Confirmado en la prueba. Aquí se escribiría en Google Sheets.</div>';updateHome()}
