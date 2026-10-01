@@ -794,6 +794,12 @@ function addMoodToCatalog(value){
 songs.flatMap(s=>s.moods||[]).forEach(addMoodToCatalog);
 ["Santa Cena","Amor","Gratitud","Celebración"].forEach(addMoodToCatalog);
 
+// Copia inicial del repertorio local. Solo se migra si la tabla songs está vacía.
+const initialSongs=JSON.parse(JSON.stringify(songs));
+let songBootstrapDone=false;
+let songBootstrapPromise=null;
+let supabaseMoodRows=[];
+
 function toneFor(song,singer){return (song.tones&&song.tones[singer])||song.key||""}
 let mediaRoles=["PC","Camara","Diapositivas"];
 let mediaVolunteers=[
@@ -1353,6 +1359,168 @@ function renderMediaVolunteers(){
 }
 
 
+
+async function getSupabaseVolunteerMap(){
+ const {data,error}=await window.supabaseClient.from("volunteers").select("id,name");
+ if(error)throw error;
+ return {
+   byId:new Map((data||[]).map(v=>[v.id,v])),
+   byName:new Map((data||[]).map(v=>[String(v.name||"").trim().toLocaleLowerCase("es"),v]))
+ };
+}
+
+async function loadSupabaseMoods(){
+ const {data,error}=await window.supabaseClient.from("moods").select("id,name").order("name");
+ if(error)throw error;
+ supabaseMoodRows=data||[];
+ moodCatalog=[];
+ supabaseMoodRows.forEach(m=>addMoodToCatalog(m.name));
+ return supabaseMoodRows;
+}
+
+async function ensureSupabaseMoods(names){
+ const clean=[...new Set((names||[]).map(v=>String(v||"").trim()).filter(Boolean))];
+ if(!clean.length)return [];
+ if(!supabaseMoodRows.length)await loadSupabaseMoods();
+ const key=v=>String(v||"").trim().toLocaleLowerCase("es");
+ const missing=clean.filter(name=>!supabaseMoodRows.some(m=>key(m.name)===key(name)));
+ if(missing.length){
+   if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para crear moods.");
+   const {error}=await window.supabaseClient.from("moods").upsert(missing.map(name=>({name})),{onConflict:"name"});
+   if(error)throw error;
+   await loadSupabaseMoods();
+ }
+ return clean.map(name=>supabaseMoodRows.find(m=>key(m.name)===key(name))).filter(Boolean);
+}
+
+async function persistSongToSupabase(song,existingId=null,{reload=true}={}){
+ if(!window.supabaseClient)throw new Error("Supabase no está disponible.");
+ if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para modificar canciones.");
+ const volunteerMap=await getSupabaseVolunteerMap();
+ const singerRow=song.singer?volunteerMap.byName.get(String(song.singer).trim().toLocaleLowerCase("es")):null;
+ const payload={
+   name:String(song.name||"").trim(),
+   artist:String(song.artist||"").trim()||null,
+   category:["Lenta","Media","Rápida"].includes(song.category)?song.category:"Media",
+   bpm:Number.isFinite(Number(song.bpm))&&Number(song.bpm)>0?Math.min(300,Math.round(Number(song.bpm))):null,
+   base_key:String(song.key||"").trim()||null,
+   primary_singer_id:singerRow?.id||null,
+   active:true
+ };
+ if(!payload.name)throw new Error("La canción necesita un nombre.");
+ let songId=existingId||song.id||null;
+ if(songId){
+   const {data,error}=await window.supabaseClient.from("songs").update(payload).eq("id",songId).select("id").single();
+   if(error)throw error;
+   songId=data.id;
+ }else{
+   // Evita duplicar al importar por nombre + artista.
+   let q=window.supabaseClient.from("songs").select("id").eq("name",payload.name);
+   if(payload.artist===null)q=q.is("artist",null); else q=q.eq("artist",payload.artist);
+   const {data:existing,error:findError}=await q.maybeSingle();
+   if(findError)throw findError;
+   if(existing?.id){
+     songId=existing.id;
+     const {error}=await window.supabaseClient.from("songs").update(payload).eq("id",songId);
+     if(error)throw error;
+   }else{
+     const {data,error}=await window.supabaseClient.from("songs").insert(payload).select("id").single();
+     if(error)throw error;
+     songId=data.id;
+   }
+ }
+
+ const moodRows=await ensureSupabaseMoods(song.moods||[]);
+ let result=await window.supabaseClient.from("song_moods").delete().eq("song_id",songId);
+ if(result.error)throw result.error;
+ if(moodRows.length){
+   result=await window.supabaseClient.from("song_moods").insert(moodRows.map(m=>({song_id:songId,mood_id:m.id})));
+   if(result.error)throw result.error;
+ }
+
+ result=await window.supabaseClient.from("song_singer_keys").delete().eq("song_id",songId);
+ if(result.error)throw result.error;
+ const toneRowsToInsert=[];
+ Object.entries(song.tones||{}).forEach(([person,key])=>{
+   const v=volunteerMap.byName.get(String(person).trim().toLocaleLowerCase("es"));
+   if(v&&String(key||"").trim())toneRowsToInsert.push({song_id:songId,volunteer_id:v.id,song_key:String(key).trim()});
+ });
+ if(toneRowsToInsert.length){
+   result=await window.supabaseClient.from("song_singer_keys").insert(toneRowsToInsert);
+   if(result.error)throw result.error;
+ }
+ if(reload)await loadSongsFromSupabase();
+ return songId;
+}
+
+async function loadSongsFromSupabase(){
+ const [{data:songRows,error:songError},{data:moodRows,error:moodError},{data:links,error:linkError},{data:keyRows,error:keyError},{data:volRows,error:volError}]=await Promise.all([
+   window.supabaseClient.from("songs").select("id,name,artist,category,bpm,base_key,primary_singer_id,active,created_at").order("created_at"),
+   window.supabaseClient.from("moods").select("id,name").order("name"),
+   window.supabaseClient.from("song_moods").select("song_id,mood_id"),
+   window.supabaseClient.from("song_singer_keys").select("song_id,volunteer_id,song_key"),
+   window.supabaseClient.from("volunteers").select("id,name")
+ ]);
+ if(songError)throw songError;if(moodError)throw moodError;if(linkError)throw linkError;if(keyError)throw keyError;if(volError)throw volError;
+ supabaseMoodRows=moodRows||[];
+ moodCatalog=[];
+ supabaseMoodRows.forEach(m=>addMoodToCatalog(m.name));
+ const moodById=new Map(supabaseMoodRows.map(m=>[m.id,m.name]));
+ const volunteerById=new Map((volRows||[]).map(v=>[v.id,v.name]));
+ const moodLinks=new Map();
+ (links||[]).forEach(l=>{if(!moodLinks.has(l.song_id))moodLinks.set(l.song_id,[]);const n=moodById.get(l.mood_id);if(n)moodLinks.get(l.song_id).push(n)});
+ const toneLinks=new Map();
+ (keyRows||[]).forEach(k=>{const person=volunteerById.get(k.volunteer_id);if(!person)return;if(!toneLinks.has(k.song_id))toneLinks.set(k.song_id,{});toneLinks.get(k.song_id)[person]=k.song_key});
+ songs=(songRows||[]).filter(s=>s.active!==false).map(s=>{
+   const item={
+     id:s.id,
+     name:s.name,
+     artist:s.artist||"",
+     category:s.category||"Media",
+     bpm:s.bpm??null,
+     moods:moodLinks.get(s.id)||[],
+     singer:volunteerById.get(s.primary_singer_id)||"",
+     key:s.base_key||"",
+     tones:toneLinks.get(s.id)||{}
+   };
+   item.cat=legacyGroupForSong(item);
+   return item;
+ });
+ refreshSongFilterOptions();
+ renderSongs();renderW();renderJ();
+ return true;
+}
+
+async function migrateInitialSongsIfEmpty(){
+ const {data,error}=await window.supabaseClient.from("songs").select("id").limit(1);
+ if(error)throw error;
+ if(data&&data.length)return false;
+ if(!canEditDatabase())return false;
+ for(const song of initialSongs){
+   await persistSongToSupabase(song,null,{reload:false});
+ }
+ return true;
+}
+
+window.bootstrapSongsSupabase=async function(){
+ if(songBootstrapDone)return true;
+ if(songBootstrapPromise)return songBootstrapPromise;
+ songBootstrapPromise=(async()=>{
+   try{
+     if(!window.supabaseClient)return false;
+     await migrateInitialSongsIfEmpty();
+     await loadSongsFromSupabase();
+     songBootstrapDone=true;
+     return true;
+   }catch(error){
+     console.error("Error sincronizando canciones con Supabase:",error);
+     if(typeof songFilterSummary!=="undefined"&&songFilterSummary)songFilterSummary.textContent="No se pudieron sincronizar las canciones: "+(error.message||error);
+     return false;
+   }finally{songBootstrapPromise=null}
+ })();
+ return songBootstrapPromise;
+};
+
 function uniqueSorted(values){
  return [...new Set(values.filter(Boolean).map(v=>String(v).trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es"));
 }
@@ -1451,7 +1619,7 @@ function addSingerTone(i){
  addToneEditorRow("","");
  setTimeout(()=>{let rows=toneRows.querySelectorAll(".toneRow");rows[rows.length-1]?.querySelector(".toneSinger")?.focus()},0)
 }
-function saveSongEditor(e){
+async function saveSongEditor(e){
  e.preventDefault();
  const mode=songEditMode.value||"edit";
  const name=seName.value.trim();
@@ -1474,15 +1642,17 @@ function saveSongEditor(e){
  };
  data.cat=legacyGroupForSong(data);
  if(data.singer&&data.key&&!data.tones[data.singer])data.tones[data.singer]=data.key;
- if(mode==="add")songs.push(data);
- else{
-   const i=Number(songEditIndex.value);
-   if(!songs[i])return;
-   songs[i]={...songs[i],...data};
- }
- closeSongEditor();
- refreshSongFilterOptions();
- renderSongs();renderW();renderJ()
+ const btn=songModalSave;
+ const old=btn.textContent;btn.disabled=true;btn.textContent="Guardando…";
+ try{
+   const i=mode==="edit"?Number(songEditIndex.value):null;
+   const existingId=mode==="edit"?songs[i]?.id:null;
+   await persistSongToSupabase(data,existingId,{reload:true});
+   closeSongEditor();
+ }catch(error){
+   console.error("Error guardando canción:",error);
+   alert("No se pudo guardar la canción en Supabase: "+(error.message||error));
+ }finally{btn.disabled=false;btn.textContent=old}
 }
 function renderSongs(){
  slist.innerHTML="";
@@ -1755,12 +1925,15 @@ wg.onclick=genW;wf.onclick=fillW;wr.onclick=fillW;wc.onclick=confirmW;we.onclick
 jg.onclick=genJ;jf.onclick=fillJ;jr.onclick=fillJ;jc.onclick=confirmJ;je.onclick=()=>{let d=prompt("Fecha AAAA-MM-DD");if(!d)return;jmonth.push({date:d,extra:true,name:"Jóvenes especial",santa:false,assign:[],songs:[]});jmonth.sort((a,b)=>a.date.localeCompare(b.date));renderJ();updateHome()};
 mg.onclick=genM;mf.onclick=fillM;mr.onclick=fillM;mc.onclick=confirmM;me.onclick=()=>{let d=prompt("Fecha AAAA-MM-DD");if(!d)return;mmonth.push({date:d,extra:true,PC:"",Camara:"",Diapositivas:""});mmonth.sort((a,b)=>a.date.localeCompare(b.date));renderM();updateHome()};
 
-seAddMood.onclick=()=>{
+seAddMood.onclick=async()=>{
  let mood=addMoodToCatalog(seNewMood.value);
  if(!mood)return;
- seNewMood.value="";
- refreshSongFilterOptions();
- refreshMoodSelect(seMoods,[...selectedMoods(seMoods),mood])
+ try{
+   await ensureSupabaseMoods([mood]);
+   seNewMood.value="";
+   refreshSongFilterOptions();
+   refreshMoodSelect(seMoods,[...selectedMoods(seMoods),mood]);
+ }catch(error){console.error(error);alert("No se pudo guardar el mood en Supabase: "+(error.message||error))}
 };
 openAddSong.onclick=openAddSongEditor;
 openImportSongs.onclick=()=>{
@@ -1859,13 +2032,15 @@ importCsvBtn.onclick=()=>{
  const file=songCsvInput.files?.[0];
  if(!file){csvStatus.textContent="Selecciona primero un archivo CSV.";return}
  const reader=new FileReader();
- reader.onload=()=>{
+ reader.onload=async()=>{
    try{
      const result=importSongsCsvText(String(reader.result||""));
+     csvStatus.textContent="Guardando importación en Supabase…";
+     for(const song of songs){await persistSongToSupabase(song,song.id||null,{reload:false})}
+     await loadSongsFromSupabase();
      csvStatus.textContent=`Importación completada: ${result.imported} filas procesadas${result.skipped?`, ${result.skipped} omitidas`:""}.`;
-     refreshSongFilterOptions();renderSongs();renderW();renderJ();
      setTimeout(()=>{songImportModal.classList.remove("open");songImportModal.setAttribute("aria-hidden","true")},650);
-   }catch(err){csvStatus.textContent="No se pudo importar: "+err.message}
+   }catch(err){console.error(err);csvStatus.textContent="No se pudo importar: "+err.message}
  };
  reader.onerror=()=>csvStatus.textContent="No se pudo leer el archivo.";
  reader.readAsText(file,"UTF-8");
@@ -2020,6 +2195,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (window.bootstrapVolunteersSupabase) {
       await window.bootstrapVolunteersSupabase();
+    }
+    if (window.bootstrapSongsSupabase) {
+      await window.bootstrapSongsSupabase();
     }
 
     return window.currentProfile;
