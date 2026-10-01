@@ -457,7 +457,7 @@ body[data-theme="light"] .modalCard .btn.primary{
 <button data-p="imgs" data-tip="Imágenes"><span class="ico">▧</span><span class="label">Imágenes</span></button>
 <button data-p="settings" data-tip="Configuración"><span class="ico">⚙</span><span class="label">Configuración</span></button>
 </div><div class="sidebarFooter"><button id="themeToggle" class="sideAction" title="Cambiar tema" aria-label="Cambiar tema"><span class="ico">◐</span></button><button id="collapseSide" class="sideAction" title="Plegar menú" aria-label="Plegar menú"><span class="ico">‹</span></button></div></aside>
-<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V22 · REFERENCIA EXACTA</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
+<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V23 · SUPABASE VOLUNTARIOS</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
 
 <section id="home" class="panel active">
   <div class="card">
@@ -531,6 +531,7 @@ body[data-theme="light"] .modalCard .btn.primary{
 <section id="media" class="panel"><div class="card"><div class="row"><div><label>Año</label><input id="my" type="number" value="2026"></div><div><label>Mes</label><select id="mm"></select></div><div class="auto"><button id="mg" class="btn secondary">Generar fechas</button></div></div><div class="row" style="margin-top:12px"><button id="mf" class="btn primary">Rellenar Multimedia del mes</button><button id="mr" class="btn secondary">Reequilibrar</button><button id="mc" class="btn success">Confirmar Multimedia</button><button id="me" class="btn secondary">Añadir extra</button></div><div id="mstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="mtable"><thead><tr><th>FECHAS 📅</th><th>PC 💻</th><th>CAMARA 🎥</th><th>⏹️DIAPOSITVAS PREDICAS</th></tr></thead><tbody id="mbody"></tbody></table></div></div></section>
 
 <section id="vols" class="panel">
+<div id="volunteerSyncStatus" class="note" style="margin-bottom:12px">Voluntarios: esperando sesión de Supabase…</div>
 <div class="two">
   <div class="card">
     <div class="volSectionHead">
@@ -608,7 +609,7 @@ body[data-theme="light"] .modalCard .btn.primary{
 
 <section id="imgs" class="panel"><div class="grid"><div class="card s4"><h2>Imágenes mensuales</h2><button id="iw" class="btn primary" style="width:100%;margin-bottom:8px">Generar Alabanza</button><button id="im" class="btn secondary" style="width:100%;margin-bottom:8px">Generar Multimedia</button><button id="idown" class="btn success" style="width:100%">Descargar PNG</button></div><div class="card s8"><canvas id="poster" width="1400" height="1000"></canvas></div></div></section>
 
-<section id="settings" class="panel"><div class="grid"><div class="card s6"><h2>Configuración</h2><label>Google Sheets anual</label><input value="2026 PROGRAMACIÓN ALABANZA Y MEDIA"><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div><div class="card s6"><div class="note">Supabase está configurado en la aplicación. Los módulos todavía usan datos locales hasta que los conectemos uno por uno. Google Sheets aún no está conectado.</div></div></div></section>
+<section id="settings" class="panel"><div class="grid"><div class="card s6"><h2>Configuración</h2><label>Google Sheets anual</label><input value="2026 PROGRAMACIÓN ALABANZA Y MEDIA"><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div><div class="card s6"><div class="note">Supabase está configurado. Voluntarios ya se sincroniza con la base de datos; Canciones, Disponibilidad, Programación e Historial siguen locales por ahora. Google Sheets aún no está conectado.</div></div></div></section>
 
 <div id="songEditModal" class="modalBackdrop" aria-hidden="true">
   <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="songEditTitle">
@@ -806,6 +807,13 @@ let mediaVolunteers=[
 {name:"Samuel U.",roles:["Camara","Diapositivas"],min:4,active:true},
 {name:"Ana",roles:["Diapositivas"],min:4,active:true}
 ];
+
+// Copias de la lista local actual. Solo se usan una vez si Supabase aún está vacío.
+const initialWorshipVolunteers=JSON.parse(JSON.stringify(volunteers));
+const initialMediaVolunteers=JSON.parse(JSON.stringify(mediaVolunteers));
+let supabaseVolunteerRoles=[];
+let volunteerBootstrapDone=false;
+let volunteerBootstrapPromise=null;
 function mediaPool(role){return mediaVolunteers.filter(v=>v.active&&v.roles.includes(role)).map(v=>v.name)}
 let wmonth=[],jmonth=[],mmonth=[],uw=[],um=[],cw=null,cj=null,cm=null,hist=[],weekStart=null,imgType="worship";
 
@@ -1017,8 +1025,16 @@ function moveHomeWeek(direction){
 function updateHome(){renderCal();renderWeek()}
 
 function refreshRoles(){ /* roles are rendered inside the volunteer modal */ }
-function refreshPeople(){[ss,awp,amp].forEach(el=>{el.innerHTML="";volunteers.filter(v=>v.active).forEach(v=>el.add(new Option(v.name,v.name)))})}
-
+function refreshPeople(){
+ if(typeof awp!=="undefined"&&awp){
+   awp.innerHTML="";
+   volunteers.filter(v=>v.active).forEach(v=>awp.add(new Option(v.name,v.name)));
+ }
+ if(typeof amp!=="undefined"&&amp){
+   amp.innerHTML="";
+   mediaVolunteers.filter(v=>v.active).forEach(v=>amp.add(new Option(v.name,v.name)));
+ }
+}
 
 function checkboxGroup(container,items,selected=[],type="checkbox",name="group"){
  container.innerHTML="";
@@ -1070,10 +1086,271 @@ function closeVolunteerEditor(){
 }
 function editVolunteer(i){openVolunteerEditor("worship",i,"edit")}
 function editMediaVolunteer(i){openVolunteerEditor("media",i,"edit")}
-function renderVols(){vlist.innerHTML="";volunteers.forEach((v,i)=>{let d=document.createElement("div");d.className="item";d.innerHTML=`<b>${v.name}</b> ${v.active?"":"<span class='muted'>(inactivo)</span>"}<div class="chips"><span class="chip">Principal: ${v.primary}</span>${v.secondary.map(x=>`<span class="chip">${x}</span>`).join("")}<span class="chip">${v.min}-${v.max}/mes</span></div><div class="itemActions"><button class="miniBtn edit">Editar</button><button class="miniBtn toggle">${v.active?"Inactivar":"Activar"}</button></div>`;d.querySelector(".edit").onclick=()=>editVolunteer(i);d.querySelector(".toggle").onclick=()=>{v.active=!v.active;renderVols();refreshPeople();renderW();renderJ()};vlist.appendChild(d)})}
-function refreshMediaRoleControl(){ /* multimedia roles are rendered inside the volunteer modal */ }
-function renderMediaVolunteers(){const box=document.getElementById("mvlist");if(!box)return;box.innerHTML="";mediaVolunteers.forEach((v,i)=>{const d=document.createElement("div");d.className="item";d.innerHTML=`<b>${v.name}</b> ${v.active?"":"<span class='muted'>(inactivo)</span>"}<div class="chips">${v.roles.map(r=>`<span class="chip">${r}</span>`).join("")}<span class="chip">mín. ${v.min}/mes</span></div><div class="itemActions"><button class="miniBtn edit">Editar</button><button class="miniBtn toggle">${v.active?"Inactivar":"Activar"}</button></div>`;d.querySelector(".edit").onclick=()=>editMediaVolunteer(i);d.querySelector(".toggle").onclick=()=>{v.active=!v.active;renderMediaVolunteers();renderM()};box.appendChild(d)})}
 
+function setVolunteerSyncStatus(message,isError=false){
+ const el=document.getElementById("volunteerSyncStatus");
+ if(!el)return;
+ el.textContent=message;
+ el.style.color=isError?"#ef7d7d":"";
+}
+function dbMediaRoleName(name){return name==="Camara"?"Cámara":name}
+function localMediaRoleName(name){return name==="Cámara"?"Camara":name}
+function canEditDatabase(){return ["admin","editor"].includes(window.currentProfile?.app_role||"")}
+
+async function ensureSupabaseVolunteerRoles(){
+ if(supabaseVolunteerRoles.length)return supabaseVolunteerRoles;
+ const {data,error}=await window.supabaseClient
+   .from("roles")
+   .select("id,name,module,sort_order")
+   .order("module")
+   .order("sort_order");
+ if(error)throw error;
+ supabaseVolunteerRoles=data||[];
+ return supabaseVolunteerRoles;
+}
+
+async function migrateInitialVolunteersIfEmpty(){
+ const {data:existing,error:existingError}=await window.supabaseClient
+   .from("volunteers")
+   .select("id")
+   .limit(1);
+ if(existingError)throw existingError;
+ if(existing&&existing.length)return false;
+ if(!canEditDatabase())return false;
+
+ setVolunteerSyncStatus("Voluntarios: migrando la lista actual a Supabase por primera vez…");
+
+ const merged=new Map();
+ [...initialWorshipVolunteers,...initialMediaVolunteers].forEach(v=>{
+   if(!merged.has(v.name))merged.set(v.name,{name:v.name,active:v.active!==false});
+ });
+ const {data:inserted,error:insertError}=await window.supabaseClient
+   .from("volunteers")
+   .insert([...merged.values()])
+   .select("id,name");
+ if(insertError)throw insertError;
+ const idByName=new Map((inserted||[]).map(v=>[v.name,v.id]));
+ const dbRoles=await ensureSupabaseVolunteerRoles();
+ const roleKey=(module,name)=>dbRoles.find(r=>r.module===module&&r.name===name);
+
+ const roleLinks=[];
+ initialWorshipVolunteers.forEach(v=>{
+   const volunteerId=idByName.get(v.name);if(!volunteerId)return;
+   const all=[v.primary,...(v.secondary||[])].filter(Boolean);
+   [...new Set(all)].forEach(name=>{
+     const role=roleKey("alabanza",name);
+     if(role)roleLinks.push({volunteer_id:volunteerId,role_id:role.id,is_primary:name===v.primary});
+   });
+ });
+ initialMediaVolunteers.forEach(v=>{
+   const volunteerId=idByName.get(v.name);if(!volunteerId)return;
+   (v.roles||[]).forEach(localName=>{
+     const role=roleKey("multimedia",dbMediaRoleName(localName));
+     if(role)roleLinks.push({volunteer_id:volunteerId,role_id:role.id,is_primary:false});
+   });
+ });
+ if(roleLinks.length){
+   const {error}=await window.supabaseClient.from("volunteer_roles").insert(roleLinks);
+   if(error)throw error;
+ }
+
+ const settings=[];
+ initialWorshipVolunteers.forEach(v=>{
+   const volunteerId=idByName.get(v.name);if(!volunteerId)return;
+   settings.push({volunteer_id:volunteerId,module:"alabanza",min_per_month:Number(v.min)||0,max_per_month:Number(v.max)||1,avoid_consecutive:true});
+ });
+ initialMediaVolunteers.forEach(v=>{
+   const volunteerId=idByName.get(v.name);if(!volunteerId)return;
+   settings.push({volunteer_id:volunteerId,module:"multimedia",min_per_month:Number(v.min)||0,max_per_month:null,avoid_consecutive:false});
+ });
+ if(settings.length){
+   const {error}=await window.supabaseClient
+     .from("volunteer_module_settings")
+     .upsert(settings,{onConflict:"volunteer_id,module"});
+   if(error)throw error;
+ }
+ return true;
+}
+
+async function loadVolunteersFromSupabase(){
+ await ensureSupabaseVolunteerRoles();
+ const [{data:volRows,error:volError},{data:linkRows,error:linkError},{data:settingRows,error:settingError}]=await Promise.all([
+   window.supabaseClient.from("volunteers").select("id,name,active,created_at").order("created_at"),
+   window.supabaseClient.from("volunteer_roles").select("volunteer_id,role_id,is_primary"),
+   window.supabaseClient.from("volunteer_module_settings").select("volunteer_id,module,min_per_month,max_per_month,avoid_consecutive")
+ ]);
+ if(volError)throw volError;if(linkError)throw linkError;if(settingError)throw settingError;
+
+ const roleById=new Map(supabaseVolunteerRoles.map(r=>[r.id,r]));
+ const linksByVolunteer=new Map();
+ (linkRows||[]).forEach(link=>{
+   const role=roleById.get(link.role_id);if(!role)return;
+   if(!linksByVolunteer.has(link.volunteer_id))linksByVolunteer.set(link.volunteer_id,[]);
+   linksByVolunteer.get(link.volunteer_id).push({...link,role});
+ });
+ const settingsByKey=new Map((settingRows||[]).map(s=>[`${s.volunteer_id}|${s.module}`,s]));
+
+ const nextWorship=[];
+ const nextMedia=[];
+ (volRows||[]).forEach(v=>{
+   const links=linksByVolunteer.get(v.id)||[];
+   const worshipLinks=links.filter(x=>x.role.module==="alabanza").sort((a,b)=>(a.role.sort_order||0)-(b.role.sort_order||0));
+   const mediaLinks=links.filter(x=>x.role.module==="multimedia").sort((a,b)=>(a.role.sort_order||0)-(b.role.sort_order||0));
+   const ws=settingsByKey.get(`${v.id}|alabanza`);
+   const ms=settingsByKey.get(`${v.id}|multimedia`);
+
+   if(worshipLinks.length||ws){
+     const principal=worshipLinks.find(x=>x.is_primary)?.role.name||worshipLinks[0]?.role.name||roles[0]||"";
+     const secondary=worshipLinks.filter(x=>x.role.name!==principal).map(x=>x.role.name);
+     nextWorship.push({id:v.id,name:v.name,primary:principal,secondary,min:ws?.min_per_month??0,max:ws?.max_per_month??Math.max(1,ws?.min_per_month??1),active:v.active!==false});
+   }
+   if(mediaLinks.length||ms){
+     nextMedia.push({id:v.id,name:v.name,roles:mediaLinks.map(x=>localMediaRoleName(x.role.name)),min:ms?.min_per_month??0,active:v.active!==false});
+   }
+ });
+
+ volunteers=nextWorship;
+ mediaVolunteers=nextMedia;
+ renderVols();
+ renderMediaVolunteers();
+ refreshPeople();
+ renderW();renderJ();renderM();
+ setVolunteerSyncStatus(`Voluntarios sincronizados con Supabase · ${volunteers.length} Alabanza · ${mediaVolunteers.length} Multimedia`);
+ return true;
+}
+
+async function saveVolunteerToSupabase(module,mode,index,data){
+ if(!window.supabaseClient)throw new Error("Supabase no está disponible.");
+ if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para modificar voluntarios.");
+ await ensureSupabaseVolunteerRoles();
+ const current=module==="worship"?volunteers[index]:mediaVolunteers[index];
+ let volunteerId=current?.id||null;
+
+ if(volunteerId){
+   const {data:updated,error}=await window.supabaseClient
+     .from("volunteers")
+     .update({name:data.name,active:data.active})
+     .eq("id",volunteerId)
+     .select("id")
+     .single();
+   if(error)throw error;
+   volunteerId=updated.id;
+ }else{
+   const {data:existing,error:findError}=await window.supabaseClient
+     .from("volunteers")
+     .select("id")
+     .eq("name",data.name)
+     .maybeSingle();
+   if(findError)throw findError;
+   if(existing?.id){
+     volunteerId=existing.id;
+     const {error}=await window.supabaseClient.from("volunteers").update({active:data.active}).eq("id",volunteerId);
+     if(error)throw error;
+   }else{
+     const {data:created,error}=await window.supabaseClient
+       .from("volunteers")
+       .insert({name:data.name,active:data.active})
+       .select("id")
+       .single();
+     if(error)throw error;
+     volunteerId=created.id;
+   }
+ }
+
+ const dbModule=module==="worship"?"alabanza":"multimedia";
+ const moduleRoleIds=supabaseVolunteerRoles.filter(r=>r.module===dbModule).map(r=>r.id);
+ if(moduleRoleIds.length){
+   const {error}=await window.supabaseClient
+     .from("volunteer_roles")
+     .delete()
+     .eq("volunteer_id",volunteerId)
+     .in("role_id",moduleRoleIds);
+   if(error)throw error;
+ }
+
+ let selectedRoles=[];
+ if(module==="worship"){
+   selectedRoles=[data.primary,...data.secondary].filter(Boolean).map(name=>({name,is_primary:name===data.primary}));
+ }else{
+   selectedRoles=data.roles.map(name=>({name:dbMediaRoleName(name),is_primary:false}));
+ }
+ const linkRows=selectedRoles.map(sel=>{
+   const role=supabaseVolunteerRoles.find(r=>r.module===dbModule&&r.name===sel.name);
+   return role?{volunteer_id:volunteerId,role_id:role.id,is_primary:sel.is_primary}:null;
+ }).filter(Boolean);
+ if(linkRows.length){
+   const {error}=await window.supabaseClient.from("volunteer_roles").insert(linkRows);
+   if(error)throw error;
+ }
+
+ const setting=module==="worship"
+   ? {volunteer_id:volunteerId,module:"alabanza",min_per_month:data.min,max_per_month:data.max,avoid_consecutive:true}
+   : {volunteer_id:volunteerId,module:"multimedia",min_per_month:data.min,max_per_month:null,avoid_consecutive:false};
+ const {error:settingError}=await window.supabaseClient
+   .from("volunteer_module_settings")
+   .upsert(setting,{onConflict:"volunteer_id,module"});
+ if(settingError)throw settingError;
+
+ await loadVolunteersFromSupabase();
+ return volunteerId;
+}
+
+async function setVolunteerActiveInSupabase(id,active){
+ if(!id)throw new Error("Este voluntario todavía no tiene un ID de Supabase.");
+ if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para modificar voluntarios.");
+ const {error}=await window.supabaseClient.from("volunteers").update({active}).eq("id",id);
+ if(error)throw error;
+ await loadVolunteersFromSupabase();
+}
+
+window.bootstrapVolunteersSupabase=async function(){
+ if(volunteerBootstrapDone)return true;
+ if(volunteerBootstrapPromise)return volunteerBootstrapPromise;
+ volunteerBootstrapPromise=(async()=>{
+   try{
+     if(!window.supabaseClient)return false;
+     await migrateInitialVolunteersIfEmpty();
+     await loadVolunteersFromSupabase();
+     volunteerBootstrapDone=true;
+     return true;
+   }catch(error){
+     console.error("Error sincronizando voluntarios con Supabase:",error);
+     setVolunteerSyncStatus("No se pudieron sincronizar los voluntarios con Supabase: "+(error.message||error),true);
+     return false;
+   }finally{
+     volunteerBootstrapPromise=null;
+   }
+ })();
+ return volunteerBootstrapPromise;
+};
+
+function renderVols(){
+ vlist.innerHTML="";
+ volunteers.forEach((v,i)=>{
+   let d=document.createElement("div");d.className="item";
+   d.innerHTML=`<b>${v.name}</b> ${v.active?"":"<span class='muted'>(inactivo)</span>"}<div class="chips"><span class="chip">Principal: ${v.primary}</span>${v.secondary.map(x=>`<span class="chip">${x}</span>`).join("")}<span class="chip">${v.min}-${v.max}/mes</span></div><div class="itemActions"><button class="miniBtn edit">Editar</button><button class="miniBtn toggle">${v.active?"Inactivar":"Activar"}</button></div>`;
+   d.querySelector(".edit").onclick=()=>editVolunteer(i);
+   d.querySelector(".toggle").onclick=async e=>{
+     const btn=e.currentTarget;btn.disabled=true;
+     try{await setVolunteerActiveInSupabase(v.id,!v.active)}catch(error){console.error(error);alert("No se pudo cambiar el estado: "+(error.message||error));btn.disabled=false}
+   };
+   vlist.appendChild(d)
+ })
+}
+function refreshMediaRoleControl(){ /* multimedia roles are rendered inside the volunteer modal */ }
+function renderMediaVolunteers(){
+ const box=document.getElementById("mvlist");if(!box)return;box.innerHTML="";
+ mediaVolunteers.forEach((v,i)=>{
+   const d=document.createElement("div");d.className="item";
+   d.innerHTML=`<b>${v.name}</b> ${v.active?"":"<span class='muted'>(inactivo)</span>"}<div class="chips">${v.roles.map(r=>`<span class="chip">${r}</span>`).join("")}<span class="chip">mín. ${v.min}/mes</span></div><div class="itemActions"><button class="miniBtn edit">Editar</button><button class="miniBtn toggle">${v.active?"Inactivar":"Activar"}</button></div>`;
+   d.querySelector(".edit").onclick=()=>editMediaVolunteer(i);
+   d.querySelector(".toggle").onclick=async e=>{
+     const btn=e.currentTarget;btn.disabled=true;
+     try{await setVolunteerActiveInSupabase(v.id,!v.active)}catch(error){console.error(error);alert("No se pudo cambiar el estado: "+(error.message||error));btn.disabled=false}
+   };
+   box.appendChild(d)
+ })
+}
 
 
 function uniqueSorted(values){
@@ -1605,7 +1882,7 @@ openAddWorshipVolunteer.onclick=()=>openVolunteerEditor("worship",null,"add");
 openAddMediaVolunteer.onclick=()=>openVolunteerEditor("media",null,"add");
 volunteerModalCancel.onclick=closeVolunteerEditor;
 
-volunteerEditForm.addEventListener("submit",e=>{
+volunteerEditForm.addEventListener("submit",async e=>{
  e.preventDefault();
 
  const module=veModule.value;
@@ -1613,38 +1890,40 @@ volunteerEditForm.addEventListener("submit",e=>{
  const index=veIndex.value===""?null:Number(veIndex.value);
  const name=veName.value.trim();
  if(!name)return;
+ const saveButton=volunteerEditForm.querySelector('button[type="submit"]');
+ const originalText=saveButton?.textContent||"Guardar";
+ if(saveButton){saveButton.disabled=true;saveButton.textContent="Guardando…"}
 
- if(module==="worship"){
-   const primary=checkedValues(vePrimaryChecks)[0]||roles[0]||"";
-   const secondary=checkedValues(veSecondaryChecks).filter(r=>r!==primary);
-   const data={
-     name,
-     primary,
-     secondary,
-     min:Math.max(0,Number(veMin.value)||0),
-     max:Math.max(1,Number(veMax.value)||1),
-     active:veActive.checked
-   };
-   if(data.max<data.min)data.max=data.min;
-
-   if(mode==="add")volunteers.push(data);
-   else if(volunteers[index])volunteers[index]={...volunteers[index],...data};
-
-   renderVols();refreshPeople();renderW();renderJ();
- }else{
-   const data={
-     name,
-     roles:checkedValues(veMediaRoleChecks),
-     min:Math.max(0,Number(veMediaMin.value)||0),
-     active:veActive.checked
-   };
-   if(mode==="add")mediaVolunteers.push(data);
-   else if(mediaVolunteers[index])mediaVolunteers[index]={...mediaVolunteers[index],...data};
-
-   renderMediaVolunteers();renderM();
+ try{
+   if(module==="worship"){
+     const primary=checkedValues(vePrimaryChecks)[0]||roles[0]||"";
+     const secondary=checkedValues(veSecondaryChecks).filter(r=>r!==primary);
+     const data={
+       name,
+       primary,
+       secondary,
+       min:Math.max(0,Number(veMin.value)||0),
+       max:Math.max(1,Number(veMax.value)||1),
+       active:veActive.checked
+     };
+     if(data.max<data.min)data.max=data.min;
+     await saveVolunteerToSupabase("worship",mode,index,data);
+   }else{
+     const data={
+       name,
+       roles:checkedValues(veMediaRoleChecks),
+       min:Math.max(0,Number(veMediaMin.value)||0),
+       active:veActive.checked
+     };
+     await saveVolunteerToSupabase("media",mode,index,data);
+   }
+   closeVolunteerEditor();
+ }catch(error){
+   console.error("Error guardando voluntario:",error);
+   alert("No se pudo guardar el voluntario en Supabase: "+(error.message||error));
+ }finally{
+   if(saveButton){saveButton.disabled=false;saveButton.textContent=originalText}
  }
-
- closeVolunteerEditor();
 });
 
 /* No cerrar ventanas al hacer clic fuera: solo Cancelar o Guardar. */
@@ -1738,6 +2017,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.dataset.userRole = data.app_role;
 
     console.log('Perfil cargado:', window.currentProfile);
+
+    if (window.bootstrapVolunteersSupabase) {
+      await window.bootstrapVolunteersSupabase();
+    }
 
     return window.currentProfile;
   }
