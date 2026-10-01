@@ -3,7 +3,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V26-SUPABASE-DISPONIBILIDAD">
-<title>Programación V26 · Supabase Disponibilidad</title>
+<title>Programación V28 · Filtros + Bloqueos</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&display=swap');
 :root{--bg:#0f1115;--panel:#15181e;--panel2:#1b1f26;--panel3:#222831;--text:#f2f4f7;--muted:#9aa4b2;--line:#2b313a;--side:#111419;--hover:#1c222a;--accent:#7c9cf5;--accentSoft:#1c2947;--success:#17351f;--successText:#b9f6c7;--blue:#9ec0df;--blue2:#c2d7ea;--bhead:#7ea7b2;--green:#dfe8dc;--green2:#c8d9c3;--ghead:#d3dde1}
@@ -285,6 +285,76 @@ body[data-theme="light"] .modalCard .btn.primary{
 .sidebarFooter .sideAction{width:40px !important;height:40px !important;padding:0 !important;justify-content:center !important;overflow:visible !important}
 .sidebarFooter .sideAction .ico{width:20px !important;min-width:20px !important;font-size:16px !important}
 </style>
+<style id="v28-song-table-locks">
+/* Canciones: misma tabla en PC y celular, con desplazamiento horizontal */
+.songDbWrap{overflow-x:auto !important;-webkit-overflow-scrolling:touch;border:1px solid var(--line) !important;border-radius:9px !important;background:var(--panel-2) !important}
+.songDbTable{display:table !important;width:100% !important;min-width:980px !important;border-collapse:collapse !important}
+.songDbTable thead{display:table-header-group !important}
+.songDbTable tbody{display:table-row-group !important}
+.songDbTable tr{display:table-row !important;border:0 !important;background:transparent !important;padding:0 !important}
+.songDbTable th,.songDbTable td{display:table-cell !important}
+.songDbTable td::before{display:none !important}
+.songDbTable th[data-col]{cursor:grab;user-select:none;position:relative}
+.songDbTable th[data-col]:active{cursor:grabbing}
+.songDbTable th.dragging{opacity:.45}
+.songDbTable th.drag-over{box-shadow:inset 3px 0 0 var(--accent)}
+.songDbTable th[data-col]:not([data-col="actions"])::after{content:"⋮⋮";font-size:9px;color:var(--muted);margin-left:7px;letter-spacing:-2px}
+.songDbTable td{white-space:normal}
+.songDbTable .songNameCell{min-width:180px}
+.songDbTable td[data-col="artist"]{min-width:150px}
+.songDbTable td[data-col="category"]{min-width:110px}
+.songDbTable td[data-col="bpm"]{min-width:80px}
+.songDbTable td[data-col="mood"]{min-width:150px}
+.songDbTable td[data-col="tones"]{min-width:190px}
+.songDbTable td[data-col="actions"]{min-width:170px}
+
+/* Filtros dinámicos */
+.songFilterBar{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-top:14px}
+.songSearchMain{flex:1 1 300px;min-width:220px}
+.songFilterAddWrap{position:relative;flex:0 0 auto}
+.songFilterMenu{position:absolute;right:0;top:calc(100% + 6px);z-index:80;width:210px;padding:6px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);box-shadow:0 14px 35px #0005;display:none}
+.songFilterMenu.open{display:grid;gap:3px}
+.songFilterMenu button{border:0;background:transparent;color:var(--text);text-align:left;padding:8px 10px;border-radius:6px}
+.songFilterMenu button:hover{background:var(--panel3)}
+.songFilterMenu button[disabled]{opacity:.4;cursor:not-allowed}
+.activeSongFilters{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.songOptionalFilter{display:none;align-items:end;gap:7px;padding:8px;border:1px solid var(--line);border-radius:9px;background:var(--panel2)}
+.songOptionalFilter.active{display:flex}
+.songOptionalFilter .filterBody{min-width:135px}
+.songOptionalFilter.bpmFilter .filterBody{display:grid;grid-template-columns:105px 105px;gap:6px}
+.removeSongFilter{width:30px;height:30px;border:1px solid var(--line);border-radius:7px;background:transparent;color:var(--muted);padding:0;flex:0 0 auto}
+.removeSongFilter:hover{color:#ef7d7d;border-color:#ef7d7d}
+
+/* Bloqueo independiente de Alabanza */
+.lockToggle{display:inline-flex;align-items:center;gap:6px}
+.lockToggle.locked{background:#2a2030 !important;border-color:#7c4d8f !important;color:#e9c8f5 !important}
+body[data-theme="light"] .lockToggle.locked{background:#f7ecfb !important;border-color:#c995dc !important;color:#6c2c82 !important}
+.worshipLockHint{font-size:11px;color:var(--muted);margin-top:7px}
+
+@media(max-width:720px){
+  .songsReferenceCard{padding:12px}
+  .songsPageHead{align-items:stretch}
+  .songsHeadActions{display:grid;grid-template-columns:1fr 1fr;width:100%}
+  .songsHeadActions .btn{width:100%}
+  .songFilterBar{align-items:stretch}
+  .songSearchMain{flex-basis:100%}
+  .songFilterAddWrap{width:100%}
+  .songFilterAddWrap>.btn{width:100%}
+  .songFilterMenu{left:0;right:0;width:auto}
+  .activeSongFilters{display:grid;grid-template-columns:1fr}
+  .songOptionalFilter.active{width:100%}
+  .songOptionalFilter .filterBody{flex:1;min-width:0}
+  .songOptionalFilter.bpmFilter .filterBody{grid-template-columns:1fr 1fr}
+  .songDbWrap{overflow-x:auto !important;border:1px solid var(--line) !important;background:var(--panel-2) !important}
+  .songDbTable{min-width:980px !important;display:table !important}
+  .songDbTable thead{display:table-header-group !important}
+  .songDbTable tbody{display:table-row-group !important}
+  .songDbTable tr{display:table-row !important;border:0 !important;padding:0 !important;background:transparent !important}
+  .songDbTable td{display:table-cell !important;padding:11px 12px !important;border-bottom:1px solid var(--line) !important}
+  .songDbTable .songNameCell{display:table-cell !important;padding:11px 12px !important;border-bottom:1px solid var(--line) !important}
+  .songDbActions{justify-content:flex-end !important}
+}
+</style>
 
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -457,7 +527,7 @@ body[data-theme="light"] .modalCard .btn.primary{
 <button data-p="imgs" data-tip="Imágenes"><span class="ico">▧</span><span class="label">Imágenes</span></button>
 <button data-p="settings" data-tip="Configuración"><span class="ico">⚙</span><span class="label">Configuración</span></button>
 </div><div class="sidebarFooter"><button id="themeToggle" class="sideAction" title="Cambiar tema" aria-label="Cambiar tema"><span class="ico">◐</span></button><button id="collapseSide" class="sideAction" title="Plegar menú" aria-label="Plegar menú"><span class="ico">‹</span></button></div></aside>
-<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V23 · SUPABASE VOLUNTARIOS</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
+<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V28 · FILTROS + BLOQUEOS</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
 
 <section id="home" class="panel active">
   <div class="card">
@@ -502,7 +572,7 @@ body[data-theme="light"] .modalCard .btn.primary{
   </div>
 </section>
 
-<section id="worship" class="panel"><div class="card"><div class="row"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto"><button id="wg" class="btn secondary">Generar fechas</button></div></div><div class="row" style="margin-top:12px"><button id="wf" class="btn primary">Rellenar Alabanza del mes</button><button id="wr" class="btn secondary">Reequilibrar</button><button id="wc" class="btn success">Confirmar Alabanza</button><button id="we" class="btn secondary">Añadir extra</button></div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div></div></section>
+<section id="worship" class="panel"><div class="card"><div class="row"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto"><button id="wg" class="btn secondary">Generar fechas</button></div></div><div class="row" style="margin-top:12px"><button id="wf" class="btn primary">Rellenar Alabanza del mes</button><button id="wr" class="btn secondary">Reequilibrar</button><button id="wLockResp" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Responsables</button><button id="wLockSongs" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Canciones</button><button id="wc" class="btn success">Confirmar Alabanza</button><button id="we" class="btn secondary">Añadir extra</button></div><div class="worshipLockHint">Puedes fijar músicos o canciones por separado. “Rellenar” solo cambiará las columnas que estén desbloqueadas.</div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div></div></section>
 
 <section id="youth" class="panel">
 <div class="card">
@@ -570,13 +640,28 @@ body[data-theme="light"] .modalCard .btn.primary{
       </div>
     </div>
 
-    <div class="songFilters referenceFilters">
-      <div class="searchWide"><label>Buscar</label><input id="sq" placeholder="Nombre, artista, cantante..."></div>
-      <div><label>Artista</label><select id="sArtistFilter"><option value="">Todos</option></select></div>
-      <div><label>Categoría</label><select id="sf"><option value="">Todas</option><option>Lenta</option><option>Media</option><option>Rápida</option></select></div>
-      <div><label>Mood</label><select id="sMoodFilter"><option value="">Todos</option></select></div>
-      <div><label>BPM mín.</label><input id="sBpmMin" type="number" min="1" max="300" placeholder="—"></div>
-      <div><label>BPM máx.</label><input id="sBpmMax" type="number" min="1" max="300" placeholder="—"></div>
+    <div class="songFilterBar">
+      <div class="songSearchMain"><label>Buscar</label><input id="sq" placeholder="Nombre, artista, cantante, tono..."></div>
+      <div class="songFilterAddWrap">
+        <button id="addSongFilter" class="btn secondary" type="button">+ Añadir filtro</button>
+        <div id="songFilterMenu" class="songFilterMenu" aria-hidden="true">
+          <button type="button" data-add-filter="artist">Artista / versión</button>
+          <button type="button" data-add-filter="category">Categoría</button>
+          <button type="button" data-add-filter="bpm">BPM</button>
+          <button type="button" data-add-filter="mood">Mood</button>
+          <button type="button" data-add-filter="singer">Cantante</button>
+          <button type="button" data-add-filter="tone">Tono</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="activeSongFilters" class="activeSongFilters">
+      <div class="songOptionalFilter" data-filter="artist"><div class="filterBody"><label>Artista</label><select id="sArtistFilter"><option value="">Todos</option></select></div><button class="removeSongFilter" type="button" data-remove-filter="artist" title="Quitar filtro">×</button></div>
+      <div class="songOptionalFilter" data-filter="category"><div class="filterBody"><label>Categoría</label><select id="sf"><option value="">Todas</option><option>Lenta</option><option>Media</option><option>Rápida</option></select></div><button class="removeSongFilter" type="button" data-remove-filter="category" title="Quitar filtro">×</button></div>
+      <div class="songOptionalFilter bpmFilter" data-filter="bpm"><div class="filterBody"><div><label>BPM mín.</label><input id="sBpmMin" type="number" min="1" max="300" placeholder="—"></div><div><label>BPM máx.</label><input id="sBpmMax" type="number" min="1" max="300" placeholder="—"></div></div><button class="removeSongFilter" type="button" data-remove-filter="bpm" title="Quitar filtro">×</button></div>
+      <div class="songOptionalFilter" data-filter="mood"><div class="filterBody"><label>Mood</label><select id="sMoodFilter"><option value="">Todos</option></select></div><button class="removeSongFilter" type="button" data-remove-filter="mood" title="Quitar filtro">×</button></div>
+      <div class="songOptionalFilter" data-filter="singer"><div class="filterBody"><label>Cantante</label><select id="sSingerFilter"><option value="">Todos</option></select></div><button class="removeSongFilter" type="button" data-remove-filter="singer" title="Quitar filtro">×</button></div>
+      <div class="songOptionalFilter" data-filter="tone"><div class="filterBody"><label>Tono</label><input id="sToneFilter" placeholder="Ej. D, G, B"></div><button class="removeSongFilter" type="button" data-remove-filter="tone" title="Quitar filtro">×</button></div>
     </div>
 
     <div class="songsListMeta">
@@ -587,14 +672,14 @@ body[data-theme="light"] .modalCard .btn.primary{
     <div class="songDbWrap">
       <table class="songDbTable">
         <thead>
-          <tr>
-            <th>Canción</th>
-            <th>Artista / versión</th>
-            <th>Categoría</th>
-            <th>BPM</th>
-            <th>Mood</th>
-            <th>Tonos</th>
-            <th></th>
+          <tr id="songTableHeadRow">
+            <th data-col="song" draggable="true">Canción</th>
+            <th data-col="artist" draggable="true">Artista / versión</th>
+            <th data-col="category" draggable="true">Categoría</th>
+            <th data-col="bpm" draggable="true">BPM</th>
+            <th data-col="mood" draggable="true">Mood</th>
+            <th data-col="tones" draggable="true">Tonos</th>
+            <th data-col="actions">Acciones</th>
           </tr>
         </thead>
         <tbody id="slist"></tbody>
@@ -822,6 +907,8 @@ let volunteerBootstrapDone=false;
 let volunteerBootstrapPromise=null;
 function mediaPool(role){return mediaVolunteers.filter(v=>v.active&&v.roles.includes(role)).map(v=>v.name)}
 let wmonth=[],jmonth=[],mmonth=[],uw=[],um=[],cw=null,cj=null,cm=null,hist=[],weekStart=null,imgType="worship";
+let worshipLockResponsibilities=localStorage.getItem("worship-lock-responsibilities")==="1";
+let worshipLockSongs=localStorage.getItem("worship-lock-songs")==="1";
 
 const iso=(Y,M,D)=>`${Y}-${String(M+1).padStart(2,"0")}-${String(D).padStart(2,"0")}`;
 const parts=s=>{let [Y,M,D]=s.split("-").map(Number);return{Y,M,D}};
@@ -926,13 +1013,11 @@ function randomTiny(){return Math.random()*0.75}
 function cleanHistorySongName(name){return String(name||"").replace(/^SANTA CENA:\s*/i,"").trim()}
 function dayDistance(a,b){return Math.abs((dObj(a)-dObj(b))/86400000)}
 
-function choose(role,counts,date,used,previousNames=new Set()){
+function choose(role,counts,date,used,previousNames=new Set(),avoidCurrent=new Set()){
  let candidates=cand(role).filter(v=>!used.includes(v.name)&&!unavailable(v.name,date,"w"));
  if(!candidates.length)return null;
- // Respeta el máximo mensual si existe; solo se relaja si dejaría el puesto vacío.
  let withinMax=candidates.filter(v=>!Number.isFinite(Number(v.max))||Number(v.max)<=0||(counts[v.name]||0)<Number(v.max));
  if(withinMax.length)candidates=withinMax;
- // Evita semanas consecutivas cuando hay alternativa.
  let nonConsecutive=candidates.filter(v=>!previousNames.has(v.name));
  if(nonConsecutive.length)candidates=nonConsecutive;
  const ranked=candidates.map(v=>{
@@ -942,9 +1027,12 @@ function choose(role,counts,date,used,previousNames=new Set()){
    const primaryPenalty=v.primary===role?0:24;
    const minBonus=belowMin?-35:0;
    const loadPenalty=count*11;
-   return {v,score:primaryPenalty+minBonus+loadPenalty+randomTiny()};
+   const sameAsPreviousPenalty=avoidCurrent.has(v.name)?12:0;
+   return {v,score:primaryPenalty+minBonus+loadPenalty+sameAsPreviousPenalty+Math.random()*5};
  }).sort((a,b)=>a.score-b.score);
- return ranked[0]?.v||null;
+ const best=ranked[0]?.score??0;
+ const pool=ranked.filter(x=>x.score<=best+8).slice(0,4);
+ return (pool[Math.floor(Math.random()*pool.length)]||ranked[0])?.v||null;
 }
 
 function seedSongHistory(){
@@ -957,10 +1045,9 @@ function seedSongHistory(){
  return lastUsed;
 }
 
-function chooseSongForService(group,singer,date,usedNames,monthCounts,lastUsed){
+function chooseSongForService(group,singer,date,usedNames,monthCounts,lastUsed,avoidCurrent=new Set()){
  let candidates=songs.filter(s=>legacyGroupForSong(s)===group&&!usedNames.has(cleanHistorySongName(s.name)));
  if(!candidates.length)return null;
- // Evita repetir una canción antes de 3 semanas cuando exista alternativa.
  const outsideWindow=candidates.filter(s=>{
    const last=lastUsed.get(cleanHistorySongName(s.name));
    return !last||dayDistance(date,last)>=21;
@@ -972,53 +1059,89 @@ function chooseSongForService(group,singer,date,usedNames,monthCounts,lastUsed){
    const usePenalty=(monthCounts[name]||0)*16;
    const last=lastUsed.get(name);
    const recentPenalty=last?Math.max(0,28-dayDistance(date,last))*0.8:0;
-   return {s,score:singerBonus+usePenalty+recentPenalty+randomTiny()*5};
+   const sameAsPreviousPenalty=avoidCurrent.has(name)?18:0;
+   return {s,score:singerBonus+usePenalty+recentPenalty+sameAsPreviousPenalty+Math.random()*12};
  }).sort((a,b)=>a.score-b.score);
- return ranked[0]?.s||null;
+ const best=ranked[0]?.score??0;
+ const pool=ranked.filter(x=>x.score<=best+14).slice(0,5);
+ return (pool[Math.floor(Math.random()*pool.length)]||ranked[0])?.s||null;
+}
+
+function updateWorshipLockButtons(){
+ const br=document.getElementById("wLockResp"),bs=document.getElementById("wLockSongs");
+ if(br){br.classList.toggle("locked",worshipLockResponsibilities);br.textContent=(worshipLockResponsibilities?"🔒 ":"🔓 ")+"Responsables";br.setAttribute("aria-pressed",String(worshipLockResponsibilities))}
+ if(bs){bs.classList.toggle("locked",worshipLockSongs);bs.textContent=(worshipLockSongs?"🔒 ":"🔓 ")+"Canciones";bs.setAttribute("aria-pressed",String(worshipLockSongs))}
 }
 
 function fillW(){
+ if(worshipLockResponsibilities&&worshipLockSongs){
+   renderW();
+   wstatus.innerHTML='<div class="note">Responsables y Canciones están bloqueados. Desbloquea al menos una columna para volver a rellenar.</div>';
+   return;
+ }
  let counts={};
  let previousNames=new Set();
  const monthSongCounts={};
  const lastSongUsed=seedSongHistory();
  wmonth.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(s=>{
-   let used=[],a=[];
-   [["Voz principal",1],["Coros",2],["Piano",1],["Guitarra",2],["Bajo",1],["Batería",1]].forEach(([r,n])=>{
-     for(let i=0;i<n;i++){
-       let p=choose(r,counts,s.date,used,previousNames);
-       // Doble rol solo como excepción; batería nunca se duplica con otro rol.
-       if(!p&&r!=="Batería")p=choose(r,counts,s.date,[],previousNames);
-       a.push({role:r,name:p?p.name:"⚠ FALTA"});
-       if(p){used.push(p.name);counts[p.name]=(counts[p.name]||0)+1}
-     }
-   });
-   s.assign=a;
-   previousNames=new Set(a.filter(x=>x.name&&x.name!=="⚠ FALTA").map(x=>x.name));
+   const previousAssignNames=new Set((s.assign||[]).filter(x=>x.name&&x.name!=="⚠ FALTA").map(x=>x.name));
+   const previousSongNames=new Set((s.songs||[]).filter(Boolean).map(x=>cleanHistorySongName(x.name)));
 
-   const singer=a.find(x=>x.role==="Voz principal")?.name||"";
-   const usedS=new Set();
-   s.songs=[];
-   ["Alabanza","Alabanza","Adoración","Adoración"].forEach(group=>{
-     const song=chooseSongForService(group,singer,s.date,usedS,monthSongCounts,lastSongUsed);
-     if(song){
-       const clean=cleanHistorySongName(song.name);
-       s.songs.push({...song,key:toneFor(song,singer)});
-       usedS.add(clean);monthSongCounts[clean]=(monthSongCounts[clean]||0)+1;lastSongUsed.set(clean,s.date);
+   if(!worshipLockResponsibilities){
+     let used=[],a=[];
+     [["Voz principal",1],["Coros",2],["Piano",1],["Guitarra",2],["Bajo",1],["Batería",1]].forEach(([r,n])=>{
+       for(let i=0;i<n;i++){
+         let p=choose(r,counts,s.date,used,previousNames,previousAssignNames);
+         if(!p&&r!=="Batería")p=choose(r,counts,s.date,[],previousNames,previousAssignNames);
+         a.push({role:r,name:p?p.name:"⚠ FALTA"});
+         if(p){used.push(p.name);counts[p.name]=(counts[p.name]||0)+1}
+       }
+     });
+     s.assign=a;
+   }else{
+     (s.assign||[]).forEach(a=>{if(a.name&&a.name!=="⚠ FALTA")counts[a.name]=(counts[a.name]||0)+1});
+   }
+
+   previousNames=new Set((s.assign||[]).filter(x=>x.name&&x.name!=="⚠ FALTA").map(x=>x.name));
+   const singer=(s.assign||[]).find(x=>x.role==="Voz principal")?.name||"";
+
+   if(!worshipLockSongs){
+     const usedS=new Set();
+     s.songs=[];
+     ["Alabanza","Alabanza","Adoración","Adoración"].forEach(group=>{
+       const song=chooseSongForService(group,singer,s.date,usedS,monthSongCounts,lastSongUsed,previousSongNames);
+       if(song){
+         const clean=cleanHistorySongName(song.name);
+         s.songs.push({...song,key:toneFor(song,singer)});
+         usedS.add(clean);monthSongCounts[clean]=(monthSongCounts[clean]||0)+1;lastSongUsed.set(clean,s.date);
+       }
+     });
+     if(s.santa){
+       const song=chooseSongForService("Santa Cena",singer,s.date,usedS,monthSongCounts,lastSongUsed,previousSongNames);
+       if(song){
+         const clean=cleanHistorySongName(song.name);
+         s.songs.push({...song,key:toneFor(song,singer),name:"SANTA CENA: "+clean});
+         monthSongCounts[clean]=(monthSongCounts[clean]||0)+1;lastSongUsed.set(clean,s.date);
+       }
      }
-   });
-   if(s.santa){
-     const song=chooseSongForService("Santa Cena",singer,s.date,usedS,monthSongCounts,lastSongUsed);
-     if(song){
-       const clean=cleanHistorySongName(song.name);
-       s.songs.push({...song,key:toneFor(song,singer),name:"SANTA CENA: "+clean});
-       monthSongCounts[clean]=(monthSongCounts[clean]||0)+1;lastSongUsed.set(clean,s.date);
-     }
+   }else{
+     // Mantiene las canciones, pero actualiza el tono si cambió la voz principal.
+     s.songs=(s.songs||[]).map(saved=>{
+       if(!saved)return saved;
+       const clean=cleanHistorySongName(saved.name);
+       const source=songs.find(x=>cleanHistorySongName(x.name)===clean)||saved;
+       const copy={...saved,key:toneFor(source,singer)};
+       if(/^SANTA CENA:/i.test(saved.name))copy.name="SANTA CENA: "+clean;
+       monthSongCounts[clean]=(monthSongCounts[clean]||0)+1;
+       lastSongUsed.set(clean,s.date);
+       return copy;
+     });
    }
  });
  renderW();
- wstatus.innerHTML='<div class="note">Tentativa generada con rotación: prioriza roles principales, mínimos/máximos, evita semanas consecutivas cuando es posible y procura no repetir canciones antes de 3 semanas.</div>';
- updateHome()
+ const locked=[];if(worshipLockResponsibilities)locked.push("Responsables");if(worshipLockSongs)locked.push("Canciones");
+ wstatus.innerHTML=`<div class="note">Tentativa generada con rotación y variación aleatoria.${locked.length?` Se conservaron: <strong>${locked.join(" y ")}</strong>.`:""} Prioriza disponibilidad, roles principales, mínimos/máximos y evita repetir canciones antes de 3 semanas cuando hay alternativas.</div>`;
+ updateHome();
 }
 
 function fillM(){
@@ -1684,6 +1807,7 @@ function refreshSongFilterOptions(){
  moodCatalog.forEach(v=>sMoodFilter.add(new Option(v,v)));
  if([...sArtistFilter.options].some(o=>o.value===artistValue))sArtistFilter.value=artistValue;
  if([...sMoodFilter.options].some(o=>o.value===moodValue))sMoodFilter.value=moodValue;
+ refreshSingerFilterOptions();
 }
 function populateSongSingerSelect(select,selected=""){
  select.innerHTML="";
@@ -1802,38 +1926,88 @@ async function deleteSongFromSupabase(song){
  return true;
 }
 
+const songAllColumns=["song","artist","category","bpm","mood","tones","actions"];
+let songColumnOrder=(()=>{try{const saved=JSON.parse(localStorage.getItem("song-column-order")||"null");return Array.isArray(saved)&&songAllColumns.every(c=>saved.includes(c))?saved:songAllColumns.slice()}catch{return songAllColumns.slice()}})();
+let activeSongFilterKeys=(()=>{try{const saved=JSON.parse(localStorage.getItem("song-active-filters")||"[]");return Array.isArray(saved)?saved.filter(x=>["artist","category","bpm","mood","singer","tone"].includes(x)):[]}catch{return []}})();
+
+function applySongColumnOrder(){
+ const head=document.getElementById("songTableHeadRow");if(!head)return;
+ songColumnOrder.forEach(key=>{const th=head.querySelector(`[data-col="${key}"]`);if(th)head.appendChild(th)});
+ document.querySelectorAll("#slist tr").forEach(tr=>songColumnOrder.forEach(key=>{const td=tr.querySelector(`[data-col="${key}"]`);if(td)tr.appendChild(td)}));
+}
+function setupSongColumnDrag(){
+ const head=document.getElementById("songTableHeadRow");if(!head)return;
+ let dragged=null;
+ head.querySelectorAll('th[data-col]:not([data-col="actions"])').forEach(th=>{
+   th.addEventListener("dragstart",e=>{dragged=th.dataset.col;th.classList.add("dragging");e.dataTransfer.effectAllowed="move"});
+   th.addEventListener("dragend",()=>{th.classList.remove("dragging");head.querySelectorAll("th").forEach(x=>x.classList.remove("drag-over"));dragged=null});
+   th.addEventListener("dragover",e=>{if(!dragged||dragged===th.dataset.col)return;e.preventDefault();th.classList.add("drag-over")});
+   th.addEventListener("dragleave",()=>th.classList.remove("drag-over"));
+   th.addEventListener("drop",e=>{
+     e.preventDefault();th.classList.remove("drag-over");
+     const target=th.dataset.col;if(!dragged||!target||dragged===target)return;
+     const from=songColumnOrder.indexOf(dragged),to=songColumnOrder.indexOf(target);
+     songColumnOrder.splice(from,1);songColumnOrder.splice(to,0,dragged);
+     const actionsIndex=songColumnOrder.indexOf("actions");if(actionsIndex!==songColumnOrder.length-1){songColumnOrder.splice(actionsIndex,1);songColumnOrder.push("actions")}
+     localStorage.setItem("song-column-order",JSON.stringify(songColumnOrder));applySongColumnOrder();
+   });
+ });
+}
+function refreshSingerFilterOptions(){
+ if(!window.sSingerFilter)return;
+ const current=sSingerFilter.value;
+ const names=[...new Set(songs.flatMap(s=>[s.singer,...Object.keys(s.tones||{})]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es"));
+ sSingerFilter.innerHTML='<option value="">Todos</option>'+names.map(n=>`<option>${n}</option>`).join("");
+ if(names.includes(current))sSingerFilter.value=current;
+}
+function syncSongFilterUI(){
+ document.querySelectorAll(".songOptionalFilter[data-filter]").forEach(el=>el.classList.toggle("active",activeSongFilterKeys.includes(el.dataset.filter)));
+ document.querySelectorAll("#songFilterMenu [data-add-filter]").forEach(btn=>btn.disabled=activeSongFilterKeys.includes(btn.dataset.addFilter));
+ localStorage.setItem("song-active-filters",JSON.stringify(activeSongFilterKeys));
+}
+function addSongFilterKey(key){if(!activeSongFilterKeys.includes(key))activeSongFilterKeys.push(key);syncSongFilterUI();songFilterMenu.classList.remove("open");songFilterMenu.setAttribute("aria-hidden","true")}
+function removeSongFilterKey(key){
+ activeSongFilterKeys=activeSongFilterKeys.filter(x=>x!==key);
+ const reset={artist:()=>sArtistFilter.value="",category:()=>sf.value="",bpm:()=>{sBpmMin.value="";sBpmMax.value=""},mood:()=>sMoodFilter.value="",singer:()=>sSingerFilter.value="",tone:()=>sToneFilter.value=""};
+ reset[key]?.();syncSongFilterUI();renderSongs();
+}
+
 function renderSongs(){
  slist.innerHTML="";
  let q=sq.value.trim().toLowerCase(),artist=sArtistFilter.value,category=sf.value,mood=sMoodFilter.value;
+ let singer=sSingerFilter?.value||"",tone=(sToneFilter?.value||"").trim().toLowerCase();
  let bpmMin=Number(sBpmMin.value),bpmMax=Number(sBpmMax.value);
  if(!Number.isFinite(bpmMin)||bpmMin<=0)bpmMin=null;
  if(!Number.isFinite(bpmMax)||bpmMax<=0)bpmMax=null;
  let shown=0;
  songs.forEach((x,i)=>{
-   let haystack=[x.name,x.artist,x.singer,x.category,x.bpm,...(x.moods||[]),...Object.keys(x.tones||{})].join(" ").toLowerCase();
-   let matches=(!q||haystack.includes(q))&&(!artist||x.artist===artist)&&(!category||x.category===category)&&(!mood||(x.moods||[]).some(m=>moodKey(m)===moodKey(mood)))&&(bpmMin===null||(x.bpm!==null&&x.bpm>=bpmMin))&&(bpmMax===null||(x.bpm!==null&&x.bpm<=bpmMax));
+   let haystack=[x.name,x.artist,x.singer,x.category,x.bpm,...(x.moods||[]),x.key,...Object.keys(x.tones||{}),...Object.values(x.tones||{})].join(" ").toLowerCase();
+   const toneValues=[x.key,...Object.values(x.tones||{})].filter(Boolean).map(v=>String(v).toLowerCase());
+   let matches=(!q||haystack.includes(q))&&(!artist||x.artist===artist)&&(!category||x.category===category)&&(!mood||(x.moods||[]).some(m=>moodKey(m)===moodKey(mood)))&&(!singer||(x.singer===singer)||Object.prototype.hasOwnProperty.call(x.tones||{},singer))&&(!tone||toneValues.some(v=>v.includes(tone)))&&(bpmMin===null||(x.bpm!==null&&x.bpm>=bpmMin))&&(bpmMax===null||(x.bpm!==null&&x.bpm<=bpmMax));
    if(!matches)return;
    shown++;
    const tr=document.createElement("tr");
    let moodHtml=(x.moods||[]).map(m=>`<span class="moodChip">${m}</span>`).join("")||'<span class="muted">—</span>';
    let toneHtml=Object.entries(x.tones||{}).map(([person,key])=>`<span class="toneChip">${person}: ${key}</span>`).join("")||'<span class="muted">—</span>';
    tr.innerHTML=`
-    <td class="songNameCell" data-label="Canción"><strong>${x.name}</strong><span class="muted">Tono base ${x.key||"—"}</span></td>
-    <td data-label="Artista">${x.artist||'<span class="muted">—</span>'}</td>
-    <td data-label="Categoría"><span class="chip">${x.category||"Media"}</span></td>
-    <td data-label="BPM">${x.bpm?`${x.bpm}`:'<span class="muted">—</span>'}</td>
-    <td data-label="Mood"><div class="songMoodList">${moodHtml}</div></td>
-    <td data-label="Tonos"><div class="songToneList">${toneHtml}</div></td>
-    <td><div class="songDbActions"><button class="dbEditBtn edit" type="button">Editar</button><button class="dbEditBtn danger deleteSong" type="button">Eliminar</button></div></td>`;
+    <td class="songNameCell" data-col="song"><strong>${x.name}</strong><span class="muted">Tono base ${x.key||"—"}</span></td>
+    <td data-col="artist">${x.artist||'<span class="muted">—</span>'}</td>
+    <td data-col="category"><span class="chip">${x.category||"Media"}</span></td>
+    <td data-col="bpm">${x.bpm?`${x.bpm}`:'<span class="muted">—</span>'}</td>
+    <td data-col="mood"><div class="songMoodList">${moodHtml}</div></td>
+    <td data-col="tones"><div class="songToneList">${toneHtml}</div></td>
+    <td data-col="actions"><div class="songDbActions"><button class="dbEditBtn edit" type="button">Editar</button><button class="dbEditBtn danger deleteSong" type="button">Eliminar</button></div></td>`;
    tr.querySelector(".edit").onclick=()=>openSongEditor(i);
    tr.querySelector(".deleteSong").onclick=async e=>{
      const btn=e.currentTarget;btn.disabled=true;
      try{const deleted=await deleteSongFromSupabase(x);if(!deleted)btn.disabled=false}catch(error){console.error(error);alert("No se pudo eliminar la canción: "+(error.message||error));btn.disabled=false}
    };
-   slist.appendChild(tr)
+   slist.appendChild(tr);
  });
  songFilterSummary.textContent=`${shown} de ${songs.length} canciones`;
-} 
+ applySongColumnOrder();
+}
+
 function renderAvail(){
  let make=(arr,id,module)=>{
    let box=document.getElementById(id);if(!box)return;box.innerHTML="";
@@ -2169,7 +2343,10 @@ function applyTheme(t){document.body.dataset.theme=t;localStorage.setItem("alaba
 function applySide(c){side.classList.toggle("collapsed",c);document.body.classList.toggle("sidebar-collapsed",c);collapseSide.querySelector(".ico").textContent=c?"›":"‹";localStorage.setItem("alabanza-side",c?"1":"0")}applySide(localStorage.getItem("alabanza-side")==="1");collapseSide.onclick=()=>applySide(!side.classList.contains("collapsed"));
 document.querySelectorAll(".nav button[data-p]").forEach(b=>b.onclick=()=>{document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));document.getElementById(b.dataset.p).classList.add("active");document.querySelectorAll(".nav button[data-p]").forEach(x=>x.classList.toggle("active",x===b));title.textContent=(sectionDescriptions[b.dataset.p]||[b.dataset.tip])[0];showSectionToast(b.dataset.p);side.classList.remove("open");overlay.classList.remove("show")});
 menu.onclick=()=>{side.classList.add("open");overlay.classList.add("show")};overlay.onclick=()=>{side.classList.remove("open");overlay.classList.remove("show")};
-wg.onclick=genW;wf.onclick=fillW;wr.onclick=fillW;wc.onclick=confirmW;we.onclick=()=>{let d=prompt("Fecha AAAA-MM-DD");if(!d)return;wmonth.push({date:d,extra:true,name:"Servicio especial",santa:false,assign:[],songs:[]});wmonth.sort((a,b)=>a.date.localeCompare(b.date));renderW();updateHome()};
+wg.onclick=genW;wf.onclick=fillW;wr.onclick=fillW;
+wLockResp.onclick=()=>{worshipLockResponsibilities=!worshipLockResponsibilities;localStorage.setItem("worship-lock-responsibilities",worshipLockResponsibilities?"1":"0");updateWorshipLockButtons()};
+wLockSongs.onclick=()=>{worshipLockSongs=!worshipLockSongs;localStorage.setItem("worship-lock-songs",worshipLockSongs?"1":"0");updateWorshipLockButtons()};
+wc.onclick=confirmW;we.onclick=()=>{let d=prompt("Fecha AAAA-MM-DD");if(!d)return;wmonth.push({date:d,extra:true,name:"Servicio especial",santa:false,assign:[],songs:[]});wmonth.sort((a,b)=>a.date.localeCompare(b.date));renderW();updateHome()};
 jg.onclick=genJ;jf.onclick=fillJ;jr.onclick=fillJ;jc.onclick=confirmJ;je.onclick=()=>{let d=prompt("Fecha AAAA-MM-DD");if(!d)return;jmonth.push({date:d,extra:true,name:"Jóvenes especial",santa:false,assign:[],songs:[]});jmonth.sort((a,b)=>a.date.localeCompare(b.date));renderJ();updateHome()};
 mg.onclick=genM;mf.onclick=fillM;mr.onclick=fillM;mc.onclick=confirmM;me.onclick=()=>{let d=prompt("Fecha AAAA-MM-DD");if(!d)return;mmonth.push({date:d,extra:true,PC:"",Camara:"",Diapositivas:""});mmonth.sort((a,b)=>a.date.localeCompare(b.date));renderM();updateHome()};
 
@@ -2200,9 +2377,16 @@ sf.onchange=renderSongs;
 sMoodFilter.onchange=renderSongs;
 sBpmMin.oninput=renderSongs;
 sBpmMax.oninput=renderSongs;
+sSingerFilter.onchange=renderSongs;
+sToneFilter.oninput=renderSongs;
+addSongFilter.onclick=e=>{e.stopPropagation();const open=!songFilterMenu.classList.contains("open");songFilterMenu.classList.toggle("open",open);songFilterMenu.setAttribute("aria-hidden",String(!open))};
+document.querySelectorAll("#songFilterMenu [data-add-filter]").forEach(btn=>btn.onclick=()=>addSongFilterKey(btn.dataset.addFilter));
+document.querySelectorAll(".removeSongFilter[data-remove-filter]").forEach(btn=>btn.onclick=()=>removeSongFilterKey(btn.dataset.removeFilter));
+document.addEventListener("click",e=>{if(!e.target.closest(".songFilterAddWrap")){songFilterMenu.classList.remove("open");songFilterMenu.setAttribute("aria-hidden","true")}});
 clearSongFilters.onclick=()=>{
- sq.value="";sArtistFilter.value="";sf.value="";sMoodFilter.value="";sBpmMin.value="";sBpmMax.value="";renderSongs()
+ sq.value="";sArtistFilter.value="";sf.value="";sMoodFilter.value="";sBpmMin.value="";sBpmMax.value="";sSingerFilter.value="";sToneFilter.value="";renderSongs()
 };
+syncSongFilterUI();setupSongColumnDrag();updateWorshipLockButtons();
 addToneRow.onclick=()=>addToneEditorRow("","");
 songModalCancel.onclick=closeSongEditor;
 songEditForm.addEventListener("submit",saveSongEditor);
