@@ -284,7 +284,7 @@ body[data-theme="light"] .modalCard .btn.primary{
 .sidebarFooter .sideAction{width:40px !important;height:40px !important;padding:0 !important;justify-content:center !important;overflow:visible !important}
 .sidebarFooter .sideAction .ico{width:20px !important;min-width:20px !important;font-size:16px !important}
 </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div id="overlay" class="overlay"></div>
