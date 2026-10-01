@@ -2,8 +2,8 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V25-SUPABASE-CANCIONES">
-<title>Programación V25 · Supabase Canciones</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V26-SUPABASE-DISPONIBILIDAD">
+<title>Programación V26 · Supabase Disponibilidad</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&display=swap');
 :root{--bg:#0f1115;--panel:#15181e;--panel2:#1b1f26;--panel3:#222831;--text:#f2f4f7;--muted:#9aa4b2;--line:#2b313a;--side:#111419;--hover:#1c222a;--accent:#7c9cf5;--accentSoft:#1c2947;--success:#17351f;--successText:#b9f6c7;--blue:#9ec0df;--blue2:#c2d7ea;--bhead:#7ea7b2;--green:#dfe8dc;--green2:#c8d9c3;--ghead:#d3dde1}
@@ -603,13 +603,13 @@ body[data-theme="light"] .modalCard .btn.primary{
   </div>
 </section>
 
-<section id="avail" class="panel"><div class="two"><div class="card"><h2>Disponibilidad Alabanza</h2><div class="row"><div><select id="awp"></select></div><div><input id="awd" type="date"></div><div class="auto"><button id="awa" class="btn secondary">No disponible</button></div></div><div id="awl" class="list" style="margin-top:10px"></div></div><div class="card"><h2>Disponibilidad Multimedia</h2><div class="row"><div><select id="amp"></select></div><div><input id="amd" type="date"></div><div class="auto"><button id="ama" class="btn secondary">No disponible</button></div></div><div id="aml" class="list" style="margin-top:10px"></div></div></div></section>
+<section id="avail" class="panel"><div id="availabilitySyncStatus" class="muted" style="margin:0 0 10px">Disponibilidad: esperando sincronización con Supabase…</div><div class="two"><div class="card"><h2>Disponibilidad Alabanza</h2><div class="row"><div><select id="awp"></select></div><div><input id="awd" type="date"></div><div class="auto"><button id="awa" class="btn secondary">No disponible</button></div></div><div id="awl" class="list" style="margin-top:10px"></div></div><div class="card"><h2>Disponibilidad Multimedia</h2><div class="row"><div><select id="amp"></select></div><div><input id="amd" type="date"></div><div class="auto"><button id="ama" class="btn secondary">No disponible</button></div></div><div id="aml" class="list" style="margin-top:10px"></div></div></div></section>
 
 <section id="hist" class="panel"><div class="card"><h2>Historial</h2><div class="row"><div><select id="ht"><option value="person">Personas</option><option value="song">Canciones</option></select></div><div><input id="hq" placeholder="Buscar..."></div><div class="auto"><button id="hr" class="btn primary">Consultar</button></div></div><div id="hout" style="margin-top:10px"></div></div></section>
 
 <section id="imgs" class="panel"><div class="grid"><div class="card s4"><h2>Imágenes mensuales</h2><button id="iw" class="btn primary" style="width:100%;margin-bottom:8px">Generar Alabanza</button><button id="im" class="btn secondary" style="width:100%;margin-bottom:8px">Generar Multimedia</button><button id="idown" class="btn success" style="width:100%">Descargar PNG</button></div><div class="card s8"><canvas id="poster" width="1400" height="1000"></canvas></div></div></section>
 
-<section id="settings" class="panel"><div class="grid"><div class="card s6"><h2>Configuración</h2><label>Google Sheets anual</label><input value="2026 PROGRAMACIÓN ALABANZA Y MEDIA"><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div><div class="card s6"><div class="note">Supabase está configurado. Voluntarios ya se sincroniza con la base de datos; Canciones, Disponibilidad, Programación e Historial siguen locales por ahora. Google Sheets aún no está conectado.</div></div></div></section>
+<section id="settings" class="panel"><div class="grid"><div class="card s6"><h2>Configuración</h2><label>Google Sheets anual</label><input value="2026 PROGRAMACIÓN ALABANZA Y MEDIA"><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div><div class="card s6"><div class="note">Supabase está configurado. Voluntarios, Canciones y Disponibilidad ya se sincronizan con la base de datos. Programación e Historial siguen locales por ahora. Google Sheets aún no está conectado.</div></div></div></section>
 
 <div id="songEditModal" class="modalBackdrop" aria-hidden="true">
   <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="songEditTitle">
@@ -1682,7 +1682,103 @@ function renderSongs(){
  });
  songFilterSummary.textContent=`${shown} de ${songs.length} canciones`;
 } 
-function renderAvail(){let make=(arr,id)=>{let box=document.getElementById(id);box.innerHTML="";arr.forEach((x,i)=>{let d=document.createElement("div");d.className="item";d.innerHTML=`<b>${x.name}</b><div class="muted">${pretty(x.date)}</div>`;d.onclick=()=>{arr.splice(i,1);renderAvail()};box.appendChild(d)})};make(uw,"awl");make(um,"aml")}
+function renderAvail(){
+ let make=(arr,id,module)=>{
+   let box=document.getElementById(id);if(!box)return;box.innerHTML="";
+   if(!arr.length){box.innerHTML='<div class="note">Sin fechas marcadas como no disponibles.</div>';return}
+   arr.slice().sort((a,b)=>a.date.localeCompare(b.date)||a.name.localeCompare(b.name,"es")).forEach(x=>{
+     let d=document.createElement("div");d.className="item";
+     d.innerHTML=`<b>${x.name}</b><div class="muted">${pretty(x.date)}</div><div class="itemActions"><button class="miniBtn removeAvailability" type="button">Quitar</button></div>`;
+     d.querySelector(".removeAvailability").onclick=async e=>{
+       e.stopPropagation();const btn=e.currentTarget;btn.disabled=true;
+       try{await deleteAvailabilityFromSupabase(x,module)}catch(error){console.error(error);alert("No se pudo quitar la indisponibilidad: "+(error.message||error));btn.disabled=false}
+     };
+     box.appendChild(d)
+   })
+ };
+ make(uw,"awl","alabanza");make(um,"aml","multimedia")
+}
+
+let availabilityBootstrapDone=false;
+let availabilityBootstrapPromise=null;
+
+function setAvailabilitySyncStatus(message,isError=false){
+ const el=document.getElementById("availabilitySyncStatus");if(!el)return;
+ el.textContent=message;el.style.color=isError?"#ef7d7d":"";
+}
+
+async function resolveVolunteerIdByName(name,module){
+ const source=module==="multimedia"?mediaVolunteers:volunteers;
+ const local=source.find(v=>v.name===name);
+ if(local?.id)return local.id;
+ const {data,error}=await window.supabaseClient.from("volunteers").select("id,name").eq("name",name).maybeSingle();
+ if(error)throw error;
+ return data?.id||null;
+}
+
+async function loadAvailabilityFromSupabase(){
+ if(!window.supabaseClient)throw new Error("Supabase no está disponible.");
+ const [{data:rows,error:rowError},{data:people,error:peopleError}]=await Promise.all([
+   window.supabaseClient.from("availability").select("id,volunteer_id,module,unavailable_date").in("module",["alabanza","multimedia"]).order("unavailable_date"),
+   window.supabaseClient.from("volunteers").select("id,name")
+ ]);
+ if(rowError)throw rowError;if(peopleError)throw peopleError;
+ const names=new Map((people||[]).map(v=>[v.id,v.name]));
+ uw=[];um=[];
+ (rows||[]).forEach(r=>{
+   const item={id:r.id,volunteerId:r.volunteer_id,name:names.get(r.volunteer_id)||"Voluntario",date:r.unavailable_date};
+   if(r.module==="alabanza")uw.push(item);
+   if(r.module==="multimedia")um.push(item);
+ });
+ renderAvail();
+ setAvailabilitySyncStatus(`Disponibilidad sincronizada con Supabase · ${uw.length} Alabanza · ${um.length} Multimedia`);
+ return true;
+}
+
+async function addAvailabilityToSupabase(module,name,date){
+ if(!window.supabaseClient)throw new Error("Supabase no está disponible.");
+ if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para modificar disponibilidad.");
+ if(!name||!date)throw new Error("Selecciona voluntario y fecha.");
+ const volunteerId=await resolveVolunteerIdByName(name,module);
+ if(!volunteerId)throw new Error("No se encontró el voluntario en Supabase.");
+ const dbModule=module==="multimedia"?"multimedia":"alabanza";
+ const {error}=await window.supabaseClient.from("availability").upsert({
+   volunteer_id:volunteerId,module:dbModule,unavailable_date:date
+ },{onConflict:"volunteer_id,module,unavailable_date"});
+ if(error)throw error;
+ await loadAvailabilityFromSupabase();
+}
+
+async function deleteAvailabilityFromSupabase(item,module){
+ if(!window.supabaseClient)throw new Error("Supabase no está disponible.");
+ if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para modificar disponibilidad.");
+ let query=window.supabaseClient.from("availability").delete();
+ if(item.id)query=query.eq("id",item.id);
+ else{
+   const volunteerId=item.volunteerId||await resolveVolunteerIdByName(item.name,module);
+   query=query.eq("volunteer_id",volunteerId).eq("module",module).eq("unavailable_date",item.date);
+ }
+ const {error}=await query;if(error)throw error;
+ await loadAvailabilityFromSupabase();
+}
+
+window.bootstrapAvailabilitySupabase=async function(){
+ if(availabilityBootstrapDone)return true;
+ if(availabilityBootstrapPromise)return availabilityBootstrapPromise;
+ availabilityBootstrapPromise=(async()=>{
+   try{
+     if(!window.supabaseClient)return false;
+     await loadAvailabilityFromSupabase();
+     availabilityBootstrapDone=true;
+     return true;
+   }catch(error){
+     console.error("Error sincronizando disponibilidad con Supabase:",error);
+     setAvailabilitySyncStatus("No se pudo sincronizar la disponibilidad: "+(error.message||error),true);
+     return false;
+   }finally{availabilityBootstrapPromise=null}
+ })();
+ return availabilityBootstrapPromise;
+};
 
 function history(){let t=ht.value,q=hq.value.toLowerCase(),rows=hist.filter(x=>x.type===t&&(!q||(x.name+" "+x.detail).toLowerCase().includes(q)));hout.innerHTML=rows.length?`<table style="width:100%;border-collapse:collapse">${rows.map(x=>`<tr><td style="padding:7px;border-bottom:1px solid #ddd">${pretty(x.date)}</td><td>${x.name}</td><td>${x.detail}</td><td>${x.module}</td></tr>`).join("")}</table>`:'<div class="note">Sin resultados todavía.</div>'}
 
@@ -1958,7 +2054,8 @@ clearSongFilters.onclick=()=>{
 addToneRow.onclick=()=>addToneEditorRow("","");
 songModalCancel.onclick=closeSongEditor;
 songEditForm.addEventListener("submit",saveSongEditor);
-awa.onclick=()=>{if(awd.value){uw.push({name:awp.value,date:awd.value});renderAvail()}};ama.onclick=()=>{if(amd.value){um.push({name:amp.value,date:amd.value});renderAvail()}};
+awa.onclick=async()=>{if(!awd.value||!awp.value)return;awa.disabled=true;try{await addAvailabilityToSupabase("alabanza",awp.value,awd.value);awd.value=""}catch(error){console.error(error);alert("No se pudo guardar la indisponibilidad: "+(error.message||error))}finally{awa.disabled=false}};
+ama.onclick=async()=>{if(!amd.value||!amp.value)return;ama.disabled=true;try{await addAvailabilityToSupabase("multimedia",amp.value,amd.value);amd.value=""}catch(error){console.error(error);alert("No se pudo guardar la indisponibilidad: "+(error.message||error))}finally{ama.disabled=false}};
 hr.onclick=history;iw.onclick=imageW;im.onclick=imageM;idown.onclick=()=>{let a=document.createElement("a");a.href=poster.toDataURL("image/png");a.download=`programacion-${imgType}.png`;a.click()};
 hy.onchange=hm.onchange=()=>{homeSelectedWeek=null;renderWeek()};
 
@@ -2199,6 +2296,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.bootstrapSongsSupabase) {
       await window.bootstrapSongsSupabase();
     }
+    if (window.bootstrapAvailabilitySupabase) {
+      await window.bootstrapAvailabilitySupabase();
+    }
 
     return window.currentProfile;
   }
@@ -2294,7 +2394,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   
 
 <script>
-window.__APP_BUILD = 'V25-SUPABASE-CANCIONES';
+window.__APP_BUILD = 'V26-SUPABASE-DISPONIBILIDAD';
 
 if (typeof persistSongToSupabase === 'function') {
   window.persistSongToSupabase = persistSongToSupabase;
@@ -2306,11 +2406,15 @@ if (typeof loadSongsFromSupabase === 'function') {
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('APP BUILD:', window.__APP_BUILD);
   console.log('Canciones Supabase cargado:', typeof window.bootstrapSongsSupabase);
+  console.log('Disponibilidad Supabase cargada:', typeof window.bootstrapAvailabilitySupabase);
 
   try {
     const { data: { session } } = await window.supabaseClient.auth.getSession();
     if (session && typeof window.bootstrapSongsSupabase === 'function') {
       await window.bootstrapSongsSupabase();
+    }
+    if (session && typeof window.bootstrapAvailabilitySupabase === 'function') {
+      await window.bootstrapAvailabilitySupabase();
     }
   } catch (error) {
     console.error('Error en arranque de Canciones Supabase:', error);
