@@ -469,6 +469,14 @@ body[data-theme="light"] .lockToggle.locked{background:#f7ecfb !important;border
 }
 </style>
 
+
+<style id="v30-schedule-sync">
+.scheduleSaved{border-left:3px solid #45a567}
+.scheduleLoaded{border-left:3px solid #668cff}
+.scheduleEmpty{border-left:3px solid #9aa4b2}
+.scheduleError{border-left:3px solid #d45a5a}
+</style>
+
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -640,7 +648,7 @@ body[data-theme="light"] .lockToggle.locked{background:#f7ecfb !important;border
 <button data-p="imgs" data-tip="Imágenes"><span class="ico">▧</span><span class="label">Imágenes</span></button>
 <button data-p="settings" data-tip="Configuración"><span class="ico">⚙</span><span class="label">Configuración</span></button>
 </div><div class="sidebarFooter"><button id="themeToggle" class="sideAction" title="Cambiar tema" aria-label="Cambiar tema"><span class="ico">◐</span></button><button id="collapseSide" class="sideAction" title="Plegar menú" aria-label="Plegar menú"><span class="ico">‹</span></button></div></aside>
-<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V29 · CATEGORÍAS + BUSCADOR</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
+<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V30 · PROGRAMACIÓN SUPABASE</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
 
 <section id="home" class="panel active">
   <div class="card">
@@ -1043,7 +1051,8 @@ function genJ(){
 }
 function fillJ(){
  let counts={};
- let previousNames=new Set();
+ const firstDate=jmonth.map(s=>s.date).filter(Boolean).sort()[0]||null;
+ let previousNames=seedPreviousVolunteerNames("Alabanza Jóvenes",firstDate);
  const monthSongCounts={};
  const lastSongUsed=seedSongHistory();
  jmonth.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(s=>{
@@ -1110,15 +1119,6 @@ function renderJ(){
      }
    })
  })
-}
-function confirmJ(){
- cj=JSON.parse(JSON.stringify(jmonth));
- cj.forEach(s=>{
-   s.assign.forEach(a=>hist.push({type:"person",date:s.date,name:a.name,detail:a.role,module:"Alabanza Jóvenes"}));
-   s.songs.filter(Boolean).forEach(x=>hist.push({type:"song",date:s.date,name:x.name,detail:x.key,module:"Alabanza Jóvenes"}))
- });
- jstatus.innerHTML='<div class="note">Jóvenes confirmado en esta prueba. En la versión real se guardará de forma independiente.</div>';
- updateHome()
 }
 
 function genM(){mmonth=getDates(+my.value,+mm.value,[0,3,6]).map(d=>({date:d,extra:false,PC:"",Camara:"",Diapositivas:""}));renderM();updateHome()}
@@ -1386,7 +1386,8 @@ function fillW(){
    return;
  }
  let counts={};
- let previousNames=new Set();
+ const firstDate=wmonth.map(s=>s.date).filter(Boolean).sort()[0]||null;
+ let previousNames=seedPreviousVolunteerNames("Alabanza",firstDate);
  const monthSongCounts={};
  const lastSongUsed=seedSongHistory();
  wmonth.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(s=>{
@@ -1563,8 +1564,6 @@ function renderW(){
 }
 function renderM(){mbody.innerHTML="";mmonth.sort((a,b)=>a.date.localeCompare(b.date));mmonth.forEach(s=>{let tr=document.createElement("tr"),dt=document.createElement("td");dt.textContent=(s.extra?"★ ":"")+days[wd(s.date)]+" "+parts(s.date).D;tr.appendChild(dt);mediaRoles.forEach(fn=>{let td=document.createElement("td"),sel=document.createElement("select");sel.add(new Option("—",""));mediaPool(fn).forEach(n=>sel.add(new Option(n,n)));sel.value=s[fn]||"";sel.onchange=()=>s[fn]=sel.value;td.appendChild(sel);tr.appendChild(td)});mbody.appendChild(tr)})}
 
-function confirmW(){cw=JSON.parse(JSON.stringify(wmonth));cw.forEach(s=>{s.assign.forEach(a=>hist.push({type:"person",date:s.date,name:a.name,detail:a.role,module:"Alabanza"}));s.songs.filter(Boolean).forEach(x=>hist.push({type:"song",date:s.date,name:x.name,detail:x.key,module:"Alabanza"}))});wstatus.innerHTML='<div class="note">Confirmado en la prueba. Aquí se escribiría en Google Sheets.</div>';updateHome()}
-function confirmM(){cm=JSON.parse(JSON.stringify(mmonth));cm.forEach(s=>mediaRoles.forEach(fn=>{if(s[fn])hist.push({type:"person",date:s.date,name:s[fn],detail:fn,module:"Multimedia"})}));mstatus.innerHTML='<div class="note">Confirmado en la prueba. Aquí se escribiría en Google Sheets.</div>';updateHome()}
 
 
 let homeViewMode="week";
@@ -1583,8 +1582,11 @@ function ensureHomeWeek(){
 }
 function renderHomeRows(dates){
  week.innerHTML="";
- const worshipData=cw||wmonth;
- const mediaData=cm||mmonth;
+ const homeY=+hy.value,homeM=+hm.value;
+ const cachedW=typeof getCachedConfirmedMonth==="function"?getCachedConfirmedMonth("alabanza",homeY,homeM):undefined;
+ const cachedM=typeof getCachedConfirmedMonth==="function"?getCachedConfirmedMonth("multimedia",homeY,homeM):undefined;
+ const worshipData=cachedW!==undefined?cachedW:((+wy.value===homeY&&+wm.value===homeM)?(cw||wmonth):[]);
+ const mediaData=cachedM!==undefined?cachedM:((+my.value===homeY&&+mm.value===homeM)?(cm||mmonth):[]);
 
  dates.forEach(date=>{
    const worship=worshipData.find(x=>x.date===date);
@@ -2499,6 +2501,519 @@ window.bootstrapAvailabilitySupabase=async function(){
  return availabilityBootstrapPromise;
 };
 
+
+// =========================================================
+// V30 · PROGRAMACIÓN MENSUAL EN SUPABASE
+// Confirmar = guardar programación oficial.
+// Rellenar / Reequilibrar = tentativa local hasta confirmar.
+// =========================================================
+
+const confirmedScheduleCache=new Map();
+let scheduleBootstrapDone=false;
+let scheduleBootstrapPromise=null;
+
+function scheduleMonthKey(module,Y,M){
+ return `${module}:${Y}-${String(Number(M)+1).padStart(2,"0")}`;
+}
+function monthBounds(Y,M){
+ const start=iso(Number(Y),Number(M),1);
+ let ny=Number(Y),nm=Number(M)+1;
+ if(nm>11){nm=0;ny++}
+ const next=iso(ny,nm,1);
+ return {start,next};
+}
+function deepCopy(value){
+ return JSON.parse(JSON.stringify(value));
+}
+function moduleLabel(module){
+ return module==="alabanza"?"Alabanza":module==="jovenes"?"Alabanza Jóvenes":"Multimedia";
+}
+function normalizeServiceName(module,s){
+ if(String(s?.name||"").trim())return String(s.name).trim();
+ if(module==="alabanza")return s?.extra?"Servicio especial":"Servicio dominical";
+ if(module==="jovenes")return s?.extra?"Jóvenes especial":"Jóvenes";
+ return s?.extra?"Multimedia especial":"Multimedia";
+}
+function dbRoleName(module,uiRole){
+ if(module==="multimedia"&&uiRole==="Camara")return "Cámara";
+ return uiRole;
+}
+function uiRoleName(module,dbRole){
+ if(module==="multimedia"&&dbRole==="Cámara")return "Camara";
+ return dbRole;
+}
+function getCachedConfirmedMonth(module,Y,M){
+ const key=scheduleMonthKey(module,Y,M);
+ return confirmedScheduleCache.has(key)?confirmedScheduleCache.get(key):undefined;
+}
+function setCachedConfirmedMonth(module,Y,M,data){
+ confirmedScheduleCache.set(scheduleMonthKey(module,Y,M),deepCopy(data||[]));
+}
+function seedPreviousVolunteerNames(label,beforeDate){
+ if(!beforeDate)return new Set();
+ const rows=(hist||[]).filter(h=>h.type==="person"&&h.module===label&&h.date&&h.date<beforeDate&&h.name&&h.name!=="⚠ FALTA");
+ if(!rows.length)return new Set();
+ const lastDate=rows.reduce((m,r)=>!m||r.date>m?r.date:m,null);
+ return new Set(rows.filter(r=>r.date===lastDate).map(r=>r.name));
+}
+function setScheduleStatus(module,message,type="loaded"){
+ const box=module==="alabanza"?wstatus:module==="jovenes"?jstatus:mstatus;
+ if(!box)return;
+ const cls=type==="saved"?"scheduleSaved":type==="error"?"scheduleError":type==="empty"?"scheduleEmpty":"scheduleLoaded";
+ box.innerHTML=`<div class="note ${cls}">${message}</div>`;
+}
+
+async function getScheduleReferenceMaps(){
+ const [{data:people,error:peopleError},{data:roleRows,error:roleError},{data:songRows,error:songError}]=await Promise.all([
+   window.supabaseClient.from("volunteers").select("id,name"),
+   window.supabaseClient.from("roles").select("id,name,module,sort_order"),
+   window.supabaseClient.from("songs").select("id,name,artist,category,bpm,base_key,active")
+ ]);
+ if(peopleError)throw peopleError;
+ if(roleError)throw roleError;
+ if(songError)throw songError;
+
+ return {
+   volunteerById:new Map((people||[]).map(v=>[v.id,v])),
+   volunteerByName:new Map((people||[]).map(v=>[String(v.name||"").trim().toLocaleLowerCase("es"),v])),
+   roleById:new Map((roleRows||[]).map(r=>[r.id,r])),
+   roleByKey:new Map((roleRows||[]).map(r=>[`${r.module}:${r.name}`,r])),
+   songById:new Map((songRows||[]).map(s=>[s.id,s])),
+   songByName:new Map((songRows||[]).map(s=>[cleanHistorySongName(s.name).toLocaleLowerCase("es"),s]))
+ };
+}
+
+async function loadConfirmedHistoryFromSupabase(){
+ if(!window.supabaseClient)return false;
+
+ const {data:services,error:serviceError}=await window.supabaseClient
+   .from("services")
+   .select("id,service_date,module,name,status")
+   .eq("status","confirmed")
+   .order("service_date");
+
+ if(serviceError)throw serviceError;
+ if(!services?.length){
+   hist=[];
+   return true;
+ }
+
+ const ids=services.map(s=>s.id);
+ const refs=await getScheduleReferenceMaps();
+
+ const [{data:assignRows,error:assignError},{data:songRows,error:songLinkError}]=await Promise.all([
+   window.supabaseClient.from("assignments").select("service_id,role_id,volunteer_id,slot_order").in("service_id",ids),
+   window.supabaseClient.from("service_songs").select("service_id,song_id,position,song_key,special_label").in("service_id",ids)
+ ]);
+ if(assignError)throw assignError;
+ if(songLinkError)throw songLinkError;
+
+ const serviceById=new Map(services.map(s=>[s.id,s]));
+ const rebuilt=[];
+
+ (assignRows||[]).forEach(a=>{
+   const service=serviceById.get(a.service_id);
+   const person=refs.volunteerById.get(a.volunteer_id);
+   const role=refs.roleById.get(a.role_id);
+   if(!service||!person||!role)return;
+   rebuilt.push({
+     type:"person",
+     date:service.service_date,
+     name:person.name,
+     detail:uiRoleName(service.module,role.name),
+     module:moduleLabel(service.module)
+   });
+ });
+
+ (songRows||[]).forEach(link=>{
+   const service=serviceById.get(link.service_id);
+   const song=refs.songById.get(link.song_id);
+   if(!service||!song)return;
+   let name=song.name;
+   if(link.special_label==="SANTA CENA")name="SANTA CENA: "+cleanHistorySongName(name);
+   rebuilt.push({
+     type:"song",
+     date:service.service_date,
+     name,
+     detail:link.song_key||song.base_key||"",
+     module:moduleLabel(service.module)
+   });
+ });
+
+ hist=rebuilt.sort((a,b)=>a.date.localeCompare(b.date));
+ return true;
+}
+
+async function fetchConfirmedMonth(module,Y,M){
+ if(!window.supabaseClient)throw new Error("Supabase no está disponible.");
+ const {start,next}=monthBounds(Y,M);
+
+ const {data:services,error:serviceError}=await window.supabaseClient
+   .from("services")
+   .select("id,service_date,module,name,is_extra,is_santa_cena,status")
+   .eq("module",module)
+   .eq("status","confirmed")
+   .gte("service_date",start)
+   .lt("service_date",next)
+   .order("service_date");
+
+ if(serviceError)throw serviceError;
+ if(!services?.length){
+   setCachedConfirmedMonth(module,Y,M,[]);
+   return [];
+ }
+
+ const ids=services.map(s=>s.id);
+ const refs=await getScheduleReferenceMaps();
+
+ const [{data:assignRows,error:assignError},{data:songLinks,error:songError}]=await Promise.all([
+   window.supabaseClient.from("assignments").select("service_id,role_id,volunteer_id,slot_order").in("service_id",ids),
+   window.supabaseClient.from("service_songs").select("service_id,song_id,position,song_key,special_label").in("service_id",ids).order("position")
+ ]);
+ if(assignError)throw assignError;
+ if(songError)throw songError;
+
+ const assignByService=new Map();
+ (assignRows||[]).forEach(a=>{
+   if(!assignByService.has(a.service_id))assignByService.set(a.service_id,[]);
+   assignByService.get(a.service_id).push(a);
+ });
+
+ const songsByService=new Map();
+ (songLinks||[]).forEach(s=>{
+   if(!songsByService.has(s.service_id))songsByService.set(s.service_id,[]);
+   songsByService.get(s.service_id).push(s);
+ });
+
+ const output=services.map(service=>{
+   if(module==="multimedia"){
+     const item={
+       date:service.service_date,
+       extra:!!service.is_extra,
+       name:service.name||"Multimedia",
+       PC:"",
+       Camara:"",
+       Diapositivas:""
+     };
+     (assignByService.get(service.id)||[]).forEach(a=>{
+       const role=refs.roleById.get(a.role_id);
+       const person=refs.volunteerById.get(a.volunteer_id);
+       if(!role||!person)return;
+       const key=uiRoleName("multimedia",role.name);
+       if(Object.prototype.hasOwnProperty.call(item,key))item[key]=person.name;
+     });
+     return item;
+   }
+
+   const serviceAssign=(assignByService.get(service.id)||[])
+     .map(a=>{
+       const role=refs.roleById.get(a.role_id);
+       const person=refs.volunteerById.get(a.volunteer_id);
+       return role&&person?{
+         role:role.name,
+         name:person.name,
+         __sort:Number(role.sort_order||0),
+         __slot:Number(a.slot_order||1)
+       }:null;
+     })
+     .filter(Boolean)
+     .sort((a,b)=>a.__sort-b.__sort||a.__slot-b.__slot)
+     .map(({role,name})=>({role,name}));
+
+   const serviceSongs=(songsByService.get(service.id)||[])
+     .slice()
+     .sort((a,b)=>Number(a.position||0)-Number(b.position||0))
+     .map(link=>{
+       const dbSong=refs.songById.get(link.song_id);
+       const liveSong=songs.find(s=>s.id===link.song_id);
+       if(!dbSong&&!liveSong)return null;
+       const base=liveSong?{...liveSong}:{
+         id:dbSong.id,
+         name:dbSong.name,
+         artist:dbSong.artist||"",
+         category:dbSong.category||"Media",
+         bpm:dbSong.bpm??null,
+         moods:[],
+         singer:"",
+         key:dbSong.base_key||"",
+         tones:{}
+       };
+       base.key=link.song_key||base.key||"";
+       if(link.special_label==="SANTA CENA"){
+         base.name="SANTA CENA: "+cleanHistorySongName(base.name);
+       }
+       return base;
+     })
+     .filter(Boolean);
+
+   return {
+     date:service.service_date,
+     extra:!!service.is_extra,
+     name:service.name||(module==="jovenes"?"Jóvenes":"Servicio dominical"),
+     santa:!!service.is_santa_cena,
+     assign:serviceAssign,
+     songs:serviceSongs
+   };
+ });
+
+ setCachedConfirmedMonth(module,Y,M,output);
+ return output;
+}
+
+async function applyConfirmedMonth(module,Y,M,{silent=false}={}){
+ const data=await fetchConfirmedMonth(module,Y,M);
+
+ if(module==="alabanza"){
+   if(data.length){
+     wmonth=deepCopy(data);cw=deepCopy(data);
+     renderW();
+     if(!silent)setScheduleStatus(module,`Programación confirmada cargada desde Supabase · ${data.length} servicios.`,"loaded");
+   }else{
+     cw=null;
+     wmonth=getDates(+Y,+M,[0]).map((d,i)=>({date:d,extra:false,name:"Servicio dominical",santa:i===0,assign:[],songs:[]}));
+     renderW();
+     if(!silent)setScheduleStatus(module,"No hay programación confirmada para este mes. Puedes rellenarla y luego pulsar Confirmar.","empty");
+   }
+ }
+ if(module==="jovenes"){
+   if(data.length){
+     jmonth=deepCopy(data);cj=deepCopy(data);
+     renderJ();
+     if(!silent)setScheduleStatus(module,`Programación de Jóvenes cargada desde Supabase · ${data.length} servicios.`,"loaded");
+   }else{
+     cj=null;
+     jmonth=getDates(+Y,+M,[6]).map(d=>({date:d,extra:false,name:"Jóvenes",santa:false,assign:[],songs:[]}));
+     renderJ();
+     if(!silent)setScheduleStatus(module,"No hay programación de Jóvenes confirmada para este mes.","empty");
+   }
+ }
+ if(module==="multimedia"){
+   if(data.length){
+     mmonth=deepCopy(data);cm=deepCopy(data);
+     renderM();
+     if(!silent)setScheduleStatus(module,`Programación Multimedia cargada desde Supabase · ${data.length} fechas.`,"loaded");
+   }else{
+     cm=null;
+     mmonth=getDates(+Y,+M,[0,3,6]).map(d=>({date:d,extra:false,name:"Multimedia",PC:"",Camara:"",Diapositivas:""}));
+     renderM();
+     if(!silent)setScheduleStatus(module,"No hay programación Multimedia confirmada para este mes.","empty");
+   }
+ }
+ updateHome();
+ return data;
+}
+
+async function saveConfirmedMonth(module,data,Y,M){
+ if(!window.supabaseClient)throw new Error("Supabase no está disponible.");
+ if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para confirmar programación.");
+ if(!Array.isArray(data)||!data.length)throw new Error("No hay fechas para confirmar.");
+
+ const {start,next}=monthBounds(Y,M);
+ const refs=await getScheduleReferenceMaps();
+
+ // Confirmar representa la versión oficial completa del mes:
+ // se reemplaza la programación confirmada previa de ese módulo/mes.
+ const {data:existing,error:existingError}=await window.supabaseClient
+   .from("services")
+   .select("id")
+   .eq("module",module)
+   .gte("service_date",start)
+   .lt("service_date",next);
+ if(existingError)throw existingError;
+
+ if(existing?.length){
+   const {error:deleteError}=await window.supabaseClient
+     .from("services")
+     .delete()
+     .in("id",existing.map(x=>x.id));
+   if(deleteError)throw deleteError;
+ }
+
+ const serviceRows=data.map(s=>({
+   service_date:s.date,
+   module,
+   name:normalizeServiceName(module,s),
+   is_extra:!!s.extra,
+   is_santa_cena:module==="alabanza"&&!!s.santa,
+   status:"confirmed"
+ }));
+
+ const {data:inserted,error:insertError}=await window.supabaseClient
+   .from("services")
+   .insert(serviceRows)
+   .select("id,service_date,name");
+ if(insertError)throw insertError;
+
+ const insertedMap=new Map((inserted||[]).map(r=>[`${r.service_date}|${r.name}`,r]));
+ const assignments=[];
+ const serviceSongs=[];
+
+ data.forEach(s=>{
+   const serviceName=normalizeServiceName(module,s);
+   const dbService=insertedMap.get(`${s.date}|${serviceName}`);
+   if(!dbService)return;
+
+   if(module==="multimedia"){
+     [["PC","PC"],["Camara","Cámara"],["Diapositivas","Diapositivas"]].forEach(([uiRole,dbRole])=>{
+       const personName=String(s[uiRole]||"").trim();
+       if(!personName||personName==="⚠ FALTA")return;
+       const person=refs.volunteerByName.get(personName.toLocaleLowerCase("es"));
+       const role=refs.roleByKey.get(`multimedia:${dbRole}`);
+       if(person&&role){
+         assignments.push({
+           service_id:dbService.id,
+           role_id:role.id,
+           volunteer_id:person.id,
+           slot_order:1
+         });
+       }
+     });
+     return;
+   }
+
+   const roleSlots={};
+   (s.assign||[]).forEach(a=>{
+     const personName=String(a.name||"").trim();
+     if(!personName||personName==="⚠ FALTA")return;
+     const person=refs.volunteerByName.get(personName.toLocaleLowerCase("es"));
+     const role=refs.roleByKey.get(`alabanza:${a.role}`);
+     if(!person||!role)return;
+     roleSlots[a.role]=(roleSlots[a.role]||0)+1;
+     assignments.push({
+       service_id:dbService.id,
+       role_id:role.id,
+       volunteer_id:person.id,
+       slot_order:roleSlots[a.role]
+     });
+   });
+
+   (s.songs||[]).forEach((saved,index)=>{
+     if(!saved)return;
+     const clean=cleanHistorySongName(saved.name);
+     const dbSong=(saved.id&&refs.songById.get(saved.id))||
+       refs.songByName.get(clean.toLocaleLowerCase("es"));
+     if(!dbSong)return;
+     serviceSongs.push({
+       service_id:dbService.id,
+       song_id:dbSong.id,
+       position:index+1,
+       song_key:saved.key||null,
+       special_label:/^SANTA CENA:/i.test(saved.name)?"SANTA CENA":null
+     });
+   });
+ });
+
+ if(assignments.length){
+   const {error}=await window.supabaseClient.from("assignments").insert(assignments);
+   if(error)throw error;
+ }
+ if(serviceSongs.length){
+   const {error}=await window.supabaseClient.from("service_songs").insert(serviceSongs);
+   if(error)throw error;
+ }
+
+ await loadConfirmedHistoryFromSupabase();
+ const loaded=await fetchConfirmedMonth(module,Y,M);
+ return loaded;
+}
+
+async function confirmW(){
+ const btn=document.getElementById("wc");
+ const old=btn?.textContent||"Confirmar Alabanza";
+ if(btn){btn.disabled=true;btn.textContent="Guardando…"}
+ try{
+   const loaded=await saveConfirmedMonth("alabanza",wmonth,+wy.value,+wm.value);
+   wmonth=deepCopy(loaded);cw=deepCopy(loaded);
+   renderW();updateHome();
+   setScheduleStatus("alabanza",`Alabanza confirmada y guardada en Supabase · ${loaded.length} servicios. Esta es ahora la programación oficial del mes.`,"saved");
+ }catch(error){
+   console.error("Error confirmando Alabanza:",error);
+   setScheduleStatus("alabanza","No se pudo guardar la programación: "+(error.message||error),"error");
+ }finally{
+   if(btn){btn.disabled=false;btn.textContent=old}
+ }
+}
+
+async function confirmJ(){
+ const btn=document.getElementById("jc");
+ const old=btn?.textContent||"Confirmar Jóvenes";
+ if(btn){btn.disabled=true;btn.textContent="Guardando…"}
+ try{
+   const loaded=await saveConfirmedMonth("jovenes",jmonth,+jy.value,+jm.value);
+   jmonth=deepCopy(loaded);cj=deepCopy(loaded);
+   renderJ();updateHome();
+   setScheduleStatus("jovenes",`Jóvenes confirmado y guardado en Supabase · ${loaded.length} servicios.`,"saved");
+ }catch(error){
+   console.error("Error confirmando Jóvenes:",error);
+   setScheduleStatus("jovenes","No se pudo guardar Jóvenes: "+(error.message||error),"error");
+ }finally{
+   if(btn){btn.disabled=false;btn.textContent=old}
+ }
+}
+
+async function confirmM(){
+ const btn=document.getElementById("mc");
+ const old=btn?.textContent||"Confirmar Multimedia";
+ if(btn){btn.disabled=true;btn.textContent="Guardando…"}
+ try{
+   const loaded=await saveConfirmedMonth("multimedia",mmonth,+my.value,+mm.value);
+   mmonth=deepCopy(loaded);cm=deepCopy(loaded);
+   renderM();updateHome();
+   setScheduleStatus("multimedia",`Multimedia confirmado y guardado en Supabase · ${loaded.length} fechas.`,"saved");
+ }catch(error){
+   console.error("Error confirmando Multimedia:",error);
+   setScheduleStatus("multimedia","No se pudo guardar Multimedia: "+(error.message||error),"error");
+ }finally{
+   if(btn){btn.disabled=false;btn.textContent=old}
+ }
+}
+
+async function loadHomeConfirmedMonth(){
+ const Y=+hy.value,M=+hm.value;
+ try{
+   await Promise.all([
+     fetchConfirmedMonth("alabanza",Y,M),
+     fetchConfirmedMonth("multimedia",Y,M)
+   ]);
+   updateHome();
+ }catch(error){
+   console.error("Error cargando Inicio desde Supabase:",error);
+ }
+}
+
+window.bootstrapSchedulesSupabase=async function(){
+ if(scheduleBootstrapDone)return true;
+ if(scheduleBootstrapPromise)return scheduleBootstrapPromise;
+
+ scheduleBootstrapPromise=(async()=>{
+   try{
+     if(!window.supabaseClient)return false;
+
+     await loadConfirmedHistoryFromSupabase();
+
+     await Promise.all([
+       applyConfirmedMonth("alabanza",+wy.value,+wm.value,{silent:false}),
+       applyConfirmedMonth("jovenes",+jy.value,+jm.value,{silent:false}),
+       applyConfirmedMonth("multimedia",+my.value,+mm.value,{silent:false})
+     ]);
+
+     await loadHomeConfirmedMonth();
+
+     scheduleBootstrapDone=true;
+     console.log("Programación mensual Supabase lista.");
+     return true;
+   }catch(error){
+     console.error("Error sincronizando programación mensual:",error);
+     setScheduleStatus("alabanza","Error sincronizando programación mensual: "+(error.message||error),"error");
+     return false;
+   }finally{
+     scheduleBootstrapPromise=null;
+   }
+ })();
+
+ return scheduleBootstrapPromise;
+};
+
 function history(){let t=ht.value,q=hq.value.toLowerCase(),rows=hist.filter(x=>x.type===t&&(!q||(x.name+" "+x.detail).toLowerCase().includes(q)));hout.innerHTML=rows.length?`<table style="width:100%;border-collapse:collapse">${rows.map(x=>`<tr><td style="padding:7px;border-bottom:1px solid #ddd">${pretty(x.date)}</td><td>${x.name}</td><td>${x.detail}</td><td>${x.module}</td></tr>`).join("")}</table>`:'<div class="note">Sin resultados todavía.</div>'}
 
 function imageW(){
@@ -3028,6 +3543,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.bootstrapAvailabilitySupabase) {
       await window.bootstrapAvailabilitySupabase();
     }
+    if (window.bootstrapSchedulesSupabase) {
+      await window.bootstrapSchedulesSupabase();
+    }
 
     return window.currentProfile;
   }
@@ -3122,8 +3640,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 </script>
   
 
+
+<script id="v30-schedule-events">
+document.addEventListener("DOMContentLoaded",()=>{
+  const bindPair=(yearId,monthId,module)=>{
+    const y=document.getElementById(yearId),m=document.getElementById(monthId);
+    const reload=async()=>{
+      if(!window.supabaseClient)return;
+      const {data:{session}}=await window.supabaseClient.auth.getSession();
+      if(!session)return;
+      try{await applyConfirmedMonth(module,+y.value,+m.value)}
+      catch(error){console.error("Error cambiando mes de programación:",error)}
+    };
+    y?.addEventListener("change",reload);
+    m?.addEventListener("change",reload);
+  };
+
+  bindPair("wy","wm","alabanza");
+  bindPair("jy","jm","jovenes");
+  bindPair("my","mm","multimedia");
+
+  const hyEl=document.getElementById("hy"),hmEl=document.getElementById("hm");
+  const loadHome=()=>{if(typeof loadHomeConfirmedMonth==="function")loadHomeConfirmedMonth()};
+  hyEl?.addEventListener("change",loadHome);
+  hmEl?.addEventListener("change",loadHome);
+});
+</script>
+
 <script>
-window.__APP_BUILD = 'V26-SUPABASE-DISPONIBILIDAD';
+window.__APP_BUILD = 'V30-PROGRAMACION-SUPABASE';
 
 if (typeof persistSongToSupabase === 'function') {
   window.persistSongToSupabase = persistSongToSupabase;
@@ -3136,6 +3681,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('APP BUILD:', window.__APP_BUILD);
   console.log('Canciones Supabase cargado:', typeof window.bootstrapSongsSupabase);
   console.log('Disponibilidad Supabase cargada:', typeof window.bootstrapAvailabilitySupabase);
+  console.log('Programación Supabase cargada:', typeof window.bootstrapSchedulesSupabase);
 
   try {
     const { data: { session } } = await window.supabaseClient.auth.getSession();
@@ -3144,6 +3690,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     if (session && typeof window.bootstrapAvailabilitySupabase === 'function') {
       await window.bootstrapAvailabilitySupabase();
+    }
+    if (session && typeof window.bootstrapSchedulesSupabase === 'function') {
+      await window.bootstrapSchedulesSupabase();
     }
   } catch (error) {
     console.error('Error en arranque de Canciones Supabase:', error);
