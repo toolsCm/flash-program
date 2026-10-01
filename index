@@ -284,7 +284,7 @@ body[data-theme="light"] .modalCard .btn.primary{
 .sidebarFooter .sideAction{width:40px !important;height:40px !important;padding:0 !important;justify-content:center !important;overflow:visible !important}
 .sidebarFooter .sideAction .ico{width:20px !important;min-width:20px !important;font-size:16px !important}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div id="overlay" class="overlay"></div>
@@ -597,10 +597,7 @@ body[data-theme="light"] .modalCard .btn.primary{
 </main>
 
 <script>
-  const SUPABASE_URL = 'https://zozvvfpjkidycwbpmnff.supabase.co/rest/v1/';
-const SUPABASE_KEY = 'sb_publishable_YI6a1hsqoqkIBbESpq_wJg_8dMRGTWS ';
-
-const supabaseClient = window.supabase.createClient(
+window.supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
