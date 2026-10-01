@@ -830,7 +830,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
 }
 </style>
 
-<!-- Base de datos -->
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL = 'https://zozvvfpjkidycwbpmnff.supabase.co';
@@ -841,8 +841,8 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
     SUPABASE_KEY
   );
 
-  console.log('Base de datos cargado:', typeof window.supabase);
-  console.log('Cliente Base de datos listo:', !!window.supabaseClient);
+  console.log('Supabase cargado:', typeof window.supabase);
+  console.log('Cliente Supabase listo:', !!window.supabaseClient);
 </script>
 </head>
 <body>
@@ -1010,7 +1010,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
 <button data-p="imgs" data-tip="Imágenes"><span class="ico">▧</span><span class="label">Imágenes</span></button>
 <button data-p="settings" data-tip="Configuración"><span class="ico">⚙</span><span class="label">Configuración</span></button>
 </div><div class="sidebarFooter"><button id="themeToggle" class="sideAction" title="Cambiar tema" aria-label="Cambiar tema"><span class="ico">◐</span></button><button id="collapseSide" class="sideAction" title="Plegar menú" aria-label="Plegar menú"><span class="ico">‹</span></button></div></aside>
-<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V33 · JÓVENES + BASE DE DATOS</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
+<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V34 · JÓVENES + UI CORREGIDA</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
 
 <section id="home" class="panel active">
   <div class="card">
@@ -1084,7 +1084,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
 <section id="media" class="panel"><div class="card"><div class="row"><div><label>Año</label><input id="my" type="number" value="2026"></div><div><label>Mes</label><select id="mm"></select></div><div class="auto"><button id="mg" class="btn secondary">Generar fechas</button></div></div><div class="row" style="margin-top:12px"><button id="mf" class="btn primary">Rellenar</button><button id="mr" class="btn secondary">Reequilibrar</button><button id="mc" class="btn success">Confirmar</button><button id="me" class="btn secondary">Añadir extra</button></div><div id="mstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="mtable"><thead><tr><th>FECHAS 📅</th><th>PC 💻</th><th>CAMARA 🎥</th><th>⏹️DIAPOSITVAS PREDICAS</th></tr></thead><tbody id="mbody"></tbody></table></div></div></section>
 
 <section id="vols" class="panel">
-<div id="volunteerSyncStatus" class="note" style="margin-bottom:12px">Voluntarios: esperando sesión de la base de datos…</div>
+<div id="volunteerSyncStatus" class="note" style="margin-bottom:12px">Voluntarios: esperando conexión con la base de datos…</div>
 <div class="two">
   <div class="card">
     <div class="volSectionHead">
@@ -1161,7 +1161,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
             <th data-col="category" draggable="true">Categoría</th>
             <th data-col="bpm" draggable="true">BPM</th>
             <th data-col="mood" draggable="true">Mood</th>
-            <th data-col="tones" draggable="true">Tonos</th>
+            <th data-col="tones" draggable="true">Tonalidades</th>
             <th data-col="actions">Acciones</th>
           </tr>
         </thead>
@@ -1171,13 +1171,13 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
   </div>
 </section>
 
-<section id="avail" class="panel"><div id="availabilitySyncStatus" class="muted" style="margin:0 0 10px">Disponibilidad: esperando sincronización con la base de datos…</div><div class="two"><div class="card"><h2>Disponibilidad Alabanza</h2><div class="row"><div><select id="awp"></select></div><div><input id="awd" type="date"></div><div class="auto"><button id="awa" class="btn secondary">No disponible</button></div></div><div id="awl" class="list" style="margin-top:10px"></div></div><div class="card"><h2>Disponibilidad Multimedia</h2><div class="row"><div><select id="amp"></select></div><div><input id="amd" type="date"></div><div class="auto"><button id="ama" class="btn secondary">No disponible</button></div></div><div id="aml" class="list" style="margin-top:10px"></div></div></div></section>
+<section id="avail" class="panel"><div id="availabilitySyncStatus" class="muted" style="margin:0 0 10px">Disponibilidad: esperando conexión con la base de datos…</div><div class="two"><div class="card"><h2>Disponibilidad Alabanza</h2><div class="row"><div><select id="awp"></select></div><div><input id="awd" type="date"></div><div class="auto"><button id="awa" class="btn secondary">No disponible</button></div></div><div id="awl" class="list" style="margin-top:10px"></div></div><div class="card"><h2>Disponibilidad Multimedia</h2><div class="row"><div><select id="amp"></select></div><div><input id="amd" type="date"></div><div class="auto"><button id="ama" class="btn secondary">No disponible</button></div></div><div id="aml" class="list" style="margin-top:10px"></div></div></div></section>
 
 <section id="hist" class="panel"><div class="card"><h2>Historial</h2><div class="row"><div><select id="ht"><option value="person">Personas</option><option value="song">Canciones</option></select></div><div><input id="hq" placeholder="Buscar..."></div><div class="auto"><button id="hr" class="btn primary">Consultar</button></div></div><div id="hout" style="margin-top:10px"></div></div></section>
 
 <section id="imgs" class="panel"><div class="grid"><div class="card s4"><h2>Imágenes mensuales</h2><button id="iw" class="btn primary" style="width:100%;margin-bottom:8px">Generar Alabanza</button><button id="im" class="btn secondary" style="width:100%;margin-bottom:8px">Generar Multimedia</button><button id="idown" class="btn success" style="width:100%">Descargar PNG</button></div><div class="card s8"><canvas id="poster" width="1400" height="1000"></canvas></div></div></section>
 
-<section id="settings" class="panel"><div class="grid"><div class="card s6"><h2>Configuración</h2><label>Google Sheets anual</label><input value="2026 PROGRAMACIÓN ALABANZA Y MEDIA"><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div><div class="card s6"><div class="note">Base de datos está configurado. Voluntarios, Canciones y Disponibilidad ya se sincronizan con la base de datos. Programación e Historial siguen locales por ahora. Google Sheets aún no está conectado.</div></div></div></section>
+<section id="settings" class="panel"><div class="grid"><div class="card s6"><h2>Configuración</h2><label>Google Sheets anual</label><input value="2026 PROGRAMACIÓN ALABANZA Y MEDIA"><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div><div class="card s6"><div class="note">La base de datos está configurada. Voluntarios, Canciones, Disponibilidad y Programación se guardan en línea. Google Sheets aún no está conectado.</div></div></div></section>
 
 <div id="songEditModal" class="modalBackdrop" aria-hidden="true">
   <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="songEditTitle">
@@ -1210,13 +1210,13 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
           </div>
         </div>
 
-        <div><label>Tono base</label><input id="seBaseKey" placeholder="Ej. D"></div>
+        <div><label>Tonalidad:</label><input id="seBaseKey" placeholder="Ej. D"></div>
         <div><label>Voz compatible principal</label><select id="seSinger"></select></div>
       </div>
 
       <div class="modalSubhead">
         <div>
-          <strong>Tonos por cantante</strong>
+          <strong>Tonalidades por cantante</strong>
           <div class="muted">Ejemplo: Juan → D, Camilo → B.</div>
         </div>
         <button id="addToneRow" class="btn secondary" type="button">+ Añadir cantante</button>
@@ -1295,13 +1295,13 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
           </div>
 
           <div style="margin-top:14px">
-            <label>Categoría</label>
+            <label>Alabanza Jóvenes</label>
             <div class="checkLine">
               <input id="veYouth" type="checkbox">
               <span>Participa en Alabanza Jóvenes</span>
             </div>
             <div class="muted" style="margin-top:6px">
-              Solo los voluntarios marcados aquí podrán aparecer en la programación de Alabanza Jóvenes.
+              Solo las personas marcadas aquí pueden aparecer en la programación de Jóvenes.
             </div>
           </div>
         </div>
@@ -1393,7 +1393,7 @@ let mediaVolunteers=[
 {name:"Ana",roles:["Diapositivas"],min:4,active:true}
 ];
 
-// Copias de la lista local actual. Solo se usan una vez si Base de datos aún está vacío.
+// Copias de la lista local actual. Solo se usan una vez si Supabase aún está vacío.
 const initialWorshipVolunteers=JSON.parse(JSON.stringify(volunteers));
 const initialMediaVolunteers=JSON.parse(JSON.stringify(mediaVolunteers));
 let supabaseVolunteerRoles=[];
@@ -1415,7 +1415,7 @@ function monday(s){let d=dObj(s),w=d.getUTCDay(),delta=w===0?-6:1-w;d.setUTCDate
 function add(s,n){let d=dObj(s);d.setUTCDate(d.getUTCDate()+n);return iso(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())}
 const unavailable=(n,d,mod)=>(mod==="w"?uw:um).some(x=>x.name===n&&x.date===d);
 const cand=r=>volunteers.filter(v=>v.active&&(v.primary===r||v.secondary.includes(r)));
-candYouth=r=>volunteers.filter(v=>v.active&&v.youth&&(v.primary===r||v.secondary.includes(r)));
+const candYouth=r=>volunteers.filter(v=>v.active&&v.youth&&(v.primary===r||v.secondary.includes(r)));
 
 function genW(){wmonth=getDates(+wy.value,+wm.value,[0]).map((d,i)=>({date:d,extra:false,name:"Servicio dominical",santa:i===0,assign:[],songs:[]}));renderW();updateHome();queueScheduleDraftSave("alabanza")}
 
@@ -1521,8 +1521,8 @@ function renderJ(){
 
        let cur=s.assign.filter(x=>x.role===r)[k];
        const allowedYouthNames=new Set(candYouth(r).map(v=>v.name));
-       sel.value=(cur?.name&&allowedYouthNames.has(cur.name))?cur.name:"⚠ FALTA";
        if(cur?.name&&!allowedYouthNames.has(cur.name))cur.name="⚠ FALTA";
+       sel.value=cur?.name||"⚠ FALTA";
        sel.onchange=()=>{
          let arr=s.assign.filter(x=>x.role===r);
          if(arr[k])arr[k].name=sel.value;
@@ -1633,10 +1633,7 @@ function chooseYouth(role,counts,date,used,previousNames=new Set(),avoidCurrent=
    const minBonus=belowMin?-35:0;
    const loadPenalty=count*11;
    const sameAsPreviousPenalty=avoidCurrent.has(v.name)?12:0;
-   return {
-     v,
-     score:primaryPenalty+minBonus+loadPenalty+sameAsPreviousPenalty+Math.random()*5
-   };
+   return {v,score:primaryPenalty+minBonus+loadPenalty+sameAsPreviousPenalty+Math.random()*5};
  }).sort((a,b)=>a.score-b.score);
 
  const best=ranked[0]?.score??0;
@@ -2245,7 +2242,7 @@ function openVolunteerEditor(module,i=null,mode="edit"){
    checkboxGroup(veSecondaryChecks,roles,v.secondary||[],"checkbox","secondaryRoles");
    veMin.value=v.min??1;
    veMax.value=v.max??2;
-   document.getElementById("veYouth").checked=!!v.youth;
+   veYouth.checked=!!v.youth;
    veActive.checked=v.active!==false;
  }else{
    const v=mode==="edit"?mediaVolunteers[i]:{name:"",roles:[],min:4,active:true};
@@ -2276,7 +2273,7 @@ function dbMediaRoleName(name){return name==="Camara"?"Cámara":name}
 function localMediaRoleName(name){return name==="Cámara"?"Camara":name}
 function canEditDatabase(){return ["admin","editor"].includes(window.currentProfile?.app_role||"")}
 
-async function ensureBase de datosVolunteerRoles(){
+async function ensureSupabaseVolunteerRoles(){
  if(supabaseVolunteerRoles.length)return supabaseVolunteerRoles;
  const {data,error}=await window.supabaseClient
    .from("roles")
@@ -2297,7 +2294,7 @@ async function migrateInitialVolunteersIfEmpty(){
  if(existing&&existing.length)return false;
  if(!canEditDatabase())return false;
 
- setVolunteerSyncStatus("Voluntarios: migrando la lista actual a Base de datos por primera vez…");
+ setVolunteerSyncStatus("Voluntarios: preparando la base de datos por primera vez…");
 
  const merged=new Map();
  [...initialWorshipVolunteers,...initialMediaVolunteers].forEach(v=>{
@@ -2309,7 +2306,7 @@ async function migrateInitialVolunteersIfEmpty(){
    .select("id,name");
  if(insertError)throw insertError;
  const idByName=new Map((inserted||[]).map(v=>[v.name,v.id]));
- const dbRoles=await ensureBase de datosVolunteerRoles();
+ const dbRoles=await ensureSupabaseVolunteerRoles();
  const roleKey=(module,name)=>dbRoles.find(r=>r.module===module&&r.name===name);
 
  const roleLinks=[];
@@ -2351,8 +2348,8 @@ async function migrateInitialVolunteersIfEmpty(){
  return true;
 }
 
-async function loadVolunteersFromBase de datos(){
- await ensureBase de datosVolunteerRoles();
+async function loadVolunteersFromSupabase(){
+ await ensureSupabaseVolunteerRoles();
  const [{data:volRows,error:volError},{data:linkRows,error:linkError},{data:settingRows,error:settingError}]=await Promise.all([
    window.supabaseClient.from("volunteers").select("id,name,active,created_at").order("created_at"),
    window.supabaseClient.from("volunteer_roles").select("volunteer_id,role_id,is_primary"),
@@ -2404,14 +2401,14 @@ async function loadVolunteersFromBase de datos(){
  renderMediaVolunteers();
  refreshPeople();
  renderW();renderJ();renderM();
- setVolunteerSyncStatus(`Voluntarios sincronizados con la base de datos · ${volunteers.length} Alabanza · ${mediaVolunteers.length} Multimedia`);
+ setVolunteerSyncStatus(`Voluntarios en base de datos · ${volunteers.length} Alabanza · ${mediaVolunteers.length} Multimedia`);
  return true;
 }
 
-async function saveVolunteerToBase de datos(module,mode,index,data){
- if(!window.supabaseClient)throw new Error("Base de datos no está disponible.");
+async function saveVolunteerToSupabase(module,mode,index,data){
+ if(!window.supabaseClient)throw new Error("La base de datos no está disponible.");
  if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para modificar voluntarios.");
- await ensureBase de datosVolunteerRoles();
+ await ensureSupabaseVolunteerRoles();
  const current=module==="worship"?volunteers[index]:mediaVolunteers[index];
  let volunteerId=current?.id||null;
 
@@ -2502,44 +2499,44 @@ async function saveVolunteerToBase de datos(module,mode,index,data){
    }
  }
 
- await loadVolunteersFromBase de datos();
+ await loadVolunteersFromSupabase();
  return volunteerId;
 }
 
-async function setVolunteerActiveInBase de datos(id,active){
- if(!id)throw new Error("Este voluntario todavía no tiene un ID de la base de datos.");
+async function setVolunteerActiveInSupabase(id,active){
+ if(!id)throw new Error("Este voluntario todavía no está registrado en la base de datos.");
  if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para modificar voluntarios.");
  const {error}=await window.supabaseClient.from("volunteers").update({active}).eq("id",id);
  if(error)throw error;
- await loadVolunteersFromBase de datos();
+ await loadVolunteersFromSupabase();
 }
 
-async function deleteVolunteerFromBase de datos(v){
- if(!v?.id)throw new Error("Este voluntario todavía no tiene un ID de la base de datos.");
+async function deleteVolunteerFromSupabase(v){
+ if(!v?.id)throw new Error("Este voluntario todavía no está registrado en la base de datos.");
  if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para eliminar voluntarios.");
  const ok=confirm(`¿Eliminar definitivamente a ${v.name}?\n\nSe eliminará de Alabanza, Multimedia, sus roles y sus indisponibilidades. Los registros históricos confirmados se conservarán cuando corresponda.`);
  if(!ok)return false;
  const {error}=await window.supabaseClient.from("volunteers").delete().eq("id",v.id);
  if(error)throw error;
- await loadVolunteersFromBase de datos();
- if(typeof loadAvailabilityFromBase de datos==="function")await loadAvailabilityFromBase de datos();
- if(typeof loadSongsFromBase de datos==="function")await loadSongsFromBase de datos();
+ await loadVolunteersFromSupabase();
+ if(typeof loadAvailabilityFromSupabase==="function")await loadAvailabilityFromSupabase();
+ if(typeof loadSongsFromSupabase==="function")await loadSongsFromSupabase();
  return true;
 }
 
-window.bootstrapVolunteersBase de datos=async function(){
+window.bootstrapVolunteersSupabase=async function(){
  if(volunteerBootstrapDone)return true;
  if(volunteerBootstrapPromise)return volunteerBootstrapPromise;
  volunteerBootstrapPromise=(async()=>{
    try{
      if(!window.supabaseClient)return false;
      await migrateInitialVolunteersIfEmpty();
-     await loadVolunteersFromBase de datos();
+     await loadVolunteersFromSupabase();
      volunteerBootstrapDone=true;
      return true;
    }catch(error){
-     console.error("Error sincronizando voluntarios con la base de datos:",error);
-     setVolunteerSyncStatus("No se pudieron sincronizar los voluntarios con la base de datos: "+(error.message||error),true);
+     console.error("Error sincronizando voluntarios con Supabase:",error);
+     setVolunteerSyncStatus("No se pudieron cargar los voluntarios desde la base de datos: "+(error.message||error),true);
      return false;
    }finally{
      volunteerBootstrapPromise=null;
@@ -2556,11 +2553,11 @@ function renderVols(){
    d.querySelector(".edit").onclick=()=>editVolunteer(i);
    d.querySelector(".toggle").onclick=async e=>{
      const btn=e.currentTarget;btn.disabled=true;
-     try{await setVolunteerActiveInBase de datos(v.id,!v.active)}catch(error){console.error(error);alert("No se pudo cambiar el estado: "+(error.message||error));btn.disabled=false}
+     try{await setVolunteerActiveInSupabase(v.id,!v.active)}catch(error){console.error(error);alert("No se pudo cambiar el estado: "+(error.message||error));btn.disabled=false}
    };
    d.querySelector(".delete").onclick=async e=>{
      const btn=e.currentTarget;btn.disabled=true;
-     try{const deleted=await deleteVolunteerFromBase de datos(v);if(!deleted)btn.disabled=false}catch(error){console.error(error);alert("No se pudo eliminar el voluntario: "+(error.message||error));btn.disabled=false}
+     try{const deleted=await deleteVolunteerFromSupabase(v);if(!deleted)btn.disabled=false}catch(error){console.error(error);alert("No se pudo eliminar el voluntario: "+(error.message||error));btn.disabled=false}
    };
    vlist.appendChild(d)
  })
@@ -2574,11 +2571,11 @@ function renderMediaVolunteers(){
    d.querySelector(".edit").onclick=()=>editMediaVolunteer(i);
    d.querySelector(".toggle").onclick=async e=>{
      const btn=e.currentTarget;btn.disabled=true;
-     try{await setVolunteerActiveInBase de datos(v.id,!v.active)}catch(error){console.error(error);alert("No se pudo cambiar el estado: "+(error.message||error));btn.disabled=false}
+     try{await setVolunteerActiveInSupabase(v.id,!v.active)}catch(error){console.error(error);alert("No se pudo cambiar el estado: "+(error.message||error));btn.disabled=false}
    };
    d.querySelector(".delete").onclick=async e=>{
      const btn=e.currentTarget;btn.disabled=true;
-     try{const deleted=await deleteVolunteerFromBase de datos(v);if(!deleted)btn.disabled=false}catch(error){console.error(error);alert("No se pudo eliminar el voluntario: "+(error.message||error));btn.disabled=false}
+     try{const deleted=await deleteVolunteerFromSupabase(v);if(!deleted)btn.disabled=false}catch(error){console.error(error);alert("No se pudo eliminar el voluntario: "+(error.message||error));btn.disabled=false}
    };
    box.appendChild(d)
  })
@@ -2586,7 +2583,7 @@ function renderMediaVolunteers(){
 
 
 
-async function getBase de datosVolunteerMap(){
+async function getSupabaseVolunteerMap(){
  const {data,error}=await window.supabaseClient.from("volunteers").select("id,name");
  if(error)throw error;
  return {
@@ -2595,7 +2592,7 @@ async function getBase de datosVolunteerMap(){
  };
 }
 
-async function loadBase de datosMoods(){
+async function loadSupabaseMoods(){
  const {data,error}=await window.supabaseClient.from("moods").select("id,name").order("name");
  if(error)throw error;
  supabaseMoodRows=data||[];
@@ -2604,25 +2601,25 @@ async function loadBase de datosMoods(){
  return supabaseMoodRows;
 }
 
-async function ensureBase de datosMoods(names){
+async function ensureSupabaseMoods(names){
  const clean=[...new Set((names||[]).map(v=>String(v||"").trim()).filter(Boolean))];
  if(!clean.length)return [];
- if(!supabaseMoodRows.length)await loadBase de datosMoods();
+ if(!supabaseMoodRows.length)await loadSupabaseMoods();
  const key=v=>String(v||"").trim().toLocaleLowerCase("es");
  const missing=clean.filter(name=>!supabaseMoodRows.some(m=>key(m.name)===key(name)));
  if(missing.length){
    if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para crear moods.");
    const {error}=await window.supabaseClient.from("moods").upsert(missing.map(name=>({name})),{onConflict:"name"});
    if(error)throw error;
-   await loadBase de datosMoods();
+   await loadSupabaseMoods();
  }
  return clean.map(name=>supabaseMoodRows.find(m=>key(m.name)===key(name))).filter(Boolean);
 }
 
-async function persistSongToBase de datos(song,existingId=null,{reload=true}={}){
- if(!window.supabaseClient)throw new Error("Base de datos no está disponible.");
+async function persistSongToSupabase(song,existingId=null,{reload=true}={}){
+ if(!window.supabaseClient)throw new Error("La base de datos no está disponible.");
  if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para modificar canciones.");
- const volunteerMap=await getBase de datosVolunteerMap();
+ const volunteerMap=await getSupabaseVolunteerMap();
  const singerRow=song.singer?volunteerMap.byName.get(String(song.singer).trim().toLocaleLowerCase("es")):null;
  const payload={
    name:String(song.name||"").trim(),
@@ -2656,7 +2653,7 @@ async function persistSongToBase de datos(song,existingId=null,{reload=true}={})
    }
  }
 
- const moodRows=await ensureBase de datosMoods(song.moods||[]);
+ const moodRows=await ensureSupabaseMoods(song.moods||[]);
  let result=await window.supabaseClient.from("song_moods").delete().eq("song_id",songId);
  if(result.error)throw result.error;
  if(moodRows.length){
@@ -2675,11 +2672,11 @@ async function persistSongToBase de datos(song,existingId=null,{reload=true}={})
    result=await window.supabaseClient.from("song_singer_keys").insert(toneRowsToInsert);
    if(result.error)throw result.error;
  }
- if(reload)await loadSongsFromBase de datos();
+ if(reload)await loadSongsFromSupabase();
  return songId;
 }
 
-async function loadSongsFromBase de datos(){
+async function loadSongsFromSupabase(){
  const [{data:songRows,error:songError},{data:moodRows,error:moodError},{data:links,error:linkError},{data:keyRows,error:keyError},{data:volRows,error:volError}]=await Promise.all([
    window.supabaseClient.from("songs").select("id,name,artist,category,bpm,base_key,primary_singer_id,active,created_at").order("created_at"),
    window.supabaseClient.from("moods").select("id,name").order("name"),
@@ -2723,23 +2720,23 @@ async function migrateInitialSongsIfEmpty(){
  if(data&&data.length)return false;
  if(!canEditDatabase())return false;
  for(const song of initialSongs){
-   await persistSongToBase de datos(song,null,{reload:false});
+   await persistSongToSupabase(song,null,{reload:false});
  }
  return true;
 }
 
-window.bootstrapSongsBase de datos=async function(){
+window.bootstrapSongsSupabase=async function(){
  if(songBootstrapDone)return true;
  if(songBootstrapPromise)return songBootstrapPromise;
  songBootstrapPromise=(async()=>{
    try{
      if(!window.supabaseClient)return false;
      await migrateInitialSongsIfEmpty();
-     await loadSongsFromBase de datos();
+     await loadSongsFromSupabase();
      songBootstrapDone=true;
      return true;
    }catch(error){
-     console.error("Error sincronizando canciones con la base de datos:",error);
+     console.error("Error sincronizando canciones con Supabase:",error);
      if(typeof songFilterSummary!=="undefined"&&songFilterSummary)songFilterSummary.textContent="No se pudieron sincronizar las canciones: "+(error.message||error);
      return false;
    }finally{songBootstrapPromise=null}
@@ -2874,15 +2871,15 @@ async function saveSongEditor(e){
  try{
    const i=mode==="edit"?Number(songEditIndex.value):null;
    const existingId=mode==="edit"?songs[i]?.id:null;
-   await persistSongToBase de datos(data,existingId,{reload:true});
+   await persistSongToSupabase(data,existingId,{reload:true});
    closeSongEditor();
  }catch(error){
    console.error("Error guardando canción:",error);
    alert("No se pudo guardar la canción en la base de datos: "+(error.message||error));
  }finally{btn.disabled=false;btn.textContent=old}
 }
-async function deleteSongFromBase de datos(song){
- if(!song?.id)throw new Error("Esta canción todavía no tiene un ID de la base de datos.");
+async function deleteSongFromSupabase(song){
+ if(!song?.id)throw new Error("Esta canción todavía no está registrada en la base de datos.");
  if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para eliminar canciones.");
  const ok=confirm(`¿Eliminar definitivamente “${song.name}”?\n\nTambién se eliminarán sus moods asociados y tonos por cantante.`);
  if(!ok)return false;
@@ -2891,7 +2888,7 @@ async function deleteSongFromBase de datos(song){
    if(error.code==="23503")throw new Error("La canción ya está vinculada a una programación confirmada y no se puede eliminar sin afectar el historial.");
    throw error;
  }
- await loadSongsFromBase de datos();
+ await loadSongsFromSupabase();
  return true;
 }
 
@@ -2959,7 +2956,7 @@ function renderSongs(){
    let moodHtml=(x.moods||[]).map(m=>`<span class="moodChip">${m}</span>`).join("")||'<span class="muted">—</span>';
    let toneHtml=Object.entries(x.tones||{}).map(([person,key])=>`<span class="toneChip">${person}: ${key}</span>`).join("")||'<span class="muted">—</span>';
    tr.innerHTML=`
-    <td class="songNameCell" data-col="song"><strong>${x.name}</strong><span class="muted">Tono base ${x.key||"—"}</span></td>
+    <td class="songNameCell" data-col="song"><strong>${x.name}</strong><span class="muted">Tonalidad: ${x.key||"—"}</span></td>
     <td data-col="artist">${x.artist||'<span class="muted">—</span>'}</td>
     <td data-col="category"><span class="chip">${x.category||"Media"}</span></td>
     <td data-col="bpm">${x.bpm?`${x.bpm}`:'<span class="muted">—</span>'}</td>
@@ -2969,7 +2966,7 @@ function renderSongs(){
    tr.querySelector(".edit").onclick=()=>openSongEditor(i);
    tr.querySelector(".deleteSong").onclick=async e=>{
      const btn=e.currentTarget;btn.disabled=true;
-     try{const deleted=await deleteSongFromBase de datos(x);if(!deleted)btn.disabled=false}catch(error){console.error(error);alert("No se pudo eliminar la canción: "+(error.message||error));btn.disabled=false}
+     try{const deleted=await deleteSongFromSupabase(x);if(!deleted)btn.disabled=false}catch(error){console.error(error);alert("No se pudo eliminar la canción: "+(error.message||error));btn.disabled=false}
    };
    slist.appendChild(tr);
  });
@@ -2986,7 +2983,7 @@ function renderAvail(){
      d.innerHTML=`<b>${x.name}</b><div class="muted">${pretty(x.date)}</div><div class="itemActions"><button class="miniBtn removeAvailability" type="button">Quitar</button></div>`;
      d.querySelector(".removeAvailability").onclick=async e=>{
        e.stopPropagation();const btn=e.currentTarget;btn.disabled=true;
-       try{await deleteAvailabilityFromBase de datos(x,module)}catch(error){console.error(error);alert("No se pudo quitar la indisponibilidad: "+(error.message||error));btn.disabled=false}
+       try{await deleteAvailabilityFromSupabase(x,module)}catch(error){console.error(error);alert("No se pudo quitar la indisponibilidad: "+(error.message||error));btn.disabled=false}
      };
      box.appendChild(d)
    })
@@ -3011,8 +3008,8 @@ async function resolveVolunteerIdByName(name,module){
  return data?.id||null;
 }
 
-async function loadAvailabilityFromBase de datos(){
- if(!window.supabaseClient)throw new Error("Base de datos no está disponible.");
+async function loadAvailabilityFromSupabase(){
+ if(!window.supabaseClient)throw new Error("La base de datos no está disponible.");
  const [{data:rows,error:rowError},{data:people,error:peopleError}]=await Promise.all([
    window.supabaseClient.from("availability").select("id,volunteer_id,module,unavailable_date").in("module",["alabanza","multimedia"]).order("unavailable_date"),
    window.supabaseClient.from("volunteers").select("id,name")
@@ -3026,12 +3023,12 @@ async function loadAvailabilityFromBase de datos(){
    if(r.module==="multimedia")um.push(item);
  });
  renderAvail();
- setAvailabilitySyncStatus(`Disponibilidad sincronizada con la base de datos · ${uw.length} Alabanza · ${um.length} Multimedia`);
+ setAvailabilitySyncStatus(`Disponibilidad en base de datos · ${uw.length} Alabanza · ${um.length} Multimedia`);
  return true;
 }
 
-async function addAvailabilityToBase de datos(module,name,date){
- if(!window.supabaseClient)throw new Error("Base de datos no está disponible.");
+async function addAvailabilityToSupabase(module,name,date){
+ if(!window.supabaseClient)throw new Error("La base de datos no está disponible.");
  if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para modificar disponibilidad.");
  if(!name||!date)throw new Error("Selecciona voluntario y fecha.");
  const volunteerId=await resolveVolunteerIdByName(name,module);
@@ -3041,11 +3038,11 @@ async function addAvailabilityToBase de datos(module,name,date){
    volunteer_id:volunteerId,module:dbModule,unavailable_date:date
  },{onConflict:"volunteer_id,module,unavailable_date"});
  if(error)throw error;
- await loadAvailabilityFromBase de datos();
+ await loadAvailabilityFromSupabase();
 }
 
-async function deleteAvailabilityFromBase de datos(item,module){
- if(!window.supabaseClient)throw new Error("Base de datos no está disponible.");
+async function deleteAvailabilityFromSupabase(item,module){
+ if(!window.supabaseClient)throw new Error("La base de datos no está disponible.");
  if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para modificar disponibilidad.");
  let query=window.supabaseClient.from("availability").delete();
  if(item.id)query=query.eq("id",item.id);
@@ -3054,20 +3051,20 @@ async function deleteAvailabilityFromBase de datos(item,module){
    query=query.eq("volunteer_id",volunteerId).eq("module",module).eq("unavailable_date",item.date);
  }
  const {error}=await query;if(error)throw error;
- await loadAvailabilityFromBase de datos();
+ await loadAvailabilityFromSupabase();
 }
 
-window.bootstrapAvailabilityBase de datos=async function(){
+window.bootstrapAvailabilitySupabase=async function(){
  if(availabilityBootstrapDone)return true;
  if(availabilityBootstrapPromise)return availabilityBootstrapPromise;
  availabilityBootstrapPromise=(async()=>{
    try{
      if(!window.supabaseClient)return false;
-     await loadAvailabilityFromBase de datos();
+     await loadAvailabilityFromSupabase();
      availabilityBootstrapDone=true;
      return true;
    }catch(error){
-     console.error("Error sincronizando disponibilidad con la base de datos:",error);
+     console.error("Error sincronizando disponibilidad con Supabase:",error);
      setAvailabilitySyncStatus("No se pudo sincronizar la disponibilidad: "+(error.message||error),true);
      return false;
    }finally{availabilityBootstrapPromise=null}
@@ -3308,7 +3305,7 @@ async function getScheduleReferenceMaps(){
  };
 }
 
-async function loadConfirmedHistoryFromBase de datos(){
+async function loadConfirmedHistoryFromSupabase(){
  if(!window.supabaseClient)return false;
 
  const {data:services,error:serviceError}=await window.supabaseClient
@@ -3370,7 +3367,7 @@ async function loadConfirmedHistoryFromBase de datos(){
 }
 
 async function fetchConfirmedMonth(module,Y,M){
- if(!window.supabaseClient)throw new Error("Base de datos no está disponible.");
+ if(!window.supabaseClient)throw new Error("La base de datos no está disponible.");
  const {start,next}=monthBounds(Y,M);
 
  const {data:services,error:serviceError}=await window.supabaseClient
@@ -3529,7 +3526,7 @@ async function applyConfirmedMonth(module,Y,M,{silent=false}={}){
 }
 
 async function saveConfirmedMonth(module,data,Y,M){
- if(!window.supabaseClient)throw new Error("Base de datos no está disponible.");
+ if(!window.supabaseClient)throw new Error("La base de datos no está disponible.");
  if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para confirmar programación.");
  if(!Array.isArray(data)||!data.length)throw new Error("No hay fechas para confirmar.");
 
@@ -3637,7 +3634,7 @@ async function saveConfirmedMonth(module,data,Y,M){
    if(error)throw error;
  }
 
- await loadConfirmedHistoryFromBase de datos();
+ await loadConfirmedHistoryFromSupabase();
  const loaded=await fetchConfirmedMonth(module,Y,M);
  return loaded;
 }
@@ -3709,11 +3706,11 @@ async function loadHomeConfirmedMonth(){
 
    updateHome();
  }catch(error){
-   console.error("Error cargando Inicio desde la base de datos:",error);
+   console.error("Error cargando Inicio desde Supabase:",error);
  }
 }
 
-window.bootstrapSchedulesBase de datos=async function(){
+window.bootstrapSchedulesSupabase=async function(){
  if(scheduleBootstrapDone)return true;
  if(scheduleBootstrapPromise)return scheduleBootstrapPromise;
 
@@ -3721,7 +3718,7 @@ window.bootstrapSchedulesBase de datos=async function(){
    try{
      if(!window.supabaseClient)return false;
 
-     await loadConfirmedHistoryFromBase de datos();
+     await loadConfirmedHistoryFromSupabase();
 
      await Promise.all([
        applySavedMonth("alabanza",+wy.value,+wm.value,{silent:false}),
@@ -3732,7 +3729,7 @@ window.bootstrapSchedulesBase de datos=async function(){
      await loadHomeConfirmedMonth();
 
      scheduleBootstrapDone=true;
-     console.log("Programación mensual Base de datos lista.");
+     console.log("Programación mensual Supabase lista.");
      return true;
    }catch(error){
      console.error("Error sincronizando programación mensual:",error);
@@ -3994,7 +3991,7 @@ seAddMood.onclick=async()=>{
  let mood=addMoodToCatalog(seNewMood.value);
  if(!mood)return;
  try{
-   await ensureBase de datosMoods([mood]);
+   await ensureSupabaseMoods([mood]);
    seNewMood.value="";
    refreshSongFilterOptions();
    refreshMoodSelect(seMoods,[...selectedMoods(seMoods),mood]);
@@ -4030,8 +4027,8 @@ syncSongFilterUI();setupSongColumnDrag();updateWorshipLockButtons();
 addToneRow.onclick=()=>addToneEditorRow("","");
 songModalCancel.onclick=closeSongEditor;
 songEditForm.addEventListener("submit",saveSongEditor);
-awa.onclick=async()=>{if(!awd.value||!awp.value)return;awa.disabled=true;try{await addAvailabilityToBase de datos("alabanza",awp.value,awd.value);awd.value=""}catch(error){console.error(error);alert("No se pudo guardar la indisponibilidad: "+(error.message||error))}finally{awa.disabled=false}};
-ama.onclick=async()=>{if(!amd.value||!amp.value)return;ama.disabled=true;try{await addAvailabilityToBase de datos("multimedia",amp.value,amd.value);amd.value=""}catch(error){console.error(error);alert("No se pudo guardar la indisponibilidad: "+(error.message||error))}finally{ama.disabled=false}};
+awa.onclick=async()=>{if(!awd.value||!awp.value)return;awa.disabled=true;try{await addAvailabilityToSupabase("alabanza",awp.value,awd.value);awd.value=""}catch(error){console.error(error);alert("No se pudo guardar la indisponibilidad: "+(error.message||error))}finally{awa.disabled=false}};
+ama.onclick=async()=>{if(!amd.value||!amp.value)return;ama.disabled=true;try{await addAvailabilityToSupabase("multimedia",amp.value,amd.value);amd.value=""}catch(error){console.error(error);alert("No se pudo guardar la indisponibilidad: "+(error.message||error))}finally{ama.disabled=false}};
 hr.onclick=history;iw.onclick=imageW;im.onclick=imageM;idown.onclick=()=>{let a=document.createElement("a");a.href=poster.toDataURL("image/png");a.download=`programacion-${imgType}.png`;a.click()};
 hy.onchange=hm.onchange=()=>{homeSelectedWeek=null;renderWeek()};
 
@@ -4109,8 +4106,8 @@ importCsvBtn.onclick=()=>{
    try{
      const result=importSongsCsvText(String(reader.result||""));
      csvStatus.textContent="Guardando importación en la base de datos…";
-     for(const song of songs){await persistSongToBase de datos(song,song.id||null,{reload:false})}
-     await loadSongsFromBase de datos();
+     for(const song of songs){await persistSongToSupabase(song,song.id||null,{reload:false})}
+     await loadSongsFromSupabase();
      csvStatus.textContent=`Importación completada: ${result.imported} filas procesadas${result.skipped?`, ${result.skipped} omitidas`:""}.`;
      setTimeout(()=>{songImportModal.classList.remove("open");songImportModal.setAttribute("aria-hidden","true")},650);
    }catch(err){console.error(err);csvStatus.textContent="No se pudo importar: "+err.message}
@@ -4152,11 +4149,11 @@ volunteerEditForm.addEventListener("submit",async e=>{
        secondary,
        min:Math.max(0,Number(veMin.value)||0),
        max:Math.max(1,Number(veMax.value)||1),
-       youth:document.getElementById("veYouth").checked,
+       youth:veYouth.checked,
        active:veActive.checked
      };
      if(data.max<data.min)data.max=data.min;
-     await saveVolunteerToBase de datos("worship",mode,index,data);
+     await saveVolunteerToSupabase("worship",mode,index,data);
    }else{
      const data={
        name,
@@ -4164,7 +4161,7 @@ volunteerEditForm.addEventListener("submit",async e=>{
        min:Math.max(0,Number(veMediaMin.value)||0),
        active:veActive.checked
      };
-     await saveVolunteerToBase de datos("media",mode,index,data);
+     await saveVolunteerToSupabase("media",mode,index,data);
    }
    closeVolunteerEditor();
  }catch(error){
@@ -4230,7 +4227,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function mostrarEstadoSesion(session) {
     if (session) {
       loginScreen.style.display = 'none';
-      setAppLoading(true,'Cargando tu programación…');
+      setAppLoading(true,'Cargando tu programación desde la base de datos…');
     } else {
       loginScreen.style.display = 'flex';
       setAppLoading(false);
@@ -4270,17 +4267,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     console.log('Perfil cargado:', window.currentProfile);
 
-    if (window.bootstrapVolunteersBase de datos) {
-      await window.bootstrapVolunteersBase de datos();
+    if (window.bootstrapVolunteersSupabase) {
+      await window.bootstrapVolunteersSupabase();
     }
-    if (window.bootstrapSongsBase de datos) {
-      await window.bootstrapSongsBase de datos();
+    if (window.bootstrapSongsSupabase) {
+      await window.bootstrapSongsSupabase();
     }
-    if (window.bootstrapAvailabilityBase de datos) {
-      await window.bootstrapAvailabilityBase de datos();
+    if (window.bootstrapAvailabilitySupabase) {
+      await window.bootstrapAvailabilitySupabase();
     }
-    if (window.bootstrapSchedulesBase de datos) {
-      await window.bootstrapSchedulesBase de datos();
+    if (window.bootstrapSchedulesSupabase) {
+      await window.bootstrapSchedulesSupabase();
     }
 
     setAppLoading(false);
@@ -4406,13 +4403,13 @@ document.addEventListener("DOMContentLoaded",()=>{
 </script>
 
 <script>
-window.__APP_BUILD = 'V33-JOVENES-BASE-DATOS';
+window.__APP_BUILD = 'V34-JOVENES-UI-CORREGIDA';
 
-if (typeof persistSongToBase de datos === 'function') {
-  window.persistSongToBase de datos = persistSongToBase de datos;
+if (typeof persistSongToSupabase === 'function') {
+  window.persistSongToSupabase = persistSongToSupabase;
 }
-if (typeof loadSongsFromBase de datos === 'function') {
-  window.loadSongsFromBase de datos = loadSongsFromBase de datos;
+if (typeof loadSongsFromSupabase === 'function') {
+  window.loadSongsFromSupabase = loadSongsFromSupabase;
 }
 window.queueScheduleDraftSave = queueScheduleDraftSave;
 window.saveScheduleDraft = saveScheduleDraft;
@@ -4420,24 +4417,24 @@ window.applySavedMonth = applySavedMonth;
 
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('APP BUILD:', window.__APP_BUILD);
-  console.log('Canciones Base de datos cargado:', typeof window.bootstrapSongsBase de datos);
-  console.log('Disponibilidad Base de datos cargada:', typeof window.bootstrapAvailabilityBase de datos);
-  console.log('Programación Base de datos cargada:', typeof window.bootstrapSchedulesBase de datos);
+  console.log('Canciones Supabase cargado:', typeof window.bootstrapSongsSupabase);
+  console.log('Disponibilidad Supabase cargada:', typeof window.bootstrapAvailabilitySupabase);
+  console.log('Programación Supabase cargada:', typeof window.bootstrapSchedulesSupabase);
   console.log('Autoguardado de borradores:', typeof window.queueScheduleDraftSave);
 
   try {
     const { data: { session } } = await window.supabaseClient.auth.getSession();
-    if (session && typeof window.bootstrapSongsBase de datos === 'function') {
-      await window.bootstrapSongsBase de datos();
+    if (session && typeof window.bootstrapSongsSupabase === 'function') {
+      await window.bootstrapSongsSupabase();
     }
-    if (session && typeof window.bootstrapAvailabilityBase de datos === 'function') {
-      await window.bootstrapAvailabilityBase de datos();
+    if (session && typeof window.bootstrapAvailabilitySupabase === 'function') {
+      await window.bootstrapAvailabilitySupabase();
     }
-    if (session && typeof window.bootstrapSchedulesBase de datos === 'function') {
-      await window.bootstrapSchedulesBase de datos();
+    if (session && typeof window.bootstrapSchedulesSupabase === 'function') {
+      await window.bootstrapSchedulesSupabase();
     }
   } catch (error) {
-    console.error('Error en arranque de Canciones Base de datos:', error);
+    console.error('Error en arranque de Canciones Supabase:', error);
   }
 });
 </script>
