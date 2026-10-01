@@ -4738,48 +4738,75 @@ refreshRoles();renderVols();refreshPeople();refreshMediaRoleControl();renderMedi
   ctx.fillText(text,x,y);
  }
  function renderWorshipPoster(data,mode='worship'){
-  if(!data.length)return;
-  let c=poster,x=c.getContext('2d');
-  x.clearRect(0,0,c.width,c.height);
+  if(!Array.isArray(data)||!data.length)return;
+
+  const c=document.getElementById('poster');
+  if(!c)return;
+  const x=c.getContext('2d');
+
+  // El render fija SIEMPRE su propio tamaño para que Multimedia no lo deje en 1000 px.
+  const W=1500;
+  const hh=96;
+  const blockH=240;
+  const H=hh+(blockH*data.length);
+  c.width=W;
+  c.height=H;
+
+  x.clearRect(0,0,W,H);
   x.fillStyle='#fff';
-  x.fillRect(0,0,c.width,c.height);
-  const c1=280,c2=820,hh=96;
+  x.fillRect(0,0,W,H);
+
+  // Fecha más angosta; más espacio para nombres y canciones.
+  const c1=170;
+  const c2=860;
+  const rolePersonSplit=505;
+  const leftPad=16;
+  const songX=c2+18;
+  const songMaxWidth=W-songX-20;
+
   x.fillStyle='#7ea7b2';
-  x.fillRect(0,0,c.width,hh);
+  x.fillRect(0,0,W,hh);
+
   x.strokeStyle='#fff';
-  x.lineWidth=3;
+  x.lineWidth=4;
   x.beginPath();
-  x.moveTo(c1,0);x.lineTo(c1,c.height);
-  x.moveTo(c2,0);x.lineTo(c2,c.height);
+  x.moveTo(c1,0);x.lineTo(c1,H);
+  x.moveTo(c2,0);x.lineTo(c2,H);
   x.stroke();
+
   x.fillStyle='#fff';
   x.textAlign='center';
   x.textBaseline='middle';
-  x.font='700 25px Impact';
+  x.font='700 27px Impact';
   x.fillText('FECHA',c1/2,hh/2);
   x.fillText('RESPONSABLES',(c1+c2)/2,hh/2);
-  x.fillText('CANCIONES',(c2+c.width)/2,hh/2);
+  x.fillText('CANCIONES',(c2+W)/2,hh/2);
 
-  let bh=(c.height-hh)/Math.max(1,data.length),y=hh;
+  let y=hh;
+
   data.forEach((s,i)=>{
    x.fillStyle=i%2===0?'#9fc1df':'#c5d9ea';
-   x.fillRect(0,y,c.width,bh);
+   x.fillRect(0,y,W,blockH);
+
    x.strokeStyle='#fff';
-   x.lineWidth=3;
+   x.lineWidth=4;
    x.beginPath();
-   x.moveTo(0,y);x.lineTo(c.width,y);
+   x.moveTo(0,y);x.lineTo(W,y);
    x.stroke();
 
    x.fillStyle='#0f172a';
-   let p=parts(s.date);
+
+   // Fecha
+   const p=parts(s.date);
    x.textAlign='center';
    x.textBaseline='middle';
    x.font='600 22px Comfortaa';
-   x.fillText(`${p.D} ${months[p.M-1].toLowerCase()}`,c1/2,y+bh/2);
+   x.fillText(`${p.D} ${months[p.M-1].toLowerCase()}`,c1/2,y+blockH/2);
 
-   let by={};
-   s.assign.forEach(a=>(by[a.role]??=[]).push(a.name));
-   let rows=[
+   // Responsables
+   const by={};
+   (s.assign||[]).forEach(a=>(by[a.role]??=[]).push(a.name));
+   const rows=[
      ['VOZ PRINCIPAL 🎙:',(by['Voz principal']||[]).join(', ')],
      ['COROS 🎤:',(by['Coros']||[]).join(', ')],
      ['PIANO 🎹:',(by['Piano']||[]).join(', ')],
@@ -4787,25 +4814,35 @@ refreshRoles();renderVols();refreshPeople();refreshMediaRoleControl();renderMedi
      ['BAJO 🪕:',(by['Bajo']||[]).join(', ')],
      ['BATERÍA 🥁:',(by['Batería']||[]).join(', ')]
    ];
-   let lh=Math.min(34,bh/7),sy=y+(bh-rows.length*lh)/2+lh*.65;
-   x.font='500 18px Comfortaa';
+
+   const lh=34;
+   const sy=y+(blockH-(rows.length*lh))/2+(lh/2);
+
    rows.forEach((r,j)=>{
+    const cy=sy+j*lh;
+
+    x.textBaseline='middle';
     x.textAlign='right';
-    x.fillText(r[0],535,sy+j*lh);
+    drawFittedText(x,r[0],rolePersonSplit-12,cy,rolePersonSplit-c1-24,18,15);
+
     x.textAlign='left';
-    x.fillText(r[1]||'—',555,sy+j*lh);
+    drawFittedText(x,r[1]||'—',rolePersonSplit+14,cy,c2-rolePersonSplit-28,18,14);
    });
 
-   let sl=s.songs.filter(Boolean).map(posterSongLabel);
-   let sh=Math.min(38,bh/5.4),ssy=y+(bh-sl.length*sh)/2+sh*.7;
+   // Canciones: una sola línea cada una; si hace falta, baja gradualmente la fuente.
+   const sl=(s.songs||[]).filter(Boolean).map(posterSongLabel);
+   const sh=38;
+   const ssy=y+(blockH-(sl.length*sh))/2+(sh/2);
+
    x.textAlign='left';
    x.textBaseline='middle';
    sl.forEach((txt,j)=>{
-    drawFittedText(x,txt,835,ssy+j*sh,540,17,14);
+    drawFittedText(x,txt,songX,ssy+j*sh,songMaxWidth,18,12);
    });
 
-   y+=bh;
+   y+=blockH;
   });
+
   imgType=mode;
  }
  window.imageW=function(){
@@ -5081,7 +5118,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 </script>
 
 <script>
-window.__APP_BUILD = 'V45-MULTIMEDIA-RENDER-GUARANTEED';
+window.__APP_BUILD = 'V46-WORSHIP-POSTER-LAYOUT-FIX';
 
 if (typeof persistSongToSupabase === 'function') {
   window.persistSongToSupabase = persistSongToSupabase;
