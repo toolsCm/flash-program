@@ -302,6 +302,148 @@ body[data-theme="light"] .modalCard .btn.primary{
 </script>
 </head>
 <body>
+  <!-- =========================
+     LOGIN SUPABASE
+========================= -->
+<div id="loginScreen" style="
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:#111318;
+  font-family:inherit;
+">
+
+  <form id="loginForm" style="
+    width:100%;
+    max-width:380px;
+    background:#181b21;
+    border:1px solid #2b3038;
+    border-radius:12px;
+    padding:28px;
+    box-sizing:border-box;
+  ">
+
+    <div style="
+      width:42px;
+      height:42px;
+      display:grid;
+      place-items:center;
+      border-radius:9px;
+      background:#f1f3f5;
+      color:#111318;
+      font-weight:800;
+      font-size:20px;
+      margin-bottom:22px;
+    ">
+      A
+    </div>
+
+    <h2 style="
+      margin:0 0 6px;
+      color:#f5f5f5;
+      font-size:22px;
+    ">
+      Iniciar sesión
+    </h2>
+
+    <p style="
+      margin:0 0 24px;
+      color:#8f96a3;
+      font-size:13px;
+    ">
+      Programación Alabanza y Multimedia
+    </p>
+
+    <label for="loginEmail" style="
+      display:block;
+      color:#aeb4bf;
+      font-size:12px;
+      margin-bottom:6px;
+    ">
+      Correo
+    </label>
+
+    <input
+      id="loginEmail"
+      type="email"
+      autocomplete="email"
+      required
+      placeholder="correo@ejemplo.com"
+      style="
+        width:100%;
+        box-sizing:border-box;
+        background:#20242b;
+        color:#f5f5f5;
+        border:1px solid #343a44;
+        border-radius:7px;
+        padding:11px 12px;
+        margin-bottom:16px;
+        outline:none;
+      "
+    >
+
+    <label for="loginPassword" style="
+      display:block;
+      color:#aeb4bf;
+      font-size:12px;
+      margin-bottom:6px;
+    ">
+      Contraseña
+    </label>
+
+    <input
+      id="loginPassword"
+      type="password"
+      autocomplete="current-password"
+      required
+      placeholder="Contraseña"
+      style="
+        width:100%;
+        box-sizing:border-box;
+        background:#20242b;
+        color:#f5f5f5;
+        border:1px solid #343a44;
+        border-radius:7px;
+        padding:11px 12px;
+        margin-bottom:18px;
+        outline:none;
+      "
+    >
+
+    <button
+      id="loginButton"
+      type="submit"
+      style="
+        width:100%;
+        border:0;
+        border-radius:7px;
+        padding:11px 14px;
+        background:#f1f3f5;
+        color:#111318;
+        font-weight:700;
+        cursor:pointer;
+      "
+    >
+      Entrar
+    </button>
+
+    <div
+      id="loginMessage"
+      style="
+        min-height:18px;
+        margin-top:14px;
+        color:#ef7d7d;
+        font-size:12px;
+      "
+    ></div>
+
+  </form>
+</div>
+<!-- FIN LOGIN SUPABASE -->
 <div id="overlay" class="overlay"></div>
 <aside id="side" class="sidebar"><div class="brand"><div class="brandMark">A</div><div class="brandText">Programación</div></div><div class="nav">
 <button data-p="home" data-tip="Inicio" class="active"><span class="ico">⌂</span><span class="label">Inicio</span></button>
