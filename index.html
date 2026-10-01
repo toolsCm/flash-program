@@ -1680,7 +1680,7 @@ refreshRoles();renderVols();refreshPeople();refreshMediaRoleControl();renderMedi
  iw.onclick=window.imageW;
 })();
 </script>
-  <script>
+<script>
 document.addEventListener('DOMContentLoaded', async () => {
 
   const loginScreen = document.getElementById('loginScreen');
@@ -1690,48 +1690,62 @@ document.addEventListener('DOMContentLoaded', async () => {
   const loginButton = document.getElementById('loginButton');
   const loginMessage = document.getElementById('loginMessage');
 
-  // Comprobar que Supabase esté disponible
+  // Perfil actual disponible para toda la aplicación
+  window.currentProfile = null;
+
   if (!window.supabaseClient) {
     loginMessage.textContent = 'No se pudo conectar con Supabase.';
     console.error('supabaseClient no está disponible.');
     return;
   }
 
-  // Mostrar u ocultar login según exista una sesión
   function mostrarEstadoSesion(session) {
     if (session) {
       loginScreen.style.display = 'none';
     } else {
       loginScreen.style.display = 'flex';
+      window.currentProfile = null;
+      delete document.body.dataset.userRole;
     }
   }
-async function cargarPerfilUsuario(session) {
 
-  if (!session || !session.user) {
-    window.currentProfile = null;
-    return;
+  async function cargarPerfilUsuario(session) {
+
+    if (!session?.user?.id) {
+      window.currentProfile = null;
+      return null;
+    }
+
+    const { data, error } = await window.supabaseClient
+      .from('profiles')
+      .select('display_name, app_role')
+      .eq('id', session.user.id)
+      .single();
+
+    if (error) {
+      console.error('Error cargando perfil:', error);
+      window.currentProfile = null;
+      return null;
+    }
+
+    window.currentProfile = {
+      id: session.user.id,
+      email: session.user.email,
+      display_name: data.display_name,
+      app_role: data.app_role
+    };
+
+    document.body.dataset.userRole = data.app_role;
+
+    console.log('Perfil cargado:', window.currentProfile);
+
+    return window.currentProfile;
   }
 
-  const { data, error } = await window.supabaseClient
-    .from('profiles')
-    .select('display_name, app_role')
-    .eq('id', session.user.id)
-    .single();
+  // =========================
+  // COMPROBAR SESIÓN ACTUAL
+  // =========================
 
-  if (error) {
-    console.error('Error cargando perfil:', error);
-    return;
-  }
-
-  window.currentProfile = data;
-
-  document.body.dataset.userRole = data.app_role;
-
-  console.log('Usuario:', session.user.email);
-  console.log('Nombre:', data.display_name);
-  console.log('Rol:', data.app_role);
-}
-  // Revisar si ya había una sesión iniciada
   const {
     data: { session },
     error: sessionError
@@ -1742,12 +1756,17 @@ async function cargarPerfilUsuario(session) {
   }
 
   mostrarEstadoSesion(session);
-  if (session) {
-  await cargarPerfilUsuario(session);
-}
 
-  // LOGIN
+  if (session) {
+    await cargarPerfilUsuario(session);
+  }
+
+  // =========================
+  // INICIAR SESIÓN
+  // =========================
+
   loginForm.addEventListener('submit', async (event) => {
+
     event.preventDefault();
 
     const email = loginEmail.value.trim();
@@ -1764,6 +1783,7 @@ async function cargarPerfilUsuario(session) {
       });
 
     if (error) {
+
       console.error('Error de inicio de sesión:', error);
 
       loginMessage.textContent =
@@ -1771,30 +1791,40 @@ async function cargarPerfilUsuario(session) {
 
       loginButton.disabled = false;
       loginButton.textContent = 'Entrar';
+
       return;
     }
 
-   if (data.session) {
-  loginMessage.textContent = '';
-  loginScreen.style.display = 'none';
+    if (data.session) {
 
-  await cargarPerfilUsuario(data.session);
+      await cargarPerfilUsuario(data.session);
 
-  console.log(
-    'Sesión iniciada:',
-    data.user.email
-  );
+      loginScreen.style.display = 'none';
+
+      console.log(
+        'Sesión iniciada:',
+        data.session.user.email
+      );
     }
 
     loginButton.disabled = false;
     loginButton.textContent = 'Entrar';
   });
 
-  // Detectar cambios posteriores de sesión
+  // =========================
+  // CAMBIOS DE SESIÓN
+  // =========================
+
   window.supabaseClient.auth.onAuthStateChange(
-    (event, session) => {
-      console.log('Estado de autenticación:', event);
+    async (event, session) => {
+
       mostrarEstadoSesion(session);
+
+      if (session) {
+        await cargarPerfilUsuario(session);
+      }
+
+      console.log('Estado de autenticación:', event);
     }
   );
 
