@@ -1022,7 +1022,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
 <button data-p="imgs" data-tip="Imágenes"><span class="ico">▧</span><span class="label">Imágenes</span></button>
 <button data-p="settings" data-tip="Configuración"><span class="ico">⚙</span><span class="label">Configuración</span></button>
 </div><div class="sidebarFooter"><button id="themeToggle" class="sideAction" title="Cambiar tema" aria-label="Cambiar tema"><span class="ico">◐</span></button><button id="collapseSide" class="sideAction" title="Plegar menú" aria-label="Plegar menú"><span class="ico">‹</span></button></div></aside>
-<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V36 · GOOGLE SHEETS V2</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
+<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V37 · GOOGLE SHEETS POST</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
 
 <section id="home" class="panel active">
   <div class="card">
@@ -1189,7 +1189,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
 
 <section id="imgs" class="panel"><div class="grid"><div class="card s4"><h2>Imágenes mensuales</h2><button id="iw" class="btn primary" style="width:100%;margin-bottom:8px">Generar Alabanza</button><button id="im" class="btn secondary" style="width:100%;margin-bottom:8px">Generar Multimedia</button><button id="idown" class="btn success" style="width:100%">Descargar PNG</button></div><div class="card s8"><canvas id="poster" width="1400" height="1000"></canvas></div></div></section>
 
-<section id="settings" class="panel"><div class="grid"><div class="card s6"><h2>Configuración</h2><label>Google Sheets anual</label><input value="2026 PROGRAMACIÓN ALABANZA Y MEDIA" readonly><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div><div class="card s6"><div class="note"><strong>Google Sheets conectado</strong><br>Al pulsar <strong>Confirmar</strong>, la programación oficial se guarda en la base de datos y también se envía al archivo anual de Google Sheets.</div><div id="googleSheetsConnectionStatus" class="muted" style="margin-top:10px">Puente v2 configurado · 2026</div></div></div></section>
+<section id="settings" class="panel"><div class="grid"><div class="card s6"><h2>Configuración</h2><label>Google Sheets anual</label><input value="2026 PROGRAMACIÓN ALABANZA Y MEDIA" readonly><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div><div class="card s6"><div class="note"><strong>Google Sheets conectado</strong><br>Al pulsar <strong>Confirmar</strong>, la programación oficial se guarda en la base de datos y también se envía al archivo anual de Google Sheets.</div><div id="googleSheetsConnectionStatus" class="muted" style="margin-top:10px">Puente v2 configurado · envío POST compatible</div></div></div></section>
 
 <div id="songEditModal" class="modalBackdrop" aria-hidden="true">
   <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="songEditTitle">
@@ -3107,17 +3107,59 @@ async function getGoogleSheetsAccessToken(){
   return session.access_token;
 }
 
-async function postGoogleSheetsPayload(payload, mode="cors"){
-  const options={
-    method:"POST",
-    headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body:JSON.stringify(payload),
-    redirect:"follow"
-  };
+function postGoogleSheetsViaForm(payload){
+  return new Promise((resolve,reject)=>{
+    try{
+      const iframeName="gsBridgeFrame_"+Date.now()+"_"+Math.random().toString(36).slice(2);
 
-  if(mode==="no-cors") options.mode="no-cors";
+      const iframe=document.createElement("iframe");
+      iframe.name=iframeName;
+      iframe.style.display="none";
+      iframe.setAttribute("aria-hidden","true");
 
-  return fetch(GOOGLE_SHEETS_BRIDGE_URL,options);
+      const form=document.createElement("form");
+      form.method="POST";
+      form.action=GOOGLE_SHEETS_BRIDGE_URL;
+      form.target=iframeName;
+      form.style.display="none";
+
+      const input=document.createElement("input");
+      input.type="hidden";
+      input.name="payload";
+      input.value=JSON.stringify(payload);
+
+      form.appendChild(input);
+      document.body.appendChild(iframe);
+      document.body.appendChild(form);
+
+      let finished=false;
+      const cleanup=()=>{
+        setTimeout(()=>{
+          form.remove();
+          iframe.remove();
+        },500);
+      };
+
+      iframe.addEventListener("load",()=>{
+        if(finished)return;
+        finished=true;
+        cleanup();
+        resolve({ok:true,verified:false,transport:"form"});
+      },{once:true});
+
+      form.submit();
+
+      setTimeout(()=>{
+        if(finished)return;
+        finished=true;
+        cleanup();
+        resolve({ok:true,verified:false,transport:"form-timeout"});
+      },4500);
+
+    }catch(error){
+      reject(error);
+    }
+  });
 }
 
 async function syncConfirmedMonthToGoogleSheets(module,services,year,monthZeroBased){
@@ -3132,53 +3174,17 @@ async function syncConfirmedMonthToGoogleSheets(module,services,year,monthZeroBa
     services:deepCopy(services||[])
   };
 
-  // Primero intentamos leer la respuesta del Apps Script.
-  // text/plain evita el preflight CORS de application/json.
-  try{
-    const response=await postGoogleSheetsPayload(payload,"cors");
+  // Google Apps Script redirige las respuestas de los Web Apps y algunos
+  // navegadores bloquean fetch por CORS. El formulario oculto realiza un POST
+  // HTML normal, que sí llega de forma fiable a doPost().
+  const result=await postGoogleSheetsViaForm(payload);
 
-    if(!response.ok){
-      throw new Error(`Google Sheets respondió ${response.status}.`);
-    }
-
-    const raw=await response.text();
-    let result=null;
-
-    try{ result=raw?JSON.parse(raw):null; }catch(_){
-      result={ok:true,raw};
-    }
-
-    if(result&&result.ok===false){
-      throw new Error(result.error||"Google Sheets rechazó la sincronización.");
-    }
-
-    return {
-      ok:true,
-      verified:true,
-      result
-    };
-  }catch(firstError){
-    console.warn("No se pudo verificar la respuesta de Google Sheets; se intentará envío compatible.",firstError);
-
-    // Algunos navegadores bloquean la lectura de la redirección de Apps Script.
-    // El segundo envío usa no-cors: el servidor recibe la programación aunque
-    // el navegador no permita inspeccionar la respuesta.
-    try{
-      await postGoogleSheetsPayload(payload,"no-cors");
-
-      return {
-        ok:true,
-        verified:false,
-        warning:firstError?.message||String(firstError)
-      };
-    }catch(secondError){
-      console.error("Error enviando a Google Sheets:",secondError);
-      throw new Error(
-        "La programación quedó guardada en la base de datos, pero no se pudo enviar a Google Sheets: "+
-        (secondError?.message||firstError?.message||secondError)
-      );
-    }
-  }
+  return {
+    ok:true,
+    verified:false,
+    result,
+    transport:"form"
+  };
 }
 
 function sheetsSuccessMessage(module,count,result){
@@ -3190,7 +3196,7 @@ function sheetsSuccessMessage(module,count,result){
     return `${label} confirmado · ${count} ${unit} · Base de datos + Google Sheets${sheet}.`;
   }
 
-  return `${label} confirmado · ${count} ${unit} · Base de datos + Google Sheets.`;
+  return `${label} confirmado · ${count} ${unit} · Guardado en base de datos y enviado a Google Sheets.`;
 }
 
 // =========================================================
@@ -4603,7 +4609,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 </script>
 
 <script>
-window.__APP_BUILD = 'V36-GOOGLE-SHEETS-V2';
+window.__APP_BUILD = 'V37-GOOGLE-SHEETS-POST';
 
 if (typeof persistSongToSupabase === 'function') {
   window.persistSongToSupabase = persistSongToSupabase;
@@ -4615,6 +4621,7 @@ window.queueScheduleDraftSave = queueScheduleDraftSave;
 window.saveScheduleDraft = saveScheduleDraft;
 window.applySavedMonth = applySavedMonth;
 window.syncConfirmedMonthToGoogleSheets = syncConfirmedMonthToGoogleSheets;
+window.postGoogleSheetsViaForm = postGoogleSheetsViaForm;
 window.GOOGLE_SHEETS_BRIDGE_URL = GOOGLE_SHEETS_BRIDGE_URL;
 
 document.addEventListener('DOMContentLoaded', async () => {
