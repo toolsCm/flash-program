@@ -284,7 +284,21 @@ body[data-theme="light"] .modalCard .btn.primary{
 .sidebarFooter .sideAction{width:40px !important;height:40px !important;padding:0 !important;justify-content:center !important;overflow:visible !important}
 .sidebarFooter .sideAction .ico{width:20px !important;min-width:20px !important;font-size:16px !important}
 </style>
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://zozvvfpjkidycwbpmnff.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_YI6a1hsqoqkIBbESpq_wJg_8dMRGTWS';
+
+  window.supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  console.log('Supabase cargado:', typeof window.supabase);
+  console.log('Cliente Supabase listo:', !!window.supabaseClient);
+</script>
 </head>
 <body>
 <div id="overlay" class="overlay"></div>
@@ -451,7 +465,7 @@ body[data-theme="light"] .modalCard .btn.primary{
 
 <section id="imgs" class="panel"><div class="grid"><div class="card s4"><h2>Imágenes mensuales</h2><button id="iw" class="btn primary" style="width:100%;margin-bottom:8px">Generar Alabanza</button><button id="im" class="btn secondary" style="width:100%;margin-bottom:8px">Generar Multimedia</button><button id="idown" class="btn success" style="width:100%">Descargar PNG</button></div><div class="card s8"><canvas id="poster" width="1400" height="1000"></canvas></div></div></section>
 
-<section id="settings" class="panel"><div class="grid"><div class="card s6"><h2>Configuración</h2><label>Google Sheets anual</label><input value="2026 PROGRAMACIÓN ALABANZA Y MEDIA"><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div><div class="card s6"><div class="note">Supabase y Google Sheets todavía no están conectados. Este prototipo sirve para validar diseño y flujo.</div></div></div></section>
+<section id="settings" class="panel"><div class="grid"><div class="card s6"><h2>Configuración</h2><label>Google Sheets anual</label><input value="2026 PROGRAMACIÓN ALABANZA Y MEDIA"><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div><div class="card s6"><div class="note">Supabase está configurado en la aplicación. Los módulos todavía usan datos locales hasta que los conectemos uno por uno. Google Sheets aún no está conectado.</div></div></div></section>
 
 <div id="songEditModal" class="modalBackdrop" aria-hidden="true">
   <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="songEditTitle">
@@ -597,10 +611,6 @@ body[data-theme="light"] .modalCard .btn.primary{
 </main>
 
 <script>
-window.supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
 const months=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],days=["DOMINGO","LUNES","MARTES","MIÉRCOLES","JUEVES","VIERNES","SÁBADO"];
 ["hm","wm","jm","mm"].forEach(id=>{months.forEach((m,i)=>document.getElementById(id).add(new Option(m,i)));document.getElementById(id).value=9});
 let roles=["Voz principal","Coros","Piano","Guitarra","Bajo","Batería"];
