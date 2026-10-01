@@ -16,7 +16,7 @@ body[data-theme="light"]{--bg:#f3f4f6;--panel:#f8f9fa;--panel2:#fff;--panel3:#ec
 .sheet{overflow:auto;border:1px solid var(--line);border-radius:9px;background:var(--panel2)}.wtable{border-collapse:separate;border-spacing:0;width:100%;min-width:900px;font-family:'Comfortaa',sans-serif;color:#111827}.wtable th{background:#7ea7b2;color:white;border:1px solid #fff;padding:14px 12px;font-family:Impact,Arial Narrow,sans-serif;letter-spacing:.04em;text-align:center}.wtable td{background:#c2d7ea;border:1px solid #fff;padding:7px 8px}.wtable tr.alt td{background:#9ec0df}.date{width:135px;text-align:center;font-weight:700;vertical-align:middle}.role{width:190px;text-align:right;font-weight:700;white-space:nowrap}.person{width:190px}.songs{min-width:340px}.wtable select,.wtable input{font-family:'Comfortaa',sans-serif;min-height:31px;padding:5px 7px;background:#ffffff;color:#111827;border-color:#b9c4cf}.wtable option{background:white;color:#111827}
 .mtable{border-collapse:collapse;width:100%;min-width:760px;font-family:'Roboto Mono',monospace;color:#111827}.mtable th{background:#d3dde1;border:1px solid white;padding:13px}.mtable td{background:#dfe8dc;border:1px solid white;padding:7px}.mtable tr:nth-child(even) td{background:#c8d9c3}.mtable td:first-child{text-align:right;font-weight:700;width:180px}.mtable select{background:white;color:#111827}.mtable option{background:white;color:#111827}
 .list{display:grid;gap:8px}.item{border:1px solid var(--line);border-radius:8px;padding:11px 12px;background:var(--panel2)}.itemActions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.miniBtn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:6px;padding:6px 8px;font-size:15px}.miniBtn:hover{background:var(--panel3)}.miniBtn.danger,.dbEditBtn.danger{color:#ef7d7d;border-color:#7f1d1d}.miniBtn.danger:hover,.dbEditBtn.danger:hover{background:#3a1717;color:#fecaca}.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.chip{font-size:14px;background:var(--panel3);border:1px solid var(--line);border-radius:999px;padding:4px 7px;color:var(--muted)}.toneChip{font-size:14px;background:var(--accentSoft);border:1px solid var(--line);border-radius:999px;padding:4px 7px;color:var(--text)}canvas{width:100%;height:auto;border:1px solid var(--line);border-radius:9px;background:white}
-.sectionToast{position:fixed;right:22px;top:22px;z-index:60;min-width:260px;max-width:360px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;box-shadow:0 14px 35px #0004;opacity:0;transform:translateY(-8px);pointer-events:none;transition:.2s}.sectionToast.show{opacity:1;transform:none}.sectionToast strong{display:block;font-size:17px;margin-bottom:3px}.sectionToast span{font-size:16px;color:var(--muted)}.overlay{display:none}
+.sectionToast{position:fixed;right:22px;top:22px;z-index:60;min-width:260px;max-width:360px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;box-shadow:0 14px 35px #0004;opacity:0;transform:translateY(-8px);pointer-events:none;transition:.2s}.sectionToast.show{opacity:1;transform:none}.sectionToast strong{display:block;font-size:17px;margin-bottom:3px}.sectionToast span{font-size:16px;color:var(--muted)}#confirmToast{min-width:0;max-width:280px;text-align:center}#confirmToast strong{margin:0}.overlay{display:none}
 @media(max-width:900px){.sidebar{transform:translateX(-100%);width:248px}.sidebar.open{transform:translateX(0)}.sidebar.collapsed{width:248px}.sidebar.collapsed .nav .label,.sidebar.collapsed .brandText{opacity:1;width:auto}.sidebar.collapsed .nav button{justify-content:flex-start;padding:0 12px}.main,.sidebar-collapsed .main{margin-left:0;padding:14px}.menu{display:block}.home,.two,.wkb{grid-template-columns:1fr}.s4,.s6,.s8,.s12{grid-column:span 12}.overlay.show{display:block;position:fixed;inset:0;background:#0006;z-index:15}.sectionToast{left:14px;right:14px;top:14px;min-width:0}}
 </style>
 <style id="v8-theme">
@@ -856,6 +856,164 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
   console.log('Supabase cargado:', typeof window.supabase);
   console.log('Cliente Supabase listo:', !!window.supabaseClient);
 </script>
+
+<style id="v41-mobile-ui">
+.versionTag{display:none !important}
+.top{
+  position:sticky;
+  top:0;
+  z-index:40;
+  background:var(--bg);
+  padding:10px 0 8px;
+  margin-bottom:14px;
+}
+#menu{display:block}
+.worshipLockHint,.worshipMixNote,#wstatus,#jstatus,#mstatus{display:none !important}
+.weekCurrent{
+  white-space:normal;
+  line-height:1.15;
+  text-align:center;
+  min-width:0;
+}
+.weekNav .btn{
+  white-space:normal;
+  line-height:1.15;
+  text-align:center;
+}
+.wk{
+  min-height:auto;
+}
+.wkh{
+  align-items:center;
+}
+.wkh span:last-child{
+  white-space:normal;
+  text-align:right;
+}
+.homeCellList .line,
+.homeSongs span,
+.wkb li{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.compactControls{
+  display:grid !important;
+  grid-template-columns:120px minmax(130px,1fr) auto;
+  gap:10px;
+  align-items:end;
+}
+.compactControls > div{
+  min-width:0 !important;
+}
+.compactControls .auto{
+  align-self:end;
+}
+.actionRow .btn{
+  min-height:42px;
+}
+.modalCard{
+  width:min(720px,96vw) !important;
+}
+.volunteerModalCard{
+  width:min(640px,96vw) !important;
+}
+@media(max-width:900px){
+  .top{
+    padding-top:12px;
+  }
+  .home{
+    grid-template-columns:1fr !important;
+    gap:12px !important;
+  }
+  .card{
+    padding:12px !important;
+  }
+  .weekNav{
+    display:grid !important;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    align-items:center;
+  }
+  .weekCurrent{
+    grid-column:1 / -1;
+    font-size:15px;
+    padding:4px 8px;
+  }
+  .weekNav .btn{
+    font-size:14px;
+    padding:8px 10px;
+    min-height:42px;
+  }
+  .wkh{
+    padding:10px 12px;
+    font-size:15px;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:4px;
+    text-align:center;
+  }
+  .wkh span:last-child{
+    text-align:center;
+  }
+  .wkb{
+    gap:10px !important;
+    padding:12px !important;
+  }
+  .wkb h4{
+    font-size:15px;
+    margin-bottom:6px;
+  }
+  .wkb ul{
+    font-size:14px;
+    line-height:1.35;
+    padding-left:16px;
+  }
+  .compactControls{
+    grid-template-columns:86px 1fr auto !important;
+    gap:8px !important;
+  }
+  .compactControls label{
+    font-size:13px;
+    margin-bottom:4px;
+  }
+  .compactControls input,
+  .compactControls select{
+    min-height:36px;
+    padding:7px 8px;
+    font-size:14px;
+  }
+  .compactControls .btn{
+    min-height:36px;
+    padding:7px 10px;
+    font-size:14px;
+    white-space:nowrap;
+  }
+  .actionRow{
+    gap:6px !important;
+  }
+  .actionRow .btn{
+    min-width:0 !important;
+    padding:8px 10px;
+    font-size:14px;
+    flex:1 1 calc(50% - 6px);
+  }
+  .sheet{
+    margin-top:10px !important;
+  }
+  .modalBackdrop{
+    padding:8px !important;
+  }
+  .modalCard,
+  .volunteerModalCard{
+    width:min(430px,100%) !important;
+    max-height:88vh !important;
+    padding:12px !important;
+    border-radius:10px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -1022,7 +1180,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
 <button data-p="imgs" data-tip="Imágenes"><span class="ico">▧</span><span class="label">Imágenes</span></button>
 <button data-p="settings" data-tip="Configuración"><span class="ico">⚙</span><span class="label">Configuración</span></button>
 </div><div class="sidebarFooter"><button id="themeToggle" class="sideAction" title="Cambiar tema" aria-label="Cambiar tema"><span class="ico">◐</span></button><button id="collapseSide" class="sideAction" title="Plegar menú" aria-label="Plegar menú"><span class="ico">‹</span></button></div></aside>
-<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag">V40 · IMAGEN ALABANZA Y JÓVENES</span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div>
+<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag"></span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div><div id="confirmToast" class="sectionToast"><strong>Programación Confirmada ✅</strong></div>
 
 <section id="home" class="panel active">
   <div class="card">
@@ -1044,9 +1202,9 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
     </div>
 
     <div id="homeWeekControls" class="weekNav">
-      <button id="prevWeek" class="btn secondary" type="button">‹ Semana anterior</button>
+      <button id="prevWeek" class="btn secondary" type="button">‹ Anterior</button>
       <div id="weekLabel" class="weekCurrent"></div>
-      <button id="nextWeek" class="btn secondary" type="button">Semana siguiente ›</button>
+      <button id="nextWeek" class="btn secondary" type="button">Siguiente ›</button>
     </div>
 
     <div id="cal" style="display:none"></div>
@@ -1067,24 +1225,23 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
   </div>
 </section>
 
-<section id="worship" class="panel"><div class="card"><div class="row"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto"><button id="wg" class="btn secondary">Generar fechas</button></div></div><div class="row" style="margin-top:12px"><button id="wf" class="btn primary">Rellenar</button><button id="wr" class="btn secondary">Reequilibrar</button><button id="wLockResp" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Responsables</button><button id="wLockSongs" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Canciones</button><button id="wc" class="btn success">Confirmar</button><button id="we" class="btn secondary">Añadir extra</button></div><div class="worshipLockHint">Puedes fijar músicos o canciones por separado. “Rellenar” solo cambiará las columnas que estén desbloqueadas.</div><div class="worshipMixNote">Mezcla automática: 2 Rápidas + 2 Lentas, 1 Rápida + 1 Media + 2 Lentas, o 2 Rápidas + 1 Media + 1 Lenta. El orden también se mezcla aleatoriamente.</div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div></div></section>
+<section id="worship" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto"><button id="wg" class="btn secondary">Generar</button></div></div><div class="row actionRow" style="margin-top:12px"><button id="wf" class="btn primary">Rellenar</button><button id="wr" class="btn secondary">Reequilibrar</button><button id="wLockResp" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Responsables</button><button id="wLockSongs" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Canciones</button><button id="wc" class="btn success">Confirmar</button><button id="we" class="btn secondary">Añadir extra</button></div><div class="worshipLockHint">Puedes fijar músicos o canciones por separado. “Rellenar” solo cambiará las columnas que estén desbloqueadas.</div><div class="worshipMixNote">Mezcla automática: 2 Rápidas + 2 Lentas, 1 Rápida + 1 Media + 2 Lentas, o 2 Rápidas + 1 Media + 1 Lenta. El orden también se mezcla aleatoriamente.</div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div></div></section>
 
 <section id="youth" class="panel">
 <div class="card">
-  <div class="row">
+  <div class="row compactControls">
     <div><label>Año</label><input id="jy" type="number" value="2026"></div>
     <div><label>Mes</label><select id="jm"></select></div>
-    <div class="auto"><button id="jg" class="btn secondary">Generar sábados</button></div>
+    <div class="auto"><button id="jg" class="btn secondary">Generar</button></div>
   </div>
-  <div class="row" style="margin-top:12px">
+  <div class="row actionRow" style="margin-top:12px">
     <button id="jf" class="btn primary">Rellenar</button>
     <button id="jr" class="btn secondary">Reequilibrar</button>
     <button id="jc" class="btn success">Confirmar</button>
     <button id="je" class="btn secondary">Añadir extra</button>
   </div>
   <div id="jstatus" style="margin-top:10px"></div>
-  <div class="note" style="margin-top:10px">Programación independiente de Alabanza, solo para sábados. Usa la misma estructura de responsables y canciones, pero no modifica la programación dominical.</div>
-  <div class="sheet" style="margin-top:12px">
+    <div class="sheet" style="margin-top:12px">
     <table class="wtable">
       <thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead>
       <tbody id="jbody"></tbody>
@@ -1093,7 +1250,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
 </div>
 </section>
 
-<section id="media" class="panel"><div class="card"><div class="row"><div><label>Año</label><input id="my" type="number" value="2026"></div><div><label>Mes</label><select id="mm"></select></div><div class="auto"><button id="mg" class="btn secondary">Generar fechas</button></div></div><div class="row" style="margin-top:12px"><button id="mf" class="btn primary">Rellenar</button><button id="mr" class="btn secondary">Reequilibrar</button><button id="mc" class="btn success">Confirmar</button><button id="me" class="btn secondary">Añadir extra</button></div><div id="mstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="mtable"><thead><tr><th>FECHAS 📅</th><th>PC 💻</th><th>CAMARA 🎥</th><th>⏹️DIAPOSITVAS PREDICAS</th></tr></thead><tbody id="mbody"></tbody></table></div></div></section>
+<section id="media" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="my" type="number" value="2026"></div><div><label>Mes</label><select id="mm"></select></div><div class="auto"><button id="mg" class="btn secondary">Generar</button></div></div><div class="row actionRow" style="margin-top:12px"><button id="mf" class="btn primary">Rellenar</button><button id="mr" class="btn secondary">Reequilibrar</button><button id="mc" class="btn success">Confirmar</button><button id="me" class="btn secondary">Añadir extra</button></div><div id="mstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="mtable"><thead><tr><th>FECHAS 📅</th><th>PC 💻</th><th>CAMARA 🎥</th><th>⏹️DIAPOSITVAS PREDICAS</th></tr></thead><tbody id="mbody"></tbody></table></div></div></section>
 
 <section id="vols" class="panel">
 <div id="volunteerSyncStatus" class="note" style="margin-bottom:12px">Voluntarios: esperando conexión con la base de datos…</div>
@@ -2188,7 +2345,7 @@ function renderWeek(){
    ensureHomeWeek();
    if(!homeSelectedWeek){week.innerHTML="";weekLabel.textContent="Sin semanas";return}
    const p=parts(homeSelectedWeek);
-   weekLabel.textContent=`Semana del domingo ${p.D} de ${months[p.M-1]}`;
+   weekLabel.innerHTML=`Semana del domingo<br>${p.D} de ${months[p.M-1]}`;
    renderHomeRows([homeSelectedWeek]);
  }
 }
@@ -3769,6 +3926,10 @@ async function confirmW(){
 
    try{
      const sheetResult=await syncConfirmedMonthToGoogleSheets("alabanza",loaded,Y,M);
+     showConfirmToast();
+     showConfirmToast();
+     showConfirmToast();
+     showConfirmToast();
      setScheduleStatus(
        "alabanza",
        sheetsSuccessMessage("alabanza",loaded.length,sheetResult),
@@ -3814,6 +3975,7 @@ async function confirmJ(){
 
    try{
      const sheetResult=await syncConfirmedMonthToGoogleSheets("jovenes",loaded,Y,M);
+     showConfirmToast();
      setScheduleStatus(
        "jovenes",
        sheetsSuccessMessage("jovenes",loaded.length,sheetResult),
@@ -3859,6 +4021,7 @@ async function confirmM(){
 
    try{
      const sheetResult=await syncConfirmedMonthToGoogleSheets("multimedia",loaded,Y,M);
+     showConfirmToast();
      setScheduleStatus(
        "multimedia",
        sheetsSuccessMessage("multimedia",loaded.length,sheetResult),
@@ -3937,7 +4100,7 @@ window.bootstrapSchedulesSupabase=async function(){
 function history(){let t=ht.value,q=hq.value.toLowerCase(),rows=hist.filter(x=>x.type===t&&(!q||(x.name+" "+x.detail).toLowerCase().includes(q)));hout.innerHTML=rows.length?`<table style="width:100%;border-collapse:collapse">${rows.map(x=>`<tr><td style="padding:7px;border-bottom:1px solid #ddd">${pretty(x.date)}</td><td>${x.name}</td><td>${x.detail}</td><td>${x.module}</td></tr>`).join("")}</table>`:'<div class="note">Sin resultados todavía.</div>'}
 
 function imageW(){
- let data=cw||wmonth;
+ let data=(Array.isArray(cw)&&cw.length?cw:wmonth);
  if(!data.length)return;
 
  // Proporciones copiadas de la imagen de referencia (655x530), a 2x resolución.
@@ -4076,7 +4239,7 @@ function imageW(){
  imgType="worship"
 }
 function imageM(){
- let data=cm||mmonth;
+ let data=(Array.isArray(cm)&&cm.length?cm:mmonth);
  if(!data.length)return;
 
  const titleH=54;
@@ -4167,6 +4330,14 @@ function imageM(){
 }
 const sectionDescriptions={home:["Inicio","Vista semanal y acceso rápido."],worship:["Alabanza","Programación mensual dominical."],youth:["Alabanza Jóvenes","Programación mensual de sábados."],media:["Multimedia","PC, cámara y diapositivas."],vols:["Voluntarios","Personas, roles y edición."],songs:["Canciones","Repertorio y tonos por cantante."],avail:["Disponibilidad","Indisponibilidades por módulo."],hist:["Historial","Participaciones y repertorio."],imgs:["Imágenes","Exportación mensual."],settings:["Configuración","Ajustes generales."]};
 function showSectionToast(id){let info=sectionDescriptions[id]||[id,""];toastTitle.textContent=info[0];toastText.textContent=info[1];sectionToast.classList.add("show");clearTimeout(window.__tt);window.__tt=setTimeout(()=>sectionToast.classList.remove("show"),1700)}
+function showConfirmToast(){
+  const t=document.getElementById("confirmToast");
+  if(!t)return;
+  t.classList.add("show");
+  clearTimeout(window.__confirmToastT);
+  window.__confirmToastT=setTimeout(()=>t.classList.remove("show"),1000);
+}
+
 function applyTheme(t){document.body.dataset.theme=t;localStorage.setItem("alabanza-theme",t)}applyTheme(localStorage.getItem("alabanza-theme")||"dark");themeToggle.onclick=()=>applyTheme(document.body.dataset.theme==="dark"?"light":"dark");
 function applySide(c){side.classList.toggle("collapsed",c);document.body.classList.toggle("sidebar-collapsed",c);collapseSide.querySelector(".ico").textContent=c?"›":"‹";localStorage.setItem("alabanza-side",c?"1":"0")}applySide(localStorage.getItem("alabanza-side")==="1");collapseSide.onclick=()=>applySide(!side.classList.contains("collapsed"));
 document.querySelectorAll(".nav button[data-p]").forEach(b=>b.onclick=()=>{document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));document.getElementById(b.dataset.p).classList.add("active");document.querySelectorAll(".nav button[data-p]").forEach(x=>x.classList.toggle("active",x===b));title.textContent=(sectionDescriptions[b.dataset.p]||[b.dataset.tip])[0];showSectionToast(b.dataset.p);side.classList.remove("open");overlay.classList.remove("show")});
@@ -4483,11 +4654,11 @@ refreshRoles();renderVols();refreshPeople();refreshMediaRoleControl();renderMedi
   imgType=mode;
  }
  window.imageW=function(){
-  let data=cw||wmonth;
+  let data=(Array.isArray(cw)&&cw.length?cw:wmonth);
   renderWorshipPoster(data,'worship');
  };
  window.imageJ=function(){
-  let data=cj||jmonth;
+  let data=(Array.isArray(cj)&&cj.length?cj:jmonth);
   renderWorshipPoster(data,'youth');
  };
  iw.onclick=window.imageW;
@@ -4692,7 +4863,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 </script>
 
 <script>
-window.__APP_BUILD = 'V40-IMAGEN-ALABANZA-JOVENES';
+window.__APP_BUILD = 'V41-MOBILE-UI-FINAL';
 
 if (typeof persistSongToSupabase === 'function') {
   window.persistSongToSupabase = persistSongToSupabase;
