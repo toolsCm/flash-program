@@ -2,8 +2,8 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Programación V3</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V25-SUPABASE-CANCIONES">
+<title>Programación V25 · Supabase Canciones</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&display=swap');
 :root{--bg:#0f1115;--panel:#15181e;--panel2:#1b1f26;--panel3:#222831;--text:#f2f4f7;--muted:#9aa4b2;--line:#2b313a;--side:#111419;--hover:#1c222a;--accent:#7c9cf5;--accentSoft:#1c2947;--success:#17351f;--successText:#b9f6c7;--blue:#9ec0df;--blue2:#c2d7ea;--bhead:#7ea7b2;--green:#dfe8dc;--green2:#c8d9c3;--ghead:#d3dde1}
@@ -2292,5 +2292,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 </script>
   
+
+<script>
+window.__APP_BUILD = 'V25-SUPABASE-CANCIONES';
+
+if (typeof persistSongToSupabase === 'function') {
+  window.persistSongToSupabase = persistSongToSupabase;
+}
+if (typeof loadSongsFromSupabase === 'function') {
+  window.loadSongsFromSupabase = loadSongsFromSupabase;
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  console.log('APP BUILD:', window.__APP_BUILD);
+  console.log('Canciones Supabase cargado:', typeof window.bootstrapSongsSupabase);
+
+  try {
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
+    if (session && typeof window.bootstrapSongsSupabase === 'function') {
+      await window.bootstrapSongsSupabase();
+    }
+  } catch (error) {
+    console.error('Error en arranque de Canciones Supabase:', error);
+  }
+});
+</script>
+
 </body>
 </html>
