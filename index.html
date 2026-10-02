@@ -1015,8 +1015,72 @@ const SUPABASE_URL = 'https://zozvvfpjkidycwbpmnff.supabase.co';
 }
 </style>
 
+
+<style id="v48-public-readonly">
+.topAuth{margin-left:auto}
+#topAuthBtn{white-space:nowrap}
+
+body.readonly-mode #wg,
+body.readonly-mode #wf,
+body.readonly-mode #wr,
+body.readonly-mode #wLockResp,
+body.readonly-mode #wLockSongs,
+body.readonly-mode #wc,
+body.readonly-mode #we,
+body.readonly-mode #jg,
+body.readonly-mode #jf,
+body.readonly-mode #jr,
+body.readonly-mode #jc,
+body.readonly-mode #je,
+body.readonly-mode #mg,
+body.readonly-mode #mf,
+body.readonly-mode #mr,
+body.readonly-mode #mc,
+body.readonly-mode #me,
+body.readonly-mode #openAddWorshipVolunteer,
+body.readonly-mode #openAddMediaVolunteer,
+body.readonly-mode #openAddSong,
+body.readonly-mode #openImportSongs,
+body.readonly-mode #awa,
+body.readonly-mode #ama,
+body.readonly-mode #settings .btn.primary,
+body.readonly-mode .itemActions,
+body.readonly-mode .songDbActions,
+body.readonly-mode .removeAvailability{
+  display:none !important;
+}
+
+body.readonly-mode #avail .card > .row{
+  display:none !important;
+}
+
+body.readonly-mode #worship .wtable select,
+body.readonly-mode #worship .wtable input,
+body.readonly-mode #youth .wtable select,
+body.readonly-mode #youth .wtable input,
+body.readonly-mode #media .mtable select{
+  pointer-events:none !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  background:transparent !important;
+  border-color:transparent !important;
+  box-shadow:none !important;
+  padding-left:0 !important;
+  padding-right:0 !important;
+}
+
+body.readonly-mode .songDbTable [data-col="actions"]{
+  display:none !important;
+}
+
+@media(max-width:900px){
+  .topAuth{margin-left:auto}
+  #topAuthBtn{font-size:13px;padding:7px 9px}
+}
+</style>
+
 </head>
-<body>
+<body class="readonly-mode">
 
 <div id="appLoadingScreen">
   <div id="appLoadingCard">
@@ -1033,7 +1097,7 @@ const SUPABASE_URL = 'https://zozvvfpjkidycwbpmnff.supabase.co';
   position:fixed;
   inset:0;
   z-index:99999;
-  display:flex;
+  display:none;
   align-items:center;
   justify-content:center;
   padding:20px;
@@ -1049,7 +1113,22 @@ const SUPABASE_URL = 'https://zozvvfpjkidycwbpmnff.supabase.co';
     border-radius:12px;
     padding:28px;
     box-sizing:border-box;
+    position:relative;
   ">
+    <button id="loginClose" type="button" aria-label="Cerrar" style="
+      position:absolute;
+      top:12px;
+      right:12px;
+      width:34px;
+      height:34px;
+      border:1px solid #343a44;
+      border-radius:7px;
+      background:#20242b;
+      color:#d7dbe2;
+      font-size:22px;
+      line-height:1;
+      cursor:pointer;
+    ">×</button>
 
     <div style="
       width:42px;
@@ -1238,7 +1317,7 @@ const SUPABASE_URL = 'https://zozvvfpjkidycwbpmnff.supabase.co';
 <button data-p="imgs" data-tip="Imágenes"><span class="ico">▧</span><span class="label">Imágenes</span></button>
 <button data-p="settings" data-tip="Configuración"><span class="ico">⚙</span><span class="label">Configuración</span></button>
 </div><div class="sidebarFooter"><button id="themeToggle" class="sideAction" title="Cambiar tema" aria-label="Cambiar tema"><span class="ico">◐</span></button><button id="collapseSide" class="sideAction" title="Plegar menú" aria-label="Plegar menú"><span class="ico">‹</span></button></div></aside>
-<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><span class="versionTag"></span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div><div id="confirmToast" class="sectionToast"><strong>Programación Confirmada ✅</strong></div>
+<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><div class="topAuth"><button id="topAuthBtn" class="btn secondary" type="button">Iniciar sesión</button></div><span class="versionTag"></span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div><div id="confirmToast" class="sectionToast"><strong>Programación Confirmada ✅</strong></div>
 
 <section id="home" class="panel active">
   <div class="card">
@@ -2456,8 +2535,10 @@ function moveHomeWeek(direction){
 
  renderWeek();
 
- if(typeof loadHomeConfirmedMonth==="function"){
-   Promise.resolve(loadHomeConfirmedMonth()).catch(console.error);
+ if(window.currentProfile){
+   if(typeof loadHomeConfirmedMonth==="function")Promise.resolve(loadHomeConfirmedMonth()).catch(console.error);
+ }else{
+   if(typeof window.loadHomeConfirmedMonthPublic==="function")Promise.resolve(window.loadHomeConfirmedMonthPublic()).catch(console.error);
  }
 }
 function updateHome(){renderCal();renderWeek()}
@@ -4158,6 +4239,49 @@ async function loadHomeConfirmedMonth(){
  }
 }
 
+
+async function loadHomeConfirmedMonthPublic(){
+ const Y=+hy.value,M=+hm.value;
+ try{
+   await Promise.all([
+     fetchConfirmedMonth("alabanza",Y,M),
+     fetchConfirmedMonth("multimedia",Y,M)
+   ]);
+   updateHome();
+ }catch(error){
+   console.error("Error cargando Inicio público:",error);
+ }
+}
+
+async function bootstrapPublicView(){
+ if(!window.supabaseClient)return false;
+ try{
+   setAppLoading(true,'Estamos cargando la página.');
+
+   if(window.bootstrapVolunteersSupabase)await window.bootstrapVolunteersSupabase();
+   if(window.bootstrapSongsSupabase)await window.bootstrapSongsSupabase();
+   if(window.bootstrapAvailabilitySupabase)await window.bootstrapAvailabilitySupabase();
+
+   await loadConfirmedHistoryFromSupabase();
+
+   await Promise.all([
+     applyConfirmedMonth("alabanza",+wy.value,+wm.value,{silent:true}),
+     applyConfirmedMonth("jovenes",+jy.value,+jm.value,{silent:true}),
+     applyConfirmedMonth("multimedia",+my.value,+mm.value,{silent:true})
+   ]);
+
+   await loadHomeConfirmedMonthPublic();
+   return true;
+ }catch(error){
+   console.error("Error cargando vista pública:",error);
+   return false;
+ }finally{
+   setAppLoading(false);
+ }
+}
+window.bootstrapPublicView=bootstrapPublicView;
+window.loadHomeConfirmedMonthPublic=loadHomeConfirmedMonthPublic;
+
 window.bootstrapSchedulesSupabase=async function(){
  if(scheduleBootstrapDone)return true;
  if(scheduleBootstrapPromise)return scheduleBootstrapPromise;
@@ -4872,7 +4996,41 @@ document.addEventListener('DOMContentLoaded', async () => {
   const authModeHint = document.getElementById('authModeHint');
   const signupConfirmWrap = document.getElementById('signupConfirmWrap');
   const signupConfirmPassword = document.getElementById('signupConfirmPassword');
+  const loginClose = document.getElementById('loginClose');
+  const topAuthBtn = document.getElementById('topAuthBtn');
   let authMode = 'login';
+
+  function openLoginModal(mode='login'){
+    setAuthMode(mode);
+    loginScreen.style.display='flex';
+    setTimeout(()=>loginEmail?.focus(),0);
+  }
+
+  function closeLoginModal(){
+    loginScreen.style.display='none';
+    loginMessage.textContent='';
+  }
+
+  function applyAccessMode(){
+    const role=window.currentProfile?.app_role||'guest';
+    const editable=['admin','editor'].includes(role);
+    document.body.classList.toggle('readonly-mode',!editable);
+    document.body.dataset.accessMode=editable?'edit':'readonly';
+
+    if(topAuthBtn){
+      if(window.currentProfile){
+        topAuthBtn.textContent=editable?'Cerrar sesión':'Cerrar sesión';
+        topAuthBtn.title=editable
+          ? `Sesión: ${window.currentProfile.display_name||window.currentProfile.email||role} · ${role}`
+          : `Sesión: ${window.currentProfile.display_name||window.currentProfile.email||role} · Solo lectura`;
+      }else{
+        topAuthBtn.textContent='Iniciar sesión';
+        topAuthBtn.title='Inicia sesión para editar';
+      }
+    }
+  }
+  window.openLoginModal=openLoginModal;
+  window.applyAccessMode=applyAccessMode;
 
   function setAuthMode(mode){
     authMode = mode === 'signup' ? 'signup' : 'login';
@@ -4893,6 +5051,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   authModeToggle?.addEventListener('click',()=>setAuthMode(authMode==='login'?'signup':'login'));
+  loginClose?.addEventListener('click',closeLoginModal);
+  loginScreen?.addEventListener('click',(e)=>{if(e.target===loginScreen)closeLoginModal()});
+  topAuthBtn?.addEventListener('click',async()=>{
+    if(window.currentProfile){
+      await window.supabaseClient.auth.signOut();
+    }else{
+      openLoginModal('login');
+    }
+  });
   setAuthMode('login');
 
   // Perfil actual disponible para toda la aplicación
@@ -4909,10 +5076,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       loginScreen.style.display = 'none';
       setAppLoading(true,'Estamos cargando la página.');
     } else {
-      loginScreen.style.display = 'flex';
-      setAppLoading(false);
+      loginScreen.style.display = 'none';
       window.currentProfile = null;
       delete document.body.dataset.userRole;
+      applyAccessMode();
     }
   }
 
@@ -4944,6 +5111,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     document.body.dataset.userRole = data.app_role;
+    applyAccessMode();
 
     console.log('Perfil cargado:', window.currentProfile);
 
@@ -4996,6 +5164,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       },250);
     }
+  }else{
+    await window.bootstrapPublicView?.();
   }
 
   // =========================
@@ -5044,7 +5214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           loginMessage.style.color='#7ddc98';
           loginMessage.textContent='Cuenta creada. Ingresando...';
           await cargarPerfilUsuario(data.session);
-          loginScreen.style.display='none';
+          closeLoginModal();
         }else{
           setAuthMode('login');
           loginEmail.value=email;
@@ -5070,7 +5240,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if(data.session){
           await cargarPerfilUsuario(data.session);
-          loginScreen.style.display = 'none';
+          closeLoginModal();
           console.log('Sesión iniciada:', data.session.user.email);
         }
       }
@@ -5083,6 +5253,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         setAuthMode('login');
       }else if(/invalid login|credentials/i.test(msg)){
         loginMessage.textContent='Correo o contraseña incorrectos.';
+      }else if(/signups are disabled/i.test(msg)){
+        loginMessage.textContent='El registro de cuentas nuevas está desactivado. Puedes seguir viendo la aplicación sin iniciar sesión.';
       }else{
         loginMessage.textContent='No se pudo completar la operación. '+msg;
       }
@@ -5103,6 +5275,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (session) {
         await cargarPerfilUsuario(session);
+      }else{
+        await window.bootstrapPublicView?.();
       }
 
       console.log('Estado de autenticación:', event);
@@ -5121,9 +5295,10 @@ document.addEventListener("DOMContentLoaded",()=>{
     const reload=async()=>{
       if(!window.supabaseClient)return;
       const {data:{session}}=await window.supabaseClient.auth.getSession();
-      if(!session)return;
-      try{await applySavedMonth(module,+y.value,+m.value)}
-      catch(error){console.error("Error cambiando mes de programación:",error)}
+      try{
+        if(session)await applySavedMonth(module,+y.value,+m.value);
+        else await applyConfirmedMonth(module,+y.value,+m.value,{silent:true});
+      }catch(error){console.error("Error cambiando mes de programación:",error)}
     };
     y?.addEventListener("change",reload);
     m?.addEventListener("change",reload);
@@ -5134,14 +5309,21 @@ document.addEventListener("DOMContentLoaded",()=>{
   bindPair("my","mm","multimedia");
 
   const hyEl=document.getElementById("hy"),hmEl=document.getElementById("hm");
-  const loadHome=()=>{if(typeof loadHomeConfirmedMonth==="function")loadHomeConfirmedMonth()};
+  const loadHome=async()=>{
+    const {data:{session}}=await window.supabaseClient.auth.getSession();
+    if(session){
+      if(typeof loadHomeConfirmedMonth==="function")loadHomeConfirmedMonth();
+    }else{
+      if(typeof window.loadHomeConfirmedMonthPublic==="function")window.loadHomeConfirmedMonthPublic();
+    }
+  };
   hyEl?.addEventListener("change",loadHome);
   hmEl?.addEventListener("change",loadHome);
 });
 </script>
 
 <script>
-window.__APP_BUILD = 'V47-AUTH-CONFIRM-REDIRECT';
+window.__APP_BUILD = 'V48-PUBLIC-READONLY-AUTH-EDIT';
 
 if (typeof persistSongToSupabase === 'function') {
   window.persistSongToSupabase = persistSongToSupabase;
@@ -5175,6 +5357,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     if (session && typeof window.bootstrapSchedulesSupabase === 'function') {
       await window.bootstrapSchedulesSupabase();
+    }else if(!session && typeof window.bootstrapPublicView === 'function'){
+      await window.bootstrapPublicView();
     }
   } catch (error) {
     console.error('Error en arranque de Canciones Supabase:', error);
@@ -5207,6 +5391,35 @@ document.addEventListener("DOMContentLoaded",()=>{
 
   if(mediaImgBtn){ mediaImgBtn.addEventListener("click",(e)=>{ e.preventDefault(); if(typeof window.imageM==="function") window.imageM(); }); }
 });
+</script>
+
+
+<script id="v48-edit-guard">
+document.addEventListener("click",(e)=>{
+  if(!document.body.classList.contains("readonly-mode"))return;
+
+  const editSelectors=[
+    "#wg","#wf","#wr","#wLockResp","#wLockSongs","#wc","#we",
+    "#jg","#jf","#jr","#jc","#je",
+    "#mg","#mf","#mr","#mc","#me",
+    "#openAddWorshipVolunteer","#openAddMediaVolunteer",
+    "#openAddSong","#openImportSongs","#awa","#ama",
+    ".itemActions button",".songDbActions button",".removeAvailability",
+    "#settings .btn.primary"
+  ];
+
+  const target=e.target.closest(editSelectors.join(","));
+  if(!target)return;
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  if(window.currentProfile){
+    alert("Tu cuenta está en modo solo lectura. Un administrador debe asignarte permisos de Editor o Admin.");
+  }else{
+    window.openLoginModal?.("login");
+  }
+},true);
 </script>
 
 </body>
