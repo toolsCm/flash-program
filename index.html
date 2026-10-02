@@ -845,7 +845,8 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'https://zozvvfpjkidycwbpmnff.supabase.co';
+  const APP_PUBLIC_URL = 'https://toolscm.github.io/program-ad/';
+const SUPABASE_URL = 'https://zozvvfpjkidycwbpmnff.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_YI6a1hsqoqkIBbESpq_wJg_8dMRGTWS';
 
   window.supabaseClient = window.supabase.createClient(
@@ -1213,7 +1214,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
 
     <div
       id="loginMessage"
-      style="
+      style="line-height:1.45;
         min-height:18px;
         margin-top:14px;
         color:#ef7d7d;
@@ -4981,6 +4982,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (session) {
     await cargarPerfilUsuario(session);
+    const hashText=window.location.hash||'';
+    const queryText=window.location.search||'';
+    if(/type=signup|type=email|access_token/i.test(hashText+queryText)){
+      setTimeout(()=>{
+        const t=document.getElementById('confirmToast');
+        if(t){
+          const strong=t.querySelector('strong');
+          if(strong)strong.textContent='Correo confirmado ✅';
+          t.classList.add('show');
+          clearTimeout(window.__confirmToastT);
+          window.__confirmToastT=setTimeout(()=>t.classList.remove('show'),1400);
+        }
+      },250);
+    }
   }
 
   // =========================
@@ -5017,7 +5032,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const { data, error } = await window.supabaseClient.auth.signUp({
           email,
-          password
+          password,
+          options:{
+            emailRedirectTo: APP_PUBLIC_URL
+          }
         });
 
         if(error)throw error;
@@ -5028,10 +5046,15 @@ document.addEventListener('DOMContentLoaded', async () => {
           await cargarPerfilUsuario(data.session);
           loginScreen.style.display='none';
         }else{
-          loginMessage.style.color='#7ddc98';
-          loginMessage.textContent='Cuenta creada. Revisa tu correo si se solicita confirmar la cuenta y luego inicia sesión.';
           setAuthMode('login');
           loginEmail.value=email;
+          loginPassword.value='';
+          loginMessage.style.color='#7ddc98';
+          loginMessage.innerHTML=
+            '<strong>Cuenta creada ✅</strong><br>'+
+            'Te enviamos un correo de confirmación a <strong>'+email.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</strong>.<br>'+
+            'Abre el correo y pulsa <strong>Confirmar correo</strong>. Después vuelve a esta página e inicia sesión.<br>'+
+            '<span style="color:#aeb4bf">Si no lo encuentras, revisa Spam o Correo no deseado.</span>';
         }
 
       }else{
@@ -5118,7 +5141,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 </script>
 
 <script>
-window.__APP_BUILD = 'V46-WORSHIP-POSTER-LAYOUT-FIX';
+window.__APP_BUILD = 'V47-AUTH-CONFIRM-REDIRECT';
 
 if (typeof persistSongToSupabase === 'function') {
   window.persistSongToSupabase = persistSongToSupabase;
