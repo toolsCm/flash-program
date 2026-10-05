@@ -2,7 +2,7 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V59-DEFINITIVE-RESPONSIVE-UI">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V60-UI-ERGONOMIA-CARDS">
 <title>Flash Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2999,6 +2999,720 @@ body.side-collapsed .main,
 }
 </style>
 
+
+<style id="v60-ux-general">
+/* ==========================================================
+   FLASH PROGRAM · V60 UX
+   Touch targets, theme fixes, card views and thumb navigation
+   ========================================================== */
+
+/* Design tokens and missing aliases from older CSS layers */
+:root{
+  --panel-2:var(--panel2);
+  --panel-3:var(--panel3);
+  --border:var(--line);
+  --fp-touch:3rem; /* 48 px */
+  --fp-accent:var(--accent);
+  --fp-danger:#b8515d;
+}
+
+body[data-theme="light"]{
+  --panel-2:var(--panel2);
+  --panel-3:var(--panel3);
+  --border:var(--line);
+}
+
+/* Fix light-theme black/undefined surfaces, especially Home */
+body[data-theme="light"] #home,
+body[data-theme="light"] #home .card,
+body[data-theme="light"] #home .homeTableWrap,
+body[data-theme="light"] #home .homeTable,
+body[data-theme="light"] #home .homeTable tbody,
+body[data-theme="light"] #home .homeTable tr,
+body[data-theme="light"] #home .homeTable td,
+body[data-theme="light"] .sheet,
+body[data-theme="light"] .songDbWrap{
+  background:var(--panel2) !important;
+  color:var(--text) !important;
+}
+body[data-theme="light"] #home .homeTable th,
+body[data-theme="light"] .wtable th,
+body[data-theme="light"] .mtable th,
+body[data-theme="light"] .songDbTable th{
+  background:var(--panel3) !important;
+  color:var(--text) !important;
+}
+body[data-theme="light"] #home .homeTable tr:nth-child(even) td{
+  background:color-mix(in srgb,var(--panel2) 92%,var(--panel3)) !important;
+}
+
+/* Section entry messages are intentionally disabled */
+.sectionToast:not(#confirmToast){
+  display:none !important;
+}
+
+/* Clear interaction states */
+.btn,
+button,
+.nav button,
+.sideAction,
+.mobileBottomNav button{
+  transition:background-color .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .1s ease;
+}
+@media (hover:hover){
+  .btn:hover:not(:disabled),
+  button:hover:not(:disabled){
+    filter:brightness(1.035);
+  }
+}
+.btn:active:not(:disabled),
+button:active:not(:disabled){
+  transform:translateY(1px);
+}
+.btn:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible{
+  outline:.18rem solid var(--accent) !important;
+  outline-offset:.12rem !important;
+}
+.btn:disabled,
+button:disabled,
+input:disabled,
+select:disabled{
+  opacity:.5 !important;
+  cursor:not-allowed !important;
+}
+
+/* Generate dates semantics */
+.generateDatesBtn{
+  white-space:normal !important;
+  text-align:center;
+  line-height:1.05 !important;
+}
+.generateSecondLine{
+  margin-left:.25rem;
+}
+.fillEmptyBtn{
+  background:var(--text) !important;
+  color:var(--bg) !important;
+  border-color:var(--text) !important;
+}
+.rebalanceBtn{
+  border-color:color-mix(in srgb,var(--accent) 58%,var(--line)) !important;
+}
+
+/* Mobile schedule cards */
+.mobileScheduleCards{
+  display:none;
+}
+.mobileScheduleCard{
+  border:1px solid var(--line);
+  border-radius:.85rem;
+  background:var(--panel2);
+  overflow:hidden;
+}
+.mobileScheduleHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:.6rem;
+  padding:.8rem .85rem;
+  border-bottom:1px solid var(--line);
+  background:var(--panel3);
+}
+.mobileScheduleHead>div:first-child{
+  min-width:0;
+}
+.mobileScheduleHead strong{
+  display:block;
+  font-size:.95rem;
+}
+.mobileScheduleHead span{
+  display:block;
+  margin-top:.15rem;
+  color:var(--muted);
+  font-size:.76rem;
+}
+.mobileScheduleBadges{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:.3rem;
+}
+.mobileScheduleBadges span{
+  margin:0;
+  padding:.25rem .42rem;
+  border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));
+  border-radius:999px;
+  background:var(--accentSoft);
+  color:var(--text);
+  white-space:nowrap;
+  font-size:.68rem;
+  font-weight:800;
+}
+.mobileScheduleSection{
+  padding:.75rem .85rem;
+}
+.mobileScheduleSection+.mobileScheduleSection{
+  border-top:1px solid var(--line);
+}
+.mobileScheduleSection h3{
+  margin:0 0 .55rem !important;
+  font-size:.83rem !important;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.mobileScheduleRow{
+  display:grid;
+  grid-template-columns:minmax(6.8rem,.62fr) minmax(0,1fr);
+  align-items:center;
+  gap:.55rem;
+  min-height:3.2rem;
+}
+.mobileScheduleRow+.mobileScheduleRow{
+  border-top:1px solid color-mix(in srgb,var(--line) 65%,transparent);
+}
+.mobileScheduleKey{
+  color:var(--muted);
+  font-size:.78rem;
+  font-weight:750;
+}
+.mobileScheduleValue{
+  min-width:0;
+}
+.assignmentChip{
+  width:100%;
+  min-height:3rem !important;
+  border-radius:999px !important;
+  padding:.52rem 2rem .52rem .75rem !important;
+  border:1px solid var(--line) !important;
+  background:var(--panel) !important;
+  color:var(--text) !important;
+}
+.assignmentChip:focus{
+  border-color:var(--accent) !important;
+  box-shadow:0 0 0 .18rem color-mix(in srgb,var(--accent) 18%,transparent);
+}
+
+/* Mobile song filters */
+.mobileSongFiltersBtn{
+  display:none;
+}
+.filterCountBadge{
+  min-width:1.35rem;
+  height:1.35rem;
+  display:inline-grid;
+  place-items:center;
+  padding:0 .28rem;
+  border-radius:999px;
+  background:var(--accent);
+  color:#fff;
+  font-size:.68rem;
+  font-weight:900;
+}
+.songFilterDrawer{
+  position:fixed;
+  inset:0;
+  z-index:118000;
+  display:none;
+  align-items:flex-end;
+  background:rgba(5,7,10,.55);
+  backdrop-filter:blur(.2rem);
+}
+.songFilterDrawer.open{
+  display:flex;
+}
+.songFilterDrawerPanel{
+  width:100%;
+  max-height:88vh;
+  display:flex;
+  flex-direction:column;
+  border:1px solid var(--line);
+  border-radius:1rem 1rem 0 0;
+  background:var(--panel);
+  color:var(--text);
+  box-shadow:0 -1.2rem 3rem rgba(0,0,0,.25);
+}
+.songFilterDrawerHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.75rem;
+  padding:.85rem 1rem;
+  border-bottom:1px solid var(--line);
+}
+.songFilterDrawerHead strong{
+  display:block;
+}
+.songFilterDrawerHead span{
+  display:block;
+  margin-top:.15rem;
+  color:var(--muted);
+  font-size:.76rem;
+}
+.songFilterDrawerHead button{
+  width:3rem;
+  height:3rem;
+  min-width:3rem;
+  border:1px solid var(--line);
+  border-radius:.65rem;
+  background:var(--panel2);
+  color:var(--text);
+  font-size:1.25rem;
+}
+#songFilterDrawerBody{
+  padding:.85rem 1rem;
+  overflow:auto;
+}
+.songFilterDrawerFooter{
+  padding:.75rem 1rem max(.75rem,env(safe-area-inset-bottom));
+  border-top:1px solid var(--line);
+  background:var(--panel);
+}
+.songFilterDrawerFooter .btn{
+  width:100%;
+}
+
+/* Mobile bottom navigation */
+.mobileBottomNav,
+.mobileQuickMenu{
+  display:none;
+}
+
+/* ==========================================================
+   TABLET PORTRAIT + MOBILE: 48 px and card views
+   ========================================================== */
+@media(max-width:51.25rem){
+  /* all relevant tap targets */
+  button,
+  .btn,
+  .nav button,
+  .sideAction,
+  .miniBtn,
+  .dbEditBtn,
+  .removeSongFilter,
+  .checkOption,
+  .checkLine,
+  input,
+  select{
+    min-height:3rem !important;
+  }
+  .removeSongFilter{
+    min-width:3rem !important;
+    width:3rem !important;
+    height:3rem !important;
+  }
+  .checkOption,
+  .checkLine{
+    padding-block:.55rem !important;
+  }
+
+  /* Scheduling: table -> cards */
+  #worship .sheet,
+  #youth .sheet,
+  #media .sheet{
+    display:none !important;
+  }
+  .mobileScheduleCards{
+    display:grid;
+    gap:.7rem;
+    margin-top:.8rem;
+  }
+
+  /* Home: weekly table -> cards */
+  #home .homeTableWrap{
+    overflow:visible !important;
+    border:0 !important;
+    background:transparent !important;
+  }
+  #home .homeTable{
+    min-width:0 !important;
+    display:block !important;
+    background:transparent !important;
+  }
+  #home .homeTable thead{
+    display:none !important;
+  }
+  #home .homeTable tbody{
+    display:grid !important;
+    gap:.65rem;
+    background:transparent !important;
+  }
+  #home .homeTable tr{
+    display:block !important;
+    border:1px solid var(--line);
+    border-radius:.8rem;
+    overflow:hidden;
+    background:var(--panel2) !important;
+  }
+  #home .homeTable td{
+    width:auto !important;
+    display:grid !important;
+    grid-template-columns:7.2rem minmax(0,1fr);
+    gap:.6rem;
+    padding:.62rem .72rem !important;
+    border-bottom:1px solid var(--line) !important;
+    background:var(--panel2) !important;
+    font-size:.8rem !important;
+  }
+  #home .homeTable td:last-child{
+    border-bottom:0 !important;
+  }
+  #home .homeTable td::before{
+    color:var(--muted);
+    font-size:.7rem;
+    font-weight:850;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+  }
+  #home .homeTable td:nth-child(1)::before{content:"Fecha"}
+  #home .homeTable td:nth-child(2)::before{content:"Responsables"}
+  #home .homeTable td:nth-child(3)::before{content:"Canciones"}
+  #home .homeTable td:nth-child(4)::before{content:"Multimedia"}
+  #home .homeTable .dateCol{
+    font-size:.78rem !important;
+  }
+  #home .homeCellList .line{
+    grid-template-columns:minmax(5rem,.7fr) minmax(0,1fr) !important;
+  }
+
+  /* Songs: table -> rich cards */
+  .songDbWrap{
+    overflow:visible !important;
+    border:0 !important;
+    background:transparent !important;
+  }
+  .songDbTable{
+    min-width:0 !important;
+    display:block !important;
+    background:transparent !important;
+  }
+  .songDbTable thead{
+    display:none !important;
+  }
+  .songDbTable tbody{
+    display:grid !important;
+    gap:.65rem;
+  }
+  .songDbTable tr{
+    display:block !important;
+    padding:.75rem !important;
+    border:1px solid var(--line) !important;
+    border-radius:.8rem !important;
+    background:var(--panel2) !important;
+  }
+  .songDbTable td{
+    min-width:0 !important;
+    display:grid !important;
+    grid-template-columns:7.2rem minmax(0,1fr) !important;
+    gap:.55rem !important;
+    padding:.48rem 0 !important;
+    border:0 !important;
+    background:transparent !important;
+    font-size:.8rem !important;
+  }
+  .songDbTable td::before{
+    content:attr(data-label) !important;
+    display:block !important;
+    color:var(--muted);
+    font-size:.7rem;
+    font-weight:850;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+  }
+  .songDbTable .songNameCell{
+    display:block !important;
+    padding:0 0 .65rem !important;
+    margin-bottom:.2rem;
+    border-bottom:1px solid var(--line) !important;
+  }
+  .songDbTable .songNameCell::before{
+    display:none !important;
+  }
+  .songDbTable .songNameCell strong{
+    font-size:1rem;
+  }
+  .songDbTable td[data-col="category"],
+  .songDbTable td[data-col="bpm"]{
+    display:flex !important;
+    align-items:center;
+    gap:.6rem !important;
+  }
+  .songDbTable td[data-col="category"]::before,
+  .songDbTable td[data-col="bpm"]::before{
+    width:7.2rem;
+    flex:0 0 7.2rem;
+  }
+  .songDbTable td[data-col="actions"]{
+    display:block !important;
+    padding-top:.65rem !important;
+  }
+  .songDbTable td[data-col="actions"]::before{
+    display:none !important;
+  }
+  .songDbActions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr;
+    gap:.45rem !important;
+  }
+  .songDbActions .dbEditBtn{
+    width:100%;
+  }
+
+  /* History table -> cards */
+  #hist #hout{
+    overflow:visible !important;
+  }
+  #hist #hout table{
+    min-width:0 !important;
+    display:block;
+  }
+  #hist #hout tbody{
+    display:grid;
+    gap:.55rem;
+  }
+  #hist #hout tr{
+    display:block;
+    padding:.65rem .72rem;
+    border:1px solid var(--line);
+    border-radius:.75rem;
+    background:var(--panel2);
+  }
+  #hist #hout td{
+    display:grid;
+    grid-template-columns:6.4rem minmax(0,1fr);
+    gap:.5rem;
+    padding:.32rem 0 !important;
+    border:0 !important;
+    font-size:.78rem;
+  }
+  #hist #hout td:nth-child(1)::before{content:"Fecha"}
+  #hist #hout td:nth-child(2)::before{content:"Nombre"}
+  #hist #hout td:nth-child(3)::before{content:"Detalle"}
+  #hist #hout td:nth-child(4)::before{content:"Módulo"}
+  #hist #hout td::before{
+    color:var(--muted);
+    font-size:.69rem;
+    font-weight:850;
+    text-transform:uppercase;
+  }
+
+  /* Song filters move into bottom sheet */
+  .mobileSongFiltersBtn{
+    display:inline-flex !important;
+  }
+  #songs>.songsReferenceCard>.songFilterBar,
+  #songs>.songsReferenceCard>#activeSongFilters{
+    display:none !important;
+  }
+  #songFilterDrawerBody .songFilterBar{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    margin:0 !important;
+    gap:.55rem !important;
+  }
+  #songFilterDrawerBody .activeSongFilters{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:.5rem !important;
+    margin-top:.65rem !important;
+  }
+  #songFilterDrawerBody .songOptionalFilter.active{
+    display:flex !important;
+    width:100%;
+  }
+  #songFilterDrawerBody .songFilterAddWrap,
+  #songFilterDrawerBody .songSearchMain{
+    width:100%;
+    min-width:0 !important;
+  }
+  #songFilterDrawerBody #addSongFilter{
+    width:100%;
+  }
+  #songFilterDrawerBody .songFilterMenu{
+    position:static !important;
+    width:100% !important;
+    margin-top:.35rem;
+    box-shadow:none !important;
+  }
+
+  /* action bar in thumb reach */
+  #worship .actionRow,
+  #youth .actionRow,
+  #media .actionRow{
+    position:sticky !important;
+    bottom:4.7rem;
+    z-index:31;
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    overflow-x:auto;
+    gap:.4rem !important;
+    margin-inline:-.78rem !important;
+    padding:.5rem .78rem !important;
+    background:color-mix(in srgb,var(--panel) 94%,transparent);
+    border-block:1px solid var(--line);
+    backdrop-filter:blur(.8rem);
+    scrollbar-width:none;
+  }
+  #worship .actionRow::-webkit-scrollbar,
+  #youth .actionRow::-webkit-scrollbar,
+  #media .actionRow::-webkit-scrollbar{
+    display:none;
+  }
+  #worship .actionRow .btn,
+  #youth .actionRow .btn,
+  #media .actionRow .btn{
+    flex:0 0 auto !important;
+    min-width:8.5rem !important;
+    width:auto !important;
+    min-height:3rem !important;
+  }
+
+  /* pill-like assignment controls */
+  .wtable select,
+  .mtable select,
+  .mobileScheduleCards select{
+    border-radius:999px !important;
+  }
+}
+
+/* ==========================================================
+   MOBILE ONLY: bottom thumb navigation
+   ========================================================== */
+@media(max-width:47.5rem){
+  .main{
+    padding-bottom:5.8rem !important;
+  }
+
+  .mobileBottomNav{
+    position:fixed;
+    left:.55rem;
+    right:.55rem;
+    bottom:max(.55rem,env(safe-area-inset-bottom));
+    z-index:1100;
+    height:4.15rem;
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:.2rem;
+    padding:.28rem;
+    border:1px solid var(--line);
+    border-radius:1rem;
+    background:color-mix(in srgb,var(--panel) 94%,transparent);
+    box-shadow:0 .9rem 2.5rem rgba(0,0,0,.3);
+    backdrop-filter:blur(1rem);
+  }
+  .mobileBottomNav button{
+    min-width:0;
+    min-height:3.5rem !important;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:.12rem;
+    padding:.25rem .1rem;
+    border:0;
+    border-radius:.72rem;
+    background:transparent;
+    color:var(--muted);
+    font-size:.64rem;
+    font-weight:800;
+  }
+  .mobileBottomNav button.active{
+    background:var(--accentSoft);
+    color:var(--text);
+  }
+  .mbnIcon{
+    font-size:1.05rem;
+    line-height:1;
+  }
+
+  .mobileQuickMenu{
+    position:fixed;
+    left:.7rem;
+    right:.7rem;
+    bottom:5rem;
+    z-index:1095;
+    display:none;
+    padding:.55rem;
+    border:1px solid var(--line);
+    border-radius:.9rem;
+    background:var(--panel);
+    box-shadow:0 1rem 3rem rgba(0,0,0,.32);
+  }
+  .mobileQuickMenu.open{
+    display:grid;
+    gap:.35rem;
+  }
+  .mobileQuickMenuHead{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:.2rem .25rem .4rem;
+  }
+  .mobileQuickMenuHead button{
+    width:3rem;
+    height:3rem;
+    min-width:3rem;
+    border:1px solid var(--line);
+    border-radius:.65rem;
+    background:var(--panel2);
+    color:var(--text);
+  }
+  .mobileQuickMenu>button[data-mobile-page]{
+    width:100%;
+    min-height:3rem;
+    text-align:left;
+    padding:.65rem .75rem;
+    border:1px solid var(--line);
+    border-radius:.65rem;
+    background:var(--panel2);
+    color:var(--text);
+    font-weight:800;
+  }
+
+  .generateDatesBtn{
+    min-width:4.8rem !important;
+    padding:.38rem .45rem !important;
+  }
+  .generateDatesBtn>span{
+    display:block;
+  }
+  .generateSecondLine{
+    margin-left:0;
+    margin-top:.08rem;
+  }
+
+  /* 60 / 30 / 10 visual balance */
+  body{
+    background:var(--bg);
+  }
+  .card,
+  .mobileScheduleCard,
+  .songDbTable tr{
+    background:var(--panel2) !important;
+  }
+  .btn.primary,
+  .fillEmptyBtn,
+  #wc,#jc,#mc{
+    box-shadow:0 .22rem .75rem color-mix(in srgb,var(--accent) 14%,transparent);
+  }
+}
+
+/* Desktop keeps words in one line */
+@media(min-width:47.51rem){
+  .generateDatesBtn>span{
+    display:inline;
+  }
+  .generateSecondLine{
+    margin-left:.25rem;
+  }
+}
+</style>
+
 </head>
 <body class="readonly-mode">
 
@@ -3347,20 +4061,20 @@ body.side-collapsed .main,
   </div>
 </section>
 
-<section id="worship" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto"><button id="wg" class="btn secondary">Generar</button></div></div><div class="row actionRow" style="margin-top:12px"><button id="wf" class="btn primary">Rellenar</button><button id="wr" class="btn secondary">Reequilibrar</button><button id="wLockResp" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Responsables</button><button id="wLockSongs" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Canciones</button><button id="wc" class="btn success">Confirmar</button><button id="we" class="btn secondary">Añadir extra</button></div><div class="worshipLockHint">Puedes fijar músicos o canciones por separado. “Rellenar” solo cambiará las columnas que estén desbloqueadas.</div><div class="worshipMixNote">Mezcla automática: 2 Rápidas + 2 Lentas, 1 Rápida + 1 Media + 2 Lentas, o 2 Rápidas + 1 Media + 1 Lenta. El orden también se mezcla aleatoriamente.</div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div></div></section>
+<section id="worship" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto"><button id="wg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="wf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="wr" class="btn secondary rebalanceBtn" title="Vuelve a repartir los campos desbloqueados para mejorar rotación y equilibrio">Reequilibrar</button><button id="wLockResp" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Responsables</button><button id="wLockSongs" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Canciones</button><button id="wc" class="btn success">Confirmar</button><button id="we" class="btn secondary">Añadir servicio</button></div><div class="worshipLockHint">Puedes fijar músicos o canciones por separado. “Rellenar vacíos” conserva lo ya elegido; “Reequilibrar” vuelve a repartir lo desbloqueado.</div><div class="worshipMixNote">Mezcla automática: 2 Rápidas + 2 Lentas, 1 Rápida + 1 Media + 2 Lentas, o 2 Rápidas + 1 Media + 1 Lenta. El orden también se mezcla aleatoriamente.</div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div><div id="wMobileCards" class="mobileScheduleCards"></div></div></section>
 
 <section id="youth" class="panel">
 <div class="card">
   <div class="row compactControls">
     <div><label>Año</label><input id="jy" type="number" value="2026"></div>
     <div><label>Mes</label><select id="jm"></select></div>
-    <div class="auto"><button id="jg" class="btn secondary">Generar</button></div>
+    <div class="auto"><button id="jg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div>
   </div>
   <div class="row actionRow" style="margin-top:12px">
-    <button id="jf" class="btn primary">Rellenar</button>
-    <button id="jr" class="btn secondary">Reequilibrar</button>
+    <button id="jf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button>
+    <button id="jr" class="btn secondary rebalanceBtn" title="Vuelve a repartir la programación para mejorar rotación y equilibrio">Reequilibrar</button>
     <button id="jc" class="btn success">Confirmar</button>
-    <button id="je" class="btn secondary">Añadir extra</button>
+    <button id="je" class="btn secondary">Añadir servicio</button>
   </div>
   <div id="jstatus" style="margin-top:10px"></div>
     <div class="sheet" style="margin-top:12px">
@@ -3369,10 +4083,11 @@ body.side-collapsed .main,
       <tbody id="jbody"></tbody>
     </table>
   </div>
+  <div id="jMobileCards" class="mobileScheduleCards"></div>
 </div>
 </section>
 
-<section id="media" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="my" type="number" value="2026"></div><div><label>Mes</label><select id="mm"></select></div><div class="auto"><button id="mg" class="btn secondary">Generar</button></div></div><div class="row actionRow" style="margin-top:12px"><button id="mf" class="btn primary">Rellenar</button><button id="mr" class="btn secondary">Reequilibrar</button><button id="mc" class="btn success">Confirmar</button><button id="me" class="btn secondary">Añadir extra</button></div><div id="mstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="mtable"><thead><tr><th>FECHAS 📅</th><th>PC 💻</th><th>CAMARA 🎥</th><th>⏹️DIAPOSITVAS PREDICAS</th></tr></thead><tbody id="mbody"></tbody></table></div></div></section>
+<section id="media" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="my" type="number" value="2026"></div><div><label>Mes</label><select id="mm"></select></div><div class="auto"><button id="mg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="mf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="mr" class="btn secondary rebalanceBtn" title="Vuelve a repartir Multimedia para mejorar rotación y equilibrio">Reequilibrar</button><button id="mc" class="btn success">Confirmar</button><button id="me" class="btn secondary">Añadir servicio</button></div><div id="mstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="mtable"><thead><tr><th>FECHAS 📅</th><th>PC 💻</th><th>CAMARA 🎥</th><th>⏹️DIAPOSITVAS PREDICAS</th></tr></thead><tbody id="mbody"></tbody></table></div><div id="mMobileCards" class="mobileScheduleCards"></div></div></section>
 
 <section id="vols" class="panel">
 <div id="volunteerSyncStatus" class="note" style="margin-bottom:12px">Voluntarios: esperando conexión con la base de datos…</div>
@@ -3411,6 +4126,7 @@ body.side-collapsed .main,
       <div class="songsHeadActions">
         <button id="openAddSong" class="btn primary" type="button">+ Añadir canción</button>
         <button id="openImportSongs" class="btn secondary" type="button">Importar lista</button>
+        <button id="mobileSongFiltersBtn" class="btn secondary mobileSongFiltersBtn" type="button">Filtrar y ordenar <span id="mobileSongFilterCount" class="filterCountBadge">0</span></button>
       </div>
     </div>
 
@@ -4402,6 +5118,246 @@ function fillM(){
  queueScheduleDraftSave("multimedia");
 }
 
+
+// =========================================================
+// V60 · PROGRAMACIÓN EN TARJETAS PARA MÓVIL/TABLET VERTICAL
+// =========================================================
+function uiSelect(options,value,onChange){
+  const select=document.createElement("select");
+  select.className="assignmentChip";
+  options.forEach(option=>{
+    const item=typeof option==="string"?{label:option,value:option}:option;
+    select.add(new Option(item.label,item.value));
+  });
+  select.value=value??"";
+  select.disabled=document.body.classList.contains("readonly-mode");
+  select.addEventListener("change",()=>onChange(select.value));
+  return select;
+}
+
+function mobileCardRow(label,control){
+  const row=document.createElement("div");
+  row.className="mobileScheduleRow";
+  const key=document.createElement("div");
+  key.className="mobileScheduleKey";
+  key.textContent=label;
+  const value=document.createElement("div");
+  value.className="mobileScheduleValue";
+  value.appendChild(control);
+  row.append(key,value);
+  return row;
+}
+
+function mobileServiceHeader(service,label){
+  const head=document.createElement("div");
+  head.className="mobileScheduleHead";
+  const left=document.createElement("div");
+  left.innerHTML=`<strong>${pretty(service.date)}</strong><span>${label}</span>`;
+  const badges=document.createElement("div");
+  badges.className="mobileScheduleBadges";
+  if(service.extra){
+    const b=document.createElement("span"); b.textContent="Servicio añadido"; badges.appendChild(b);
+  }
+  if(service.santa){
+    const b=document.createElement("span"); b.textContent="Santa Cena"; badges.appendChild(b);
+  }
+  head.append(left,badges);
+  return head;
+}
+
+function renderMobileWorshipCards(){
+  const box=document.getElementById("wMobileCards");
+  if(!box)return;
+  box.innerHTML="";
+  const spec=[["Voz principal",1],["Coros",2],["Piano",1],["Guitarra",2],["Bajo",1],["Batería",1]];
+
+  wmonth.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(service=>{
+    const card=document.createElement("article");
+    card.className="mobileScheduleCard";
+    card.appendChild(mobileServiceHeader(service,"Alabanza"));
+
+    const responsibles=document.createElement("div");
+    responsibles.className="mobileScheduleSection";
+    responsibles.innerHTML="<h3>Responsables</h3>";
+
+    spec.forEach(([role,count])=>{
+      for(let index=0;index<count;index++){
+        const current=(service.assign||[]).filter(x=>x.role===role)[index]?.name||"⚠ FALTA";
+        const options=["⚠ FALTA",...cand(role).map(v=>v.name)];
+        const select=uiSelect(options,current,newValue=>{
+          const arr=(service.assign||[]).filter(x=>x.role===role);
+          if(arr[index])arr[index].name=newValue;
+          else service.assign.push({role,name:newValue});
+
+          if(role==="Voz principal"){
+            service.songs=(service.songs||[]).map(saved=>{
+              if(!saved)return saved;
+              const clean=cleanHistorySongName(saved.name);
+              const source=songs.find(x=>cleanHistorySongName(x.name)===clean)||saved;
+              const copy={...saved,key:toneFor(source,newValue)};
+              if(/^SANTA CENA:/i.test(saved.name))copy.name="SANTA CENA: "+clean;
+              return copy;
+            });
+          }
+          renderW();
+          queueScheduleDraftSave("alabanza");
+        });
+        const label=count>1?`${role} ${index+1}`:role;
+        responsibles.appendChild(mobileCardRow(label,select));
+      }
+    });
+    card.appendChild(responsibles);
+
+    const songSection=document.createElement("div");
+    songSection.className="mobileScheduleSection";
+    songSection.innerHTML="<h3>Canciones</h3>";
+    const max=service.santa?5:4;
+
+    for(let index=0;index<max;index++){
+      const isSantaSlot=service.santa&&index===max-1;
+      const pool=songs.filter(song=>isSantaSlot?isSantaCenaSong(song):!isSantaCenaSong(song));
+      const options=[{label:"— seleccionar —",value:""},...pool.map(song=>({
+        label:`${cleanHistorySongName(song.name)} · ${song.category||"Media"} · ${song.artist||"—"}`,
+        value:String(songs.indexOf(song))
+      }))];
+
+      let selected="";
+      const saved=service.songs?.[index];
+      if(saved){
+        const clean=cleanHistorySongName(saved.name);
+        const found=songs.findIndex(x=>cleanHistorySongName(x.name)===clean);
+        if(found>=0)selected=String(found);
+      }
+
+      const select=uiSelect(options,selected,newValue=>{
+        if(newValue===""){
+          service.songs[index]=null;
+        }else{
+          const song={...songs[Number(newValue)]};
+          const lead=(service.assign||[]).find(a=>a.role==="Voz principal")?.name||"";
+          song.key=toneFor(song,lead);
+          if(isSantaSlot)song.name="SANTA CENA: "+cleanHistorySongName(song.name);
+          service.songs[index]=song;
+        }
+        renderW();
+        queueScheduleDraftSave("alabanza");
+      });
+      songSection.appendChild(mobileCardRow(isSantaSlot?"Santa Cena":`Canción ${index+1}`,select));
+    }
+
+    card.appendChild(songSection);
+    box.appendChild(card);
+  });
+}
+
+function renderMobileYouthCards(){
+  const box=document.getElementById("jMobileCards");
+  if(!box)return;
+  box.innerHTML="";
+  const spec=[["Voz principal",1],["Coros",2],["Piano",1],["Guitarra",2],["Bajo",1],["Batería",1]];
+
+  jmonth.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(service=>{
+    const card=document.createElement("article");
+    card.className="mobileScheduleCard";
+    card.appendChild(mobileServiceHeader(service,"Alabanza Jóvenes"));
+
+    const responsibles=document.createElement("div");
+    responsibles.className="mobileScheduleSection";
+    responsibles.innerHTML="<h3>Responsables</h3>";
+
+    spec.forEach(([role,count])=>{
+      for(let index=0;index<count;index++){
+        const current=(service.assign||[]).filter(x=>x.role===role)[index]?.name||"⚠ FALTA";
+        const options=["⚠ FALTA",...candYouth(role).map(v=>v.name)];
+        const select=uiSelect(options,current,newValue=>{
+          const arr=(service.assign||[]).filter(x=>x.role===role);
+          if(arr[index])arr[index].name=newValue;
+          else service.assign.push({role,name:newValue});
+
+          if(role==="Voz principal"){
+            service.songs=(service.songs||[]).map(saved=>{
+              if(!saved)return saved;
+              const clean=cleanHistorySongName(saved.name);
+              const source=songs.find(x=>cleanHistorySongName(x.name)===clean)||saved;
+              return {...saved,key:toneFor(source,newValue)};
+            });
+          }
+          renderJ();
+          queueScheduleDraftSave("jovenes");
+        });
+        responsibles.appendChild(mobileCardRow(count>1?`${role} ${index+1}`:role,select));
+      }
+    });
+    card.appendChild(responsibles);
+
+    const songSection=document.createElement("div");
+    songSection.className="mobileScheduleSection";
+    songSection.innerHTML="<h3>Canciones</h3>";
+
+    for(let index=0;index<3;index++){
+      const pool=songs.filter(x=>!isSantaCenaSong(x));
+      const options=[{label:"— seleccionar —",value:""},...pool.map(song=>({
+        label:`${song.name} · ${song.category||"Media"} · ${song.artist||"—"}`,
+        value:String(songs.indexOf(song))
+      }))];
+      let selected="";
+      const saved=service.songs?.[index];
+      if(saved){
+        const clean=cleanHistorySongName(saved.name);
+        const found=songs.findIndex(x=>cleanHistorySongName(x.name)===clean);
+        if(found>=0)selected=String(found);
+      }
+
+      const select=uiSelect(options,selected,newValue=>{
+        if(newValue===""){
+          service.songs[index]=null;
+        }else{
+          const song={...songs[Number(newValue)]};
+          const lead=(service.assign||[]).find(a=>a.role==="Voz principal")?.name||"";
+          song.key=toneFor(song,lead);
+          service.songs[index]=song;
+        }
+        renderJ();
+        queueScheduleDraftSave("jovenes");
+      });
+      songSection.appendChild(mobileCardRow(`Canción ${index+1}`,select));
+    }
+
+    card.appendChild(songSection);
+    box.appendChild(card);
+  });
+}
+
+function renderMobileMediaCards(){
+  const box=document.getElementById("mMobileCards");
+  if(!box)return;
+  box.innerHTML="";
+
+  mmonth.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(service=>{
+    const card=document.createElement("article");
+    card.className="mobileScheduleCard";
+    card.appendChild(mobileServiceHeader(service,"Multimedia"));
+
+    const section=document.createElement("div");
+    section.className="mobileScheduleSection";
+    section.innerHTML="<h3>Responsables</h3>";
+
+    const labels={PC:"PC",Camara:"Cámara",Diapositivas:"Diapositivas"};
+    mediaRoles.forEach(role=>{
+      const options=[{label:"— seleccionar —",value:""},...mediaPool(role).map(name=>({label:name,value:name}))];
+      const select=uiSelect(options,service[role]||"",newValue=>{
+        service[role]=newValue;
+        renderM();
+        queueScheduleDraftSave("multimedia");
+      });
+      section.appendChild(mobileCardRow(labels[role]||role,select));
+    });
+
+    card.appendChild(section);
+    box.appendChild(card);
+  });
+}
+
 function renderW(){
  wbody.innerHTML="";
  wmonth.sort((a,b)=>a.date.localeCompare(b.date));
@@ -4486,7 +5442,7 @@ function renderW(){
    });
  });
 }
-function renderM(){mbody.innerHTML="";mmonth.sort((a,b)=>a.date.localeCompare(b.date));mmonth.forEach(s=>{let tr=document.createElement("tr"),dt=document.createElement("td");dt.textContent=(s.extra?"★ ":"")+days[wd(s.date)]+" "+parts(s.date).D;tr.appendChild(dt);mediaRoles.forEach(fn=>{let td=document.createElement("td"),sel=document.createElement("select");sel.add(new Option("—",""));mediaPool(fn).forEach(n=>sel.add(new Option(n,n)));sel.value=s[fn]||"";sel.onchange=()=>{s[fn]=sel.value;queueScheduleDraftSave("multimedia")};td.appendChild(sel);tr.appendChild(td)});mbody.appendChild(tr)})}
+function renderM(){mbody.innerHTML="";mmonth.sort((a,b)=>a.date.localeCompare(b.date));mmonth.forEach(s=>{let tr=document.createElement("tr"),dt=document.createElement("td");dt.textContent=(s.extra?"★ ":"")+days[wd(s.date)]+" "+parts(s.date).D;tr.appendChild(dt);mediaRoles.forEach(fn=>{let td=document.createElement("td"),sel=document.createElement("select");sel.add(new Option("—",""));mediaPool(fn).forEach(n=>sel.add(new Option(n,n)));sel.value=s[fn]||"";sel.onchange=()=>{s[fn]=sel.value;queueScheduleDraftSave("multimedia")};td.appendChild(sel);tr.appendChild(td)});mbody.appendChild(tr)});renderMobileMediaCards()}
 
 
 
@@ -5395,13 +6351,13 @@ function renderSongs(){
    let moodHtml=(x.moods||[]).map(m=>`<span class="moodChip">${m}</span>`).join("")||'<span class="muted">—</span>';
    let toneHtml=Object.entries(x.tones||{}).map(([person,key])=>`<span class="toneChip">${person}: ${key}</span>`).join("")||'<span class="muted">—</span>';
    tr.innerHTML=`
-    <td class="songNameCell" data-col="song"><strong>${x.name}</strong><span class="muted">Tonalidad: ${x.key||"—"}</span></td>
-    <td data-col="artist">${x.artist||'<span class="muted">—</span>'}</td>
-    <td data-col="category"><span class="chip">${x.category||"Media"}</span></td>
-    <td data-col="bpm">${x.bpm?`${x.bpm}`:'<span class="muted">—</span>'}</td>
-    <td data-col="mood"><div class="songMoodList">${moodHtml}</div></td>
-    <td data-col="tones"><div class="songToneList">${toneHtml}</div></td>
-    <td data-col="actions"><div class="songDbActions"><button class="dbEditBtn edit" type="button">Editar</button><button class="dbEditBtn danger deleteSong" type="button">Eliminar</button></div></td>`;
+    <td class="songNameCell" data-col="song" data-label="Canción"><strong>${x.name}</strong><span class="muted">Tonalidad: ${x.key||"—"}</span></td>
+    <td data-col="artist" data-label="Artista / versión">${x.artist||'<span class="muted">—</span>'}</td>
+    <td data-col="category" data-label="Categoría"><span class="chip">${x.category||"Media"}</span></td>
+    <td data-col="bpm" data-label="BPM">${x.bpm?`${x.bpm}`:'<span class="muted">—</span>'}</td>
+    <td data-col="mood" data-label="Mood"><div class="songMoodList">${moodHtml}</div></td>
+    <td data-col="tones" data-label="Tonalidades"><div class="songToneList">${toneHtml}</div></td>
+    <td data-col="actions" data-label="Acciones"><div class="songDbActions"><button class="dbEditBtn edit" type="button">Editar</button><button class="dbEditBtn danger deleteSong" type="button">Eliminar</button></div></td>`;
    tr.querySelector(".edit").onclick=()=>openSongEditor(i);
    tr.querySelector(".deleteSong").onclick=async e=>{
      const btn=e.currentTarget;btn.disabled=true;
@@ -6777,7 +7733,7 @@ function imageM(){
 }
 window.imageM=imageM;
 const sectionDescriptions={home:["Inicio","Vista semanal y acceso rápido."],worship:["Alabanza","Programación mensual dominical."],youth:["Alabanza Jóvenes","Programación mensual de sábados."],media:["Multimedia","PC, cámara y diapositivas."],vols:["Voluntarios","Personas, roles y edición."],songs:["Canciones","Repertorio y tonos por cantante."],avail:["Disponibilidad","Indisponibilidades por módulo."],hist:["Historial","Participaciones y repertorio."],imgs:["Imágenes","Exportación mensual."],settings:["Configuración","Ajustes generales."]};
-function showSectionToast(id){let info=sectionDescriptions[id]||[id,""];toastTitle.textContent=info[0];toastText.textContent=info[1];sectionToast.classList.add("show");clearTimeout(window.__tt);window.__tt=setTimeout(()=>sectionToast.classList.remove("show"),1700)}
+function showSectionToast(id){return;}
 function showConfirmToast(){
   const t=document.getElementById("confirmToast");
   if(!t)return;
@@ -6788,14 +7744,106 @@ function showConfirmToast(){
 
 function applyTheme(t){document.body.dataset.theme=t;localStorage.setItem("alabanza-theme",t)}applyTheme(localStorage.getItem("alabanza-theme")||"dark");themeToggle.onclick=()=>applyTheme(document.body.dataset.theme==="dark"?"light":"dark");
 function applySide(c){side.classList.toggle("collapsed",c);document.body.classList.toggle("sidebar-collapsed",c);collapseSide.querySelector(".ico").textContent=c?"›":"‹";localStorage.setItem("alabanza-side",c?"1":"0")}applySide(localStorage.getItem("alabanza-side")==="1");collapseSide.onclick=()=>applySide(!side.classList.contains("collapsed"));
-document.querySelectorAll(".nav button[data-p]").forEach(b=>b.onclick=()=>{document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));document.getElementById(b.dataset.p).classList.add("active");document.querySelectorAll(".nav button[data-p]").forEach(x=>x.classList.toggle("active",x===b));title.textContent=(sectionDescriptions[b.dataset.p]||[b.dataset.tip])[0];showSectionToast(b.dataset.p);side.classList.remove("open");overlay.classList.remove("show")});
+document.querySelectorAll(".nav button[data-p]").forEach(b=>b.onclick=()=>{document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));document.getElementById(b.dataset.p).classList.add("active");document.querySelectorAll(".nav button[data-p]").forEach(x=>x.classList.toggle("active",x===b));title.textContent=(sectionDescriptions[b.dataset.p]||[b.dataset.tip])[0];side.classList.remove("open");overlay.classList.remove("show")});
 menu.onclick=()=>{side.classList.add("open");overlay.classList.add("show")};overlay.onclick=()=>{side.classList.remove("open");overlay.classList.remove("show")};
-wg.onclick=genW;wf.onclick=fillW;wr.onclick=fillW;
+
+// =========================================================
+// V60 · RELLENAR VACÍOS VS REEQUILIBRAR
+// =========================================================
+function restoreExistingAssignments(afterService,beforeAssignments){
+  const byRoleIndex={};
+  (beforeAssignments||[]).forEach(item=>{
+    const key=item.role;
+    byRoleIndex[key]??=[];
+    byRoleIndex[key].push(item);
+  });
+
+  Object.entries(byRoleIndex).forEach(([role,items])=>{
+    const current=(afterService.assign||[]).filter(x=>x.role===role);
+    items.forEach((before,index)=>{
+      if(!before?.name || before.name==="⚠ FALTA")return;
+      if(current[index])current[index].name=before.name;
+      else afterService.assign.push({role,name:before.name});
+    });
+  });
+}
+
+function fillWEmpty(){
+  const snapshot=new Map(wmonth.map(s=>[
+    s.date,
+    {assign:deepCopy(s.assign||[]),songs:deepCopy(s.songs||[])}
+  ]));
+
+  fillW();
+
+  wmonth.forEach(s=>{
+    const before=snapshot.get(s.date);
+    if(!before)return;
+    if(!worshipLockResponsibilities)restoreExistingAssignments(s,before.assign);
+    if(!worshipLockSongs){
+      before.songs.forEach((song,index)=>{
+        if(song)s.songs[index]=deepCopy(song);
+      });
+    }
+  });
+
+  renderW();
+  updateHome();
+  queueScheduleDraftSave("alabanza");
+  window.showAppToast?.("Se rellenaron solo los espacios vacíos.","success",1200);
+}
+
+function fillJEmpty(){
+  const snapshot=new Map(jmonth.map(s=>[
+    s.date,
+    {assign:deepCopy(s.assign||[]),songs:deepCopy(s.songs||[])}
+  ]));
+
+  fillJ();
+
+  jmonth.forEach(s=>{
+    const before=snapshot.get(s.date);
+    if(!before)return;
+    restoreExistingAssignments(s,before.assign);
+    before.songs.forEach((song,index)=>{
+      if(song)s.songs[index]=deepCopy(song);
+    });
+  });
+
+  renderJ();
+  updateHome();
+  queueScheduleDraftSave("jovenes");
+  window.showAppToast?.("Se rellenaron solo los espacios vacíos.","success",1200);
+}
+
+function fillMEmpty(){
+  const snapshot=new Map(mmonth.map(s=>[
+    s.date,
+    {PC:s.PC||"",Camara:s.Camara||"",Diapositivas:s.Diapositivas||""}
+  ]));
+
+  fillM();
+
+  mmonth.forEach(s=>{
+    const before=snapshot.get(s.date);
+    if(!before)return;
+    mediaRoles.forEach(role=>{
+      if(before[role])s[role]=before[role];
+    });
+  });
+
+  renderM();
+  updateHome();
+  queueScheduleDraftSave("multimedia");
+  window.showAppToast?.("Se rellenaron solo los espacios vacíos.","success",1200);
+}
+
+wg.onclick=genW;wf.onclick=fillWEmpty;wr.onclick=fillW;
 wLockResp.onclick=()=>{worshipLockResponsibilities=!worshipLockResponsibilities;localStorage.setItem("worship-lock-responsibilities",worshipLockResponsibilities?"1":"0");updateWorshipLockButtons()};
 wLockSongs.onclick=()=>{worshipLockSongs=!worshipLockSongs;localStorage.setItem("worship-lock-songs",worshipLockSongs?"1":"0");updateWorshipLockButtons()};
 wc.onclick=confirmW;we.onclick=async()=>{let d=await window.appPrompt("Agregar servicio especial",{message:"Selecciona la fecha del servicio.",inputType:"date",confirmText:"Agregar"});if(!d)return;wmonth.push({date:d,extra:true,name:"Servicio especial",santa:false,assign:[],songs:[]});wmonth.sort((a,b)=>a.date.localeCompare(b.date));renderW();updateHome();queueScheduleDraftSave("alabanza");window.showAppToast("Servicio agregado.","success",1000)};
-jg.onclick=genJ;jf.onclick=fillJ;jr.onclick=fillJ;jc.onclick=confirmJ;je.onclick=async()=>{let d=await window.appPrompt("Agregar servicio de Jóvenes",{message:"Selecciona la fecha del servicio.",inputType:"date",confirmText:"Agregar"});if(!d)return;jmonth.push({date:d,extra:true,name:"Jóvenes especial",santa:false,assign:[],songs:[]});jmonth.sort((a,b)=>a.date.localeCompare(b.date));renderJ();updateHome();queueScheduleDraftSave("jovenes");window.showAppToast("Servicio agregado.","success",1000)};
-mg.onclick=genM;mf.onclick=fillM;mr.onclick=fillM;mc.onclick=confirmM;me.onclick=async()=>{let d=await window.appPrompt("Agregar servicio de Multimedia",{message:"Selecciona la fecha del servicio.",inputType:"date",confirmText:"Agregar"});if(!d)return;mmonth.push({date:d,extra:true,PC:"",Camara:"",Diapositivas:""});mmonth.sort((a,b)=>a.date.localeCompare(b.date));renderM();updateHome();queueScheduleDraftSave("multimedia");window.showAppToast("Servicio agregado.","success",1000)};
+jg.onclick=genJ;jf.onclick=fillJEmpty;jr.onclick=fillJ;jc.onclick=confirmJ;je.onclick=async()=>{let d=await window.appPrompt("Agregar servicio de Jóvenes",{message:"Selecciona la fecha del servicio.",inputType:"date",confirmText:"Agregar"});if(!d)return;jmonth.push({date:d,extra:true,name:"Jóvenes especial",santa:false,assign:[],songs:[]});jmonth.sort((a,b)=>a.date.localeCompare(b.date));renderJ();updateHome();queueScheduleDraftSave("jovenes");window.showAppToast("Servicio agregado.","success",1000)};
+mg.onclick=genM;mf.onclick=fillMEmpty;mr.onclick=fillM;mc.onclick=confirmM;me.onclick=async()=>{let d=await window.appPrompt("Agregar servicio de Multimedia",{message:"Selecciona la fecha del servicio.",inputType:"date",confirmText:"Agregar"});if(!d)return;mmonth.push({date:d,extra:true,PC:"",Camara:"",Diapositivas:""});mmonth.sort((a,b)=>a.date.localeCompare(b.date));renderM();updateHome();queueScheduleDraftSave("multimedia");window.showAppToast("Servicio agregado.","success",1000)};
 
 seAddMood.onclick=async()=>{
  let mood=addMoodToCatalog(seNewMood.value);
@@ -8468,5 +9516,162 @@ document.addEventListener("click",(e)=>{
 })();
 </script>
 
+
+<nav id="mobileBottomNav" class="mobileBottomNav" aria-label="Navegación móvil">
+  <button type="button" data-mobile-page="home" class="active"><span class="mbnIcon">⌂</span><span>Inicio</span></button>
+  <button type="button" id="mobileProgramBtn"><span class="mbnIcon">▦</span><span>Programación</span></button>
+  <button type="button" data-mobile-page="songs"><span class="mbnIcon">♫</span><span>Canciones</span></button>
+  <button type="button" data-mobile-page="vols"><span class="mbnIcon">◉</span><span>Voluntarios</span></button>
+  <button type="button" id="mobileMoreBtn"><span class="mbnIcon">•••</span><span>Más</span></button>
+</nav>
+
+<div id="mobileProgramMenu" class="mobileQuickMenu" aria-hidden="true">
+  <div class="mobileQuickMenuHead"><strong>Programación</strong><button id="closeMobileProgramMenu" type="button" aria-label="Cerrar">×</button></div>
+  <button type="button" data-mobile-page="worship">Alabanza</button>
+  <button type="button" data-mobile-page="youth">Alabanza Jóvenes</button>
+  <button type="button" data-mobile-page="media">Multimedia</button>
+</div>
+
+<div id="songFilterDrawer" class="songFilterDrawer" aria-hidden="true">
+  <div class="songFilterDrawerPanel">
+    <div class="songFilterDrawerHead">
+      <div><strong>Filtrar y ordenar</strong><span id="mobileFilterCountLabel">Sin filtros activos</span></div>
+      <button id="closeSongFilterDrawer" type="button" aria-label="Cerrar filtros">×</button>
+    </div>
+    <div id="songFilterDrawerBody"></div>
+    <div class="songFilterDrawerFooter">
+      <button id="applySongFiltersMobile" class="btn primary" type="button">Ver resultados</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =========================================================
+// V60 · NAVEGACIÓN INFERIOR Y FILTROS MÓVILES
+// =========================================================
+(()=>{
+  const bottomNav=document.getElementById("mobileBottomNav");
+  const programMenu=document.getElementById("mobileProgramMenu");
+  const programBtn=document.getElementById("mobileProgramBtn");
+  const moreBtn=document.getElementById("mobileMoreBtn");
+  const closeProgram=document.getElementById("closeMobileProgramMenu");
+  const sideNavButtons=[...document.querySelectorAll(".nav button[data-p]")];
+
+  function openPage(page){
+    const target=sideNavButtons.find(button=>button.dataset.p===page);
+    if(target)target.click();
+    bottomNav?.querySelectorAll("button[data-mobile-page]").forEach(button=>{
+      button.classList.toggle("active",button.dataset.mobilePage===page);
+    });
+    if(programBtn)programBtn.classList.toggle("active",["worship","youth","media"].includes(page));
+    programMenu?.classList.remove("open");
+    programMenu?.setAttribute("aria-hidden","true");
+  }
+
+  bottomNav?.addEventListener("click",event=>{
+    const button=event.target.closest("button[data-mobile-page]");
+    if(button)openPage(button.dataset.mobilePage);
+  });
+
+  programMenu?.addEventListener("click",event=>{
+    const button=event.target.closest("button[data-mobile-page]");
+    if(button)openPage(button.dataset.mobilePage);
+  });
+
+  programBtn?.addEventListener("click",()=>{
+    const open=!programMenu.classList.contains("open");
+    programMenu.classList.toggle("open",open);
+    programMenu.setAttribute("aria-hidden",String(!open));
+  });
+
+  closeProgram?.addEventListener("click",()=>{
+    programMenu.classList.remove("open");
+    programMenu.setAttribute("aria-hidden","true");
+  });
+
+  moreBtn?.addEventListener("click",()=>{
+    side.classList.add("open");
+    overlay.classList.add("show");
+  });
+
+  sideNavButtons.forEach(button=>button.addEventListener("click",()=>{
+    const page=button.dataset.p;
+    bottomNav?.querySelectorAll("button[data-mobile-page]").forEach(mobile=>{
+      mobile.classList.toggle("active",mobile.dataset.mobilePage===page);
+    });
+    programBtn?.classList.toggle("active",["worship","youth","media"].includes(page));
+  }));
+
+  // ---------------- Song filters bottom sheet ----------------
+  const filterDrawer=document.getElementById("songFilterDrawer");
+  const filterBody=document.getElementById("songFilterDrawerBody");
+  const filterBtn=document.getElementById("mobileSongFiltersBtn");
+  const closeFilter=document.getElementById("closeSongFilterDrawer");
+  const applyFilter=document.getElementById("applySongFiltersMobile");
+  const filterBar=document.querySelector("#songs .songFilterBar");
+  const activeFilters=document.getElementById("activeSongFilters");
+  const listMeta=document.querySelector("#songs .songsListMeta");
+  const mobileFilterCount=document.getElementById("mobileSongFilterCount");
+  const mobileFilterCountLabel=document.getElementById("mobileFilterCountLabel");
+  const media=window.matchMedia("(max-width: 820px)");
+
+  function activeFilterCount(){
+    let count=0;
+    if(String(document.getElementById("sq")?.value||"").trim())count++;
+    document.querySelectorAll("#activeSongFilters .songOptionalFilter.active").forEach(filter=>{
+      const values=[...filter.querySelectorAll("input,select")].some(control=>String(control.value||"").trim());
+      if(values)count++;
+    });
+    return count;
+  }
+
+  function updateFilterCount(){
+    const count=activeFilterCount();
+    if(mobileFilterCount)mobileFilterCount.textContent=String(count);
+    if(mobileFilterCountLabel)mobileFilterCountLabel.textContent=count?`${count} filtro${count===1?"":"s"} activo${count===1?"":"s"}`:"Sin filtros activos";
+  }
+
+  function relocateSongFilters(){
+    if(!filterBar||!activeFilters||!listMeta||!filterBody)return;
+    if(media.matches){
+      filterBody.append(filterBar,activeFilters);
+    }else{
+      const parent=listMeta.parentNode;
+      parent.insertBefore(filterBar,listMeta);
+      parent.insertBefore(activeFilters,listMeta);
+      filterDrawer?.classList.remove("open");
+      filterDrawer?.setAttribute("aria-hidden","true");
+    }
+    updateFilterCount();
+  }
+
+  function openFilterDrawer(){
+    relocateSongFilters();
+    filterDrawer?.classList.add("open");
+    filterDrawer?.setAttribute("aria-hidden","false");
+  }
+
+  function closeFilterDrawer(){
+    filterDrawer?.classList.remove("open");
+    filterDrawer?.setAttribute("aria-hidden","true");
+  }
+
+  filterBtn?.addEventListener("click",openFilterDrawer);
+  closeFilter?.addEventListener("click",closeFilterDrawer);
+  applyFilter?.addEventListener("click",closeFilterDrawer);
+  filterDrawer?.addEventListener("click",event=>{
+    if(event.target===filterDrawer)closeFilterDrawer();
+  });
+
+  document.getElementById("songs")?.addEventListener("input",updateFilterCount);
+  document.getElementById("songs")?.addEventListener("change",updateFilterCount);
+  document.getElementById("clearSongFilters")?.addEventListener("click",()=>setTimeout(updateFilterCount,0));
+
+  if(media.addEventListener)media.addEventListener("change",relocateSongFilters);
+  else media.addListener(relocateSongFilters);
+
+  relocateSongFilters();
+})();
+</script>
 </body>
 </html>
