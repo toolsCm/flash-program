@@ -1081,6 +1081,173 @@ body.readonly-mode .songDbTable [data-col="actions"]{
 }
 </style>
 
+
+<style id="flash-team-system">
+/* V50 · Equipos privados */
+.topAuth{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  min-width:0;
+}
+#topTeamBadge{
+  display:none;
+  max-width:15rem;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  padding:.42rem .65rem;
+  border:1px solid var(--border,#303640);
+  border-radius:.55rem;
+  background:var(--panel,#181c22);
+  color:var(--muted,#9aa2af);
+  font-size:.78rem;
+  font-weight:700;
+}
+
+.teamGate{
+  position:fixed;
+  inset:0;
+  z-index:99998;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:1.25rem;
+  background:#111318;
+}
+.teamGate.show{display:flex}
+.teamGateCard{
+  width:min(100%,56rem);
+  max-height:calc(100vh - 2rem);
+  overflow:auto;
+  padding:1.5rem;
+  border:1px solid #2b3038;
+  border-radius:1rem;
+  background:#181b21;
+  color:#f5f5f5;
+  box-shadow:0 1.5rem 5rem rgba(0,0,0,.35);
+}
+.teamGateHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:1rem;
+  margin-bottom:1.2rem;
+}
+.teamGateBrand{
+  display:flex;
+  align-items:center;
+  gap:.7rem;
+}
+.teamGateMark{
+  width:2.4rem;height:2.4rem;
+  display:grid;place-items:center;
+  border-radius:.55rem;
+  background:#f1f3f5;color:#111318;
+  font-weight:900;font-size:1.2rem;
+}
+.teamGateCard h2{margin:.2rem 0 .3rem}
+.teamGateCard p{margin:0;color:#949ca8}
+.teamGateGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.9rem;
+}
+.teamGateBox{
+  padding:1rem;
+  border:1px solid #2b3038;
+  border-radius:.75rem;
+  background:#15181e;
+}
+.teamGateBox h3{margin:0 0 .35rem}
+.teamGateBox p{font-size:.88rem;margin:0 0 .8rem}
+.teamGateBox input{
+  width:100%;
+  min-height:2.75rem;
+  margin-bottom:.65rem;
+}
+.teamGateBox .btn{width:100%}
+#teamGateMessage{
+  min-height:1.2rem;
+  margin-top:.9rem;
+  color:#ffb4b4;
+  font-size:.88rem;
+}
+.teamGateFooter{
+  display:flex;
+  justify-content:space-between;
+  gap:.7rem;
+  flex-wrap:wrap;
+  margin-top:1rem;
+  padding-top:1rem;
+  border-top:1px solid #2b3038;
+}
+.teamGateFooter a{
+  color:#aeb7c6;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  min-height:2.5rem;
+}
+
+.teamInfoStrip{
+  display:flex;
+  gap:.5rem;
+  flex-wrap:wrap;
+  margin:.55rem 0 1rem;
+}
+.teamInfoPill{
+  padding:.42rem .65rem;
+  border:1px solid var(--border,#303640);
+  border-radius:999px;
+  background:var(--panel2,#20242b);
+  font-size:.8rem;
+}
+.teamCodeRow{
+  display:flex;
+  align-items:end;
+  gap:.55rem;
+  flex-wrap:wrap;
+  margin:.85rem 0 1rem;
+}
+.teamCodeRow > div{flex:1 1 14rem}
+.teamCodeRow input{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:800;letter-spacing:.04em}
+.teamMembersList{display:grid;gap:.5rem;margin-top:.7rem}
+.teamMemberRow{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  align-items:center;
+  gap:.55rem;
+  padding:.65rem .7rem;
+  border:1px solid var(--border,#303640);
+  border-radius:.6rem;
+  background:var(--panel2,#20242b);
+}
+.teamMemberName{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.teamRoleLabel{
+  color:var(--muted,#9aa2af);
+  font-size:.8rem;
+}
+.teamMemberRow select{
+  min-width:7.8rem;
+  min-height:2.35rem;
+}
+.teamMemberRow .miniBtn{white-space:nowrap}
+.teamAdminNote{font-size:.82rem;color:var(--muted,#9aa2af);margin-top:.65rem}
+#teamSettingsCard{display:none}
+
+@media(max-width:720px){
+  #topTeamBadge{max-width:8rem;padding:.36rem .48rem}
+  .teamGateGrid{grid-template-columns:1fr}
+  .teamGateCard{padding:1rem}
+  .teamMemberRow{
+    grid-template-columns:minmax(0,1fr) auto;
+  }
+  .teamMemberRow .teamTransferBtn{grid-column:1/-1;width:100%}
+}
+</style>
+
 </head>
 <body class="readonly-mode">
 
@@ -1089,6 +1256,48 @@ body.readonly-mode .songDbTable [data-col="actions"]{
     <div id="appLoadingSpinner"></div>
     <strong style="display:block;margin-bottom:6px">Cargando</strong>
     <div id="appLoadingText">Estamos cargando la página.</div>
+  </div>
+</div>
+
+<div id="teamGate" class="teamGate" aria-hidden="true">
+  <div class="teamGateCard" role="dialog" aria-modal="true" aria-labelledby="teamGateTitle">
+    <div class="teamGateHead">
+      <div>
+        <div class="teamGateBrand">
+          <span class="teamGateMark">F</span>
+          <div>
+            <strong>Flash Program</strong>
+            <h2 id="teamGateTitle">Configura tu equipo</h2>
+          </div>
+        </div>
+        <p>Para entrar a la aplicación debes crear un equipo o unirte con el código que te compartió su administrador.</p>
+      </div>
+    </div>
+
+    <div class="teamGateGrid">
+      <form id="createTeamForm" class="teamGateBox">
+        <h3>Crear un equipo</h3>
+        <p>Serás el único administrador del equipo y podrás asignar Editores.</p>
+        <label for="createTeamName">Nombre del equipo</label>
+        <input id="createTeamName" maxlength="80" placeholder="Ej. Alabanza Central" required>
+        <button class="btn primary" type="submit">Crear equipo</button>
+      </form>
+
+      <form id="joinTeamForm" class="teamGateBox">
+        <h3>Unirme a un equipo</h3>
+        <p>Entrarás inicialmente como miembro de solo lectura. El administrador podrá darte permiso de Editor.</p>
+        <label for="joinTeamCode">Código del equipo</label>
+        <input id="joinTeamCode" maxlength="20" placeholder="FP-XXXXXXXX" autocomplete="off" required>
+        <button class="btn secondary" type="submit">Unirme con código</button>
+      </form>
+    </div>
+
+    <div id="teamGateMessage"></div>
+
+    <div class="teamGateFooter">
+      <a href="index.html">← Volver a Flash Program</a>
+      <button id="teamGateLogout" class="btn secondary" type="button">Cerrar sesión</button>
+    </div>
   </div>
 </div>
 
@@ -1319,7 +1528,7 @@ body.readonly-mode .songDbTable [data-col="actions"]{
 <button data-p="imgs" data-tip="Imágenes"><span class="ico">▧</span><span class="label">Imágenes</span></button>
 <button data-p="settings" data-tip="Configuración"><span class="ico">⚙</span><span class="label">Configuración</span></button>
 </div><div class="sidebarFooter"><button id="themeToggle" class="sideAction" title="Cambiar tema" aria-label="Cambiar tema"><span class="ico">◐</span></button><button id="collapseSide" class="sideAction" title="Plegar menú" aria-label="Plegar menú"><span class="ico">‹</span></button></div></aside>
-<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><div class="topAuth"><button id="topAuthBtn" class="btn secondary" type="button">Iniciar sesión</button></div><span class="versionTag"></span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div><div id="confirmToast" class="sectionToast"><strong>Programación Confirmada ✅</strong></div>
+<main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><div class="topAuth"><span id="topTeamBadge" title="Equipo actual"></span><button id="topAuthBtn" class="btn secondary" type="button">Iniciar sesión</button></div><span class="versionTag"></span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div><div id="confirmToast" class="sectionToast"><strong>Programación Confirmada ✅</strong></div>
 
 <section id="home" class="panel active">
   <div class="card">
@@ -1485,7 +1694,28 @@ body.readonly-mode .songDbTable [data-col="actions"]{
 
 <section id="imgs" class="panel"><div class="grid"><div class="card s4"><h2>Imágenes mensuales</h2><button id="iw" class="btn primary" style="width:100%;margin-bottom:8px">Generar Alabanza</button><button id="ij" class="btn secondary" style="width:100%;margin-bottom:8px">Generar Jóvenes</button><button id="im" class="btn secondary" style="width:100%;margin-bottom:8px" onclick="window.imageM&&window.imageM()">Generar Multimedia</button><button id="idown" class="btn success" style="width:100%">Descargar PNG</button></div><div class="card s8"><canvas id="poster" width="1400" height="1000"></canvas></div></div></section>
 
-<section id="settings" class="panel"><div class="grid"><div class="card s6"><h2>Configuración</h2><label>Google Sheets anual</label><input value="2026 PROGRAMACIÓN ALABANZA Y MEDIA" readonly><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div><div class="card s6"><div class="note"><strong>Google Sheets conectado</strong><br>Al pulsar <strong>Confirmar</strong>, la programación oficial se guarda en la base de datos y también se envía al archivo anual de Google Sheets.</div><div id="googleSheetsConnectionStatus" class="muted" style="margin-top:10px">Puente v2 configurado · envío Beacon</div><div class="muted" style="margin-top:6px">Después de confirmar, el Apps Script registrará el intento en <code>lastSync</code>.</div></div></div></section>
+<section id="settings" class="panel"><div class="grid">
+<div id="teamSettingsCard" class="card s12">
+  <h2>Equipo</h2>
+  <div class="teamInfoStrip">
+    <span id="teamSettingsName" class="teamInfoPill">Equipo</span>
+    <span id="teamSettingsRole" class="teamInfoPill">Rol</span>
+  </div>
+
+  <div id="teamAdminControls" style="display:none">
+    <label>Código para unirse al equipo</label>
+    <div class="teamCodeRow">
+      <div><input id="teamJoinCode" readonly></div>
+      <button id="copyTeamCode" class="btn secondary" type="button">Copiar código</button>
+      <button id="resetTeamCode" class="btn secondary" type="button">Nuevo código</button>
+    </div>
+    <div class="teamAdminNote">Quien se una con este código entra como <strong>Solo lectura</strong>. Solo el administrador puede convertirlo en Editor.</div>
+  </div>
+
+  <h3 style="margin:1.2rem 0 .4rem">Miembros</h3>
+  <div id="teamMembersList" class="teamMembersList"></div>
+</div>
+<div class="card s6"><h2>Configuración</h2><label>Google Sheets anual</label><input value="2026 PROGRAMACIÓN ALABANZA Y MEDIA" readonly><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div><div class="card s6"><div class="note"><strong>Google Sheets</strong><br>La programación siempre se guarda primero en la base de datos. La sincronización con el archivo anual solo se realiza en los equipos que tengan esa conexión habilitada.</div><div id="googleSheetsConnectionStatus" class="muted" style="margin-top:10px">Comprobando conexión del equipo…</div><div class="muted" style="margin-top:6px">Los equipos nuevos quedan aislados y no usan automáticamente el archivo de Google Sheets del equipo original.</div></div></div></section>
 
 <div id="songEditModal" class="modalBackdrop" aria-hidden="true">
   <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="songEditTitle">
@@ -2877,7 +3107,6 @@ window.bootstrapVolunteersSupabase=async function(){
  volunteerBootstrapPromise=(async()=>{
    try{
      if(!window.supabaseClient)return false;
-     await migrateInitialVolunteersIfEmpty();
      await loadVolunteersFromSupabase();
      volunteerBootstrapDone=true;
      return true;
@@ -2956,7 +3185,12 @@ async function ensureSupabaseMoods(names){
  const missing=clean.filter(name=>!supabaseMoodRows.some(m=>key(m.name)===key(name)));
  if(missing.length){
    if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para crear moods.");
-   const {error}=await window.supabaseClient.from("moods").upsert(missing.map(name=>({name})),{onConflict:"name"});
+   const teamId=window.currentTeam?.id;
+   if(!teamId)throw new Error("No hay un equipo activo.");
+   const {error}=await window.supabaseClient.from("moods").upsert(
+     missing.map(name=>({name,team_id:teamId})),
+     {onConflict:"team_id,name"}
+   );
    if(error)throw error;
    await loadSupabaseMoods();
  }
@@ -3079,7 +3313,6 @@ window.bootstrapSongsSupabase=async function(){
  songBootstrapPromise=(async()=>{
    try{
      if(!window.supabaseClient)return false;
-     await migrateInitialSongsIfEmpty();
      await loadSongsFromSupabase();
      songBootstrapDone=true;
      return true;
@@ -3476,6 +3709,16 @@ async function sendGoogleSheetsFallback(payload){
 }
 
 async function syncConfirmedMonthToGoogleSheets(module,services,year,monthZeroBased){
+  if(!window.currentTeam?.sheet_sync_enabled){
+    return {
+      ok:true,
+      skipped:true,
+      verified:false,
+      result:null,
+      transport:"disabled-for-team"
+    };
+  }
+
   const accessToken=await getGoogleSheetsAccessToken();
 
   const payload={
@@ -3511,6 +3754,10 @@ async function syncConfirmedMonthToGoogleSheets(module,services,year,monthZeroBa
 function sheetsSuccessMessage(module,count,result){
   const label=module==="alabanza"?"Alabanza":module==="jovenes"?"Jóvenes":"Multimedia";
   const unit=module==="multimedia"?"fechas":"servicios";
+
+  if(result?.skipped){
+    return `${label} confirmado · ${count} ${unit} · Base de datos`;
+  }
 
   if(result?.verified){
     const sheet=result.result?.sheet?` · Hoja ${result.result.sheet}`:"";
@@ -3552,6 +3799,7 @@ async function fetchScheduleDraft(module,Y,M){
  const {data,error}=await window.supabaseClient
    .from("app_settings")
    .select("setting_key,setting_value,updated_at")
+   .eq("team_id",window.currentTeam?.id)
    .eq("setting_key",settingKey)
    .maybeSingle();
 
@@ -3573,9 +3821,7 @@ async function fetchScheduleDraft(module,Y,M){
 async function saveScheduleDraft(module,{silent=true}={}){
  if(!window.supabaseClient||!window.currentProfile)return false;
 
- // app_settings actualmente está protegido para administrador.
- // Si más adelante un Editor debe autoguardar, ampliaremos esa política RLS.
- if(window.currentProfile.app_role!=="admin")return false;
+ if(!canEditDatabase())return false;
 
  const {data,Y,M}=moduleScheduleState(module);
  if(!Array.isArray(data))return false;
@@ -3592,10 +3838,11 @@ async function saveScheduleDraft(module,{silent=true}={}){
  const {error}=await window.supabaseClient
    .from("app_settings")
    .upsert({
+     team_id:window.currentTeam?.id,
      setting_key:key,
      setting_value:payload,
      updated_at:new Date().toISOString()
-   },{onConflict:"setting_key"});
+   },{onConflict:"team_id,setting_key"});
 
  if(error)throw error;
 
@@ -3619,12 +3866,13 @@ function queueScheduleDraftSave(module,delay=450){
 }
 
 async function clearScheduleDraft(module,Y,M){
- if(!window.supabaseClient||window.currentProfile?.app_role!=="admin")return;
+ if(!window.supabaseClient||!canEditDatabase())return;
 
  const key=scheduleDraftKey(module,Y,M);
  const {error}=await window.supabaseClient
    .from("app_settings")
    .delete()
+   .eq("team_id",window.currentTeam?.id)
    .eq("setting_key",key);
 
  if(error)throw error;
@@ -4129,7 +4377,7 @@ async function confirmW(){
    renderW();
    updateHome();
 
-   if(btn)btn.textContent="Google Sheets…";
+   if(btn)btn.textContent=window.currentTeam?.sheet_sync_enabled?"Google Sheets…":"Finalizando…";
 
    try{
      const sheetResult=await syncConfirmedMonthToGoogleSheets("alabanza",loaded,Y,M);
@@ -4178,7 +4426,7 @@ async function confirmJ(){
    renderJ();
    updateHome();
 
-   if(btn)btn.textContent="Google Sheets…";
+   if(btn)btn.textContent=window.currentTeam?.sheet_sync_enabled?"Google Sheets…":"Finalizando…";
 
    try{
      const sheetResult=await syncConfirmedMonthToGoogleSheets("jovenes",loaded,Y,M);
@@ -4224,7 +4472,7 @@ async function confirmM(){
    renderM();
    updateHome();
 
-   if(btn)btn.textContent="Google Sheets…";
+   if(btn)btn.textContent=window.currentTeam?.sheet_sync_enabled?"Google Sheets…":"Finalizando…";
 
    try{
      const sheetResult=await syncConfirmedMonthToGoogleSheets("multimedia",loaded,Y,M);
@@ -5073,7 +5321,255 @@ document.addEventListener('DOMContentLoaded', async () => {
   const signupConfirmPassword = document.getElementById('signupConfirmPassword');
   const loginClose = document.getElementById('loginClose');
   const topAuthBtn = document.getElementById('topAuthBtn');
+
+  const teamGate = document.getElementById('teamGate');
+  const createTeamForm = document.getElementById('createTeamForm');
+  const createTeamName = document.getElementById('createTeamName');
+  const joinTeamForm = document.getElementById('joinTeamForm');
+  const joinTeamCode = document.getElementById('joinTeamCode');
+  const teamGateMessage = document.getElementById('teamGateMessage');
+  const teamGateLogout = document.getElementById('teamGateLogout');
+  const topTeamBadge = document.getElementById('topTeamBadge');
+
+  const teamSettingsCard = document.getElementById('teamSettingsCard');
+  const teamSettingsName = document.getElementById('teamSettingsName');
+  const teamSettingsRole = document.getElementById('teamSettingsRole');
+  const teamAdminControls = document.getElementById('teamAdminControls');
+  const teamJoinCode = document.getElementById('teamJoinCode');
+  const copyTeamCode = document.getElementById('copyTeamCode');
+  const resetTeamCode = document.getElementById('resetTeamCode');
+  const teamMembersList = document.getElementById('teamMembersList');
+
+  window.currentTeam = null;
   let authMode = 'login';
+
+  const TEAM_ROLE_LABELS={admin:'Administrador',editor:'Editor',viewer:'Solo lectura'};
+
+  function escapeTeamHtml(value){
+    return String(value??'')
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#039;');
+  }
+
+  function teamRoleLabel(role){
+    return TEAM_ROLE_LABELS[role]||role||'Sin equipo';
+  }
+
+  function showTeamGate(show,message=''){
+    if(!teamGate)return;
+    teamGate.classList.toggle('show',!!show);
+    teamGate.setAttribute('aria-hidden',show?'false':'true');
+    if(teamGateMessage)teamGateMessage.textContent=message||'';
+  }
+
+  async function loadMyTeam(){
+    const {data,error}=await window.supabaseClient.rpc('get_my_team');
+    if(error)throw error;
+    const row=Array.isArray(data)?data[0]:data;
+    if(!row)return null;
+    return {
+      id:row.team_id,
+      name:row.team_name,
+      role:row.role,
+      join_code:row.join_code||null,
+      sheet_sync_enabled:row.sheet_sync_enabled===true
+    };
+  }
+
+  function applyTeamToProfile(team){
+    window.currentTeam=team||null;
+    if(window.currentProfile){
+      window.currentProfile.team_id=team?.id||null;
+      window.currentProfile.team_name=team?.name||null;
+      window.currentProfile.app_role=team?.role||'viewer';
+    }
+
+    const role=team?.role||'viewer';
+    document.body.dataset.userRole=role;
+
+    if(topTeamBadge){
+      if(team){
+        topTeamBadge.textContent=team.name;
+        topTeamBadge.style.display='inline-flex';
+        topTeamBadge.title=`${team.name} · ${teamRoleLabel(team.role)}`;
+      }else{
+        topTeamBadge.textContent='';
+        topTeamBadge.style.display='none';
+      }
+    }
+
+    const sheetsStatus=document.getElementById('googleSheetsConnectionStatus');
+    if(sheetsStatus){
+      sheetsStatus.textContent=team?.sheet_sync_enabled
+        ? 'Google Sheets conectado para este equipo'
+        : 'Google Sheets no configurado para este equipo';
+    }
+
+    applyAccessMode();
+  }
+
+  async function refreshTeamSettings(){
+    if(!window.currentTeam)return;
+
+    if(teamSettingsCard)teamSettingsCard.style.display='block';
+    if(teamSettingsName)teamSettingsName.textContent=window.currentTeam.name;
+    if(teamSettingsRole)teamSettingsRole.textContent=teamRoleLabel(window.currentTeam.role);
+
+    const isAdmin=window.currentTeam.role==='admin';
+    if(teamAdminControls)teamAdminControls.style.display=isAdmin?'block':'none';
+    if(teamJoinCode)teamJoinCode.value=isAdmin?(window.currentTeam.join_code||''):'';
+
+    const {data,error}=await window.supabaseClient.rpc('get_team_members');
+    if(error){
+      console.error('Error cargando miembros:',error);
+      if(teamMembersList)teamMembersList.innerHTML='<div class="muted">No se pudieron cargar los miembros.</div>';
+      return;
+    }
+
+    if(!teamMembersList)return;
+    teamMembersList.innerHTML='';
+
+    (data||[]).forEach(member=>{
+      const row=document.createElement('div');
+      row.className='teamMemberRow';
+
+      const name=document.createElement('div');
+      name.className='teamMemberName';
+      name.innerHTML=`<strong>${escapeTeamHtml(member.display_name||'Miembro')}</strong><div class="teamRoleLabel">${teamRoleLabel(member.role)}</div>`;
+      row.appendChild(name);
+
+      if(isAdmin && member.role!=='admin'){
+        const select=document.createElement('select');
+        select.innerHTML='<option value="viewer">Solo lectura</option><option value="editor">Editor</option>';
+        select.value=member.role;
+        select.title='Permiso del miembro';
+        select.addEventListener('change',async()=>{
+          const previous=member.role;
+          try{
+            select.disabled=true;
+            const {error}=await window.supabaseClient.rpc('set_team_member_role',{
+              p_user_id:member.user_id,
+              p_role:select.value
+            });
+            if(error)throw error;
+            member.role=select.value;
+            await refreshTeamSettings();
+          }catch(error){
+            console.error(error);
+            select.value=previous;
+            alert(error.message||'No se pudo cambiar el permiso.');
+          }finally{
+            select.disabled=false;
+          }
+        });
+        row.appendChild(select);
+
+        const transfer=document.createElement('button');
+        transfer.type='button';
+        transfer.className='miniBtn teamTransferBtn';
+        transfer.textContent='Hacer admin';
+        transfer.title='Transferir la administración a esta persona';
+        transfer.addEventListener('click',async()=>{
+          const ok=confirm(`¿Transferir la administración del equipo a ${member.display_name||'esta persona'}?\n\nTú pasarás a ser Editor.`);
+          if(!ok)return;
+          try{
+            transfer.disabled=true;
+            const {error}=await window.supabaseClient.rpc('transfer_team_admin',{p_user_id:member.user_id});
+            if(error)throw error;
+            location.reload();
+          }catch(error){
+            console.error(error);
+            alert(error.message||'No se pudo transferir la administración.');
+            transfer.disabled=false;
+          }
+        });
+        row.appendChild(transfer);
+      }else{
+        const label=document.createElement('span');
+        label.className='teamRoleLabel';
+        label.textContent=teamRoleLabel(member.role);
+        row.appendChild(label);
+        const spacer=document.createElement('span');
+        row.appendChild(spacer);
+      }
+
+      teamMembersList.appendChild(row);
+    });
+  }
+
+  createTeamForm?.addEventListener('submit',async(event)=>{
+    event.preventDefault();
+    const name=createTeamName.value.trim();
+    if(!name)return;
+    teamGateMessage.textContent='Creando equipo…';
+    try{
+      const {data,error}=await window.supabaseClient.rpc('create_team',{p_name:name});
+      if(error)throw error;
+      const created=Array.isArray(data)?data[0]:data;
+      teamGateMessage.textContent='Equipo creado ✅';
+      if(created?.team_id){
+        setTimeout(()=>location.reload(),250);
+      }else{
+        location.reload();
+      }
+    }catch(error){
+      console.error(error);
+      teamGateMessage.textContent=error.message||'No se pudo crear el equipo.';
+    }
+  });
+
+  joinTeamForm?.addEventListener('submit',async(event)=>{
+    event.preventDefault();
+    const code=joinTeamCode.value.trim().toUpperCase();
+    if(!code)return;
+    teamGateMessage.textContent='Uniéndote al equipo…';
+    try{
+      const {data,error}=await window.supabaseClient.rpc('join_team_by_code',{p_code:code});
+      if(error)throw error;
+      teamGateMessage.textContent='Te uniste al equipo ✅';
+      setTimeout(()=>location.reload(),250);
+    }catch(error){
+      console.error(error);
+      teamGateMessage.textContent=error.message||'No se pudo usar ese código.';
+    }
+  });
+
+  teamGateLogout?.addEventListener('click',async()=>{
+    await window.supabaseClient.auth.signOut();
+  });
+
+  copyTeamCode?.addEventListener('click',async()=>{
+    const code=teamJoinCode?.value||'';
+    if(!code)return;
+    try{
+      await navigator.clipboard.writeText(code);
+      copyTeamCode.textContent='Copiado ✓';
+      setTimeout(()=>copyTeamCode.textContent='Copiar código',1100);
+    }catch{
+      teamJoinCode?.select();
+      document.execCommand('copy');
+    }
+  });
+
+  resetTeamCode?.addEventListener('click',async()=>{
+    if(!confirm('¿Generar un nuevo código? El código anterior dejará de funcionar.'))return;
+    try{
+      resetTeamCode.disabled=true;
+      const {data,error}=await window.supabaseClient.rpc('reset_team_join_code');
+      if(error)throw error;
+      const newCode=typeof data==='string'?data:(Array.isArray(data)?data[0]:data);
+      if(teamJoinCode)teamJoinCode.value=newCode||'';
+      if(window.currentTeam)window.currentTeam.join_code=newCode||'';
+    }catch(error){
+      console.error(error);
+      alert(error.message||'No se pudo generar un nuevo código.');
+    }finally{
+      resetTeamCode.disabled=false;
+    }
+  });
 
   function openLoginModal(mode='login'){
     setAuthMode(mode);
@@ -5126,8 +5622,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   authModeToggle?.addEventListener('click',()=>setAuthMode(authMode==='login'?'signup':'login'));
-  loginClose?.addEventListener('click',closeLoginModal);
-  loginScreen?.addEventListener('click',(e)=>{if(e.target===loginScreen)closeLoginModal()});
+  loginClose?.addEventListener('click',()=>{ location.href='index.html'; });
   topAuthBtn?.addEventListener('click',async()=>{
     if(window.currentProfile){
       await window.supabaseClient.auth.signOut();
@@ -5151,10 +5646,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       loginScreen.style.display = 'none';
       setAppLoading(true,'Estamos cargando la página.');
     } else {
-      loginScreen.style.display = 'none';
+      showTeamGate(false);
+      loginScreen.style.display = 'flex';
       window.currentProfile = null;
+      window.currentTeam = null;
       delete document.body.dataset.userRole;
+      if(topTeamBadge)topTeamBadge.style.display='none';
       applyAccessMode();
+      setAppLoading(false);
     }
   }
 
@@ -5162,6 +5661,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (!session?.user?.id) {
       window.currentProfile = null;
+      window.currentTeam = null;
       return null;
     }
 
@@ -5182,12 +5682,31 @@ document.addEventListener('DOMContentLoaded', async () => {
       id: session.user.id,
       email: session.user.email,
       display_name: data.display_name,
-      app_role: data.app_role
+      account_role: data.app_role,
+      app_role: 'viewer'
     };
 
-    document.body.dataset.userRole = data.app_role;
-    applyAccessMode();
+    let team=null;
+    try{
+      team=await loadMyTeam();
+    }catch(teamError){
+      console.error('Error cargando equipo:',teamError);
+      setAppLoading(false);
+      alert('No se pudo cargar el equipo. Verifica que hayas ejecutado el SQL de Equipos y permisos en Supabase.');
+      return window.currentProfile;
+    }
 
+    if(!team){
+      applyTeamToProfile(null);
+      showTeamGate(true);
+      setAppLoading(false);
+      return window.currentProfile;
+    }
+
+    showTeamGate(false);
+    applyTeamToProfile(team);
+
+    console.log('Equipo cargado:', window.currentTeam);
     console.log('Perfil cargado:', window.currentProfile);
 
     const bootStarted=performance.now();
@@ -5198,7 +5717,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       window.bootstrapSchedulesSupabase?.()
     ]);
 
-    console.log(`Datos de usuario listos en ${Math.round(performance.now()-bootStarted)} ms`);
+    try{
+      await refreshTeamSettings();
+    }catch(teamUiError){
+      console.error('Error actualizando panel del equipo:',teamUiError);
+    }
+
+    console.log(`Datos del equipo listos en ${Math.round(performance.now()-bootStarted)} ms`);
     setAppLoading(false);
     return window.currentProfile;
   }
@@ -5235,8 +5760,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       },250);
     }
-  }else{
-    await window.bootstrapPublicView?.();
   }
 
   // =========================
@@ -5284,7 +5807,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if(data.session){
           loginMessage.style.color='#7ddc98';
           loginMessage.textContent='Cuenta creada. Ingresando...';
-          await cargarPerfilUsuario(data.session);
           closeLoginModal();
         }else{
           setAuthMode('login');
@@ -5310,7 +5832,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if(error)throw error;
 
         if(data.session){
-          await cargarPerfilUsuario(data.session);
           closeLoginModal();
           console.log('Sesión iniciada:', data.session.user.email);
         }
@@ -5325,7 +5846,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }else if(/invalid login|credentials/i.test(msg)){
         loginMessage.textContent='Correo o contraseña incorrectos.';
       }else if(/signups are disabled/i.test(msg)){
-        loginMessage.textContent='El registro de cuentas nuevas está desactivado. Puedes seguir viendo la aplicación sin iniciar sesión.';
+        loginMessage.textContent='El registro de cuentas nuevas está desactivado en Supabase. Activa Email signups para permitir nuevas cuentas.';
       }else{
         loginMessage.textContent='No se pudo completar la operación. '+msg;
       }
@@ -5350,8 +5871,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (session) {
         await cargarPerfilUsuario(session);
       }else{
-        publicBootstrapDone=false;
-        await window.bootstrapPublicView?.();
+        window.currentTeam=null;
+        showTeamGate(false);
       }
 
       console.log('Estado de autenticación:', event);
