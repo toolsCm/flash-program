@@ -1330,6 +1330,104 @@ body.readonly-mode .songDbTable [data-col="actions"]{
 .csvImportLocked{pointer-events:none;opacity:.66}
 </style>
 
+
+<style id="v53-google-sheets-team">
+.gsConnectionCard .gsStatusBox{
+  padding:.75rem .85rem;
+  border:1px solid var(--line);
+  border-radius:.65rem;
+  background:var(--panel2);
+  margin-bottom:.85rem;
+}
+.gsConnectionCard .gsStatusBox.connected{
+  border-color:#315a3c;
+  background:#17241b;
+}
+.gsConnectionCard .gsStatusTitle{font-weight:800}
+.gsConnectionCard .gsStatusMeta{
+  color:var(--muted);
+  font-size:.82rem;
+  margin-top:.25rem;
+  overflow-wrap:anywhere;
+}
+.gsConnectionGrid{
+  display:grid;
+  grid-template-columns:minmax(7rem,.32fr) minmax(0,1fr);
+  gap:.7rem;
+}
+.gsConnectionGrid .span2{grid-column:1/-1}
+.gsAdvanced{
+  margin:.85rem 0;
+  border:1px solid var(--line);
+  border-radius:.65rem;
+  background:var(--panel2);
+}
+.gsAdvanced summary{
+  cursor:pointer;
+  padding:.72rem .82rem;
+  font-weight:800;
+}
+.gsAdvancedBody{
+  padding:0 .82rem .82rem;
+  display:grid;
+  gap:.65rem;
+}
+.gsConnectionActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.55rem;
+  margin-top:.8rem;
+}
+.gsConnectionActions .btn{min-height:2.65rem}
+.gsYearList{
+  display:grid;
+  gap:.55rem;
+  margin-top:.85rem;
+}
+.gsYearRow{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:.65rem;
+  padding:.65rem .7rem;
+  border:1px solid var(--line);
+  border-radius:.6rem;
+  background:var(--panel2);
+}
+.gsYearBadge{
+  min-width:3.6rem;
+  text-align:center;
+  font-weight:900;
+}
+.gsYearInfo{
+  min-width:0;
+  color:var(--muted);
+  font-size:.8rem;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.gsYearRow a{white-space:nowrap}
+.gsFutureOptions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.45rem;
+  margin-top:.75rem;
+}
+.gsFutureOptions .btn[disabled]{
+  opacity:.48;
+  cursor:not-allowed;
+}
+@media(max-width:42rem){
+  .gsConnectionGrid{grid-template-columns:1fr}
+  .gsConnectionGrid .span2{grid-column:auto}
+  .gsConnectionActions{display:grid;grid-template-columns:1fr 1fr}
+  .gsConnectionActions .btn{width:100%}
+  .gsYearRow{grid-template-columns:auto 1fr}
+  .gsYearRow a{grid-column:1/-1;width:100%}
+}
+</style>
+
 </head>
 <body class="readonly-mode">
 
@@ -1797,7 +1895,74 @@ body.readonly-mode .songDbTable [data-col="actions"]{
   <h3 style="margin:1.2rem 0 .4rem">Miembros</h3>
   <div id="teamMembersList" class="teamMembersList"></div>
 </div>
-<div class="card s6"><h2>Configuración</h2><label>Google Sheets anual</label><input value="2026 PROGRAMACIÓN ALABANZA Y MEDIA" readonly><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div><div class="card s6"><div class="note"><strong>Google Sheets</strong><br>La programación siempre se guarda primero en la base de datos. La sincronización con el archivo anual solo se realiza en los equipos que tengan esa conexión habilitada.</div><div id="googleSheetsConnectionStatus" class="muted" style="margin-top:10px">Comprobando conexión del equipo…</div><div class="muted" style="margin-top:6px">Los equipos nuevos quedan aislados y no usan automáticamente el archivo de Google Sheets del equipo original.</div></div></div></section>
+<div class="card s6"><h2>Configuración</h2><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div>
+
+<div id="googleSheetsCard" class="card s6 gsConnectionCard">
+  <h2>Google Sheets</h2>
+
+  <div id="googleSheetsConnectionStatus" class="gsStatusBox">
+    <div class="gsStatusTitle">Comprobando conexión…</div>
+    <div class="gsStatusMeta">La programación se guarda primero en Flash Program.</div>
+  </div>
+
+  <div id="googleSheetsAdminControls" style="display:none">
+    <div class="gsConnectionGrid">
+      <div>
+        <label>Año</label>
+        <input id="gsConnectionYear" type="number" min="2024" max="2100" step="1">
+      </div>
+      <div>
+        <label>Enlace del archivo</label>
+        <input id="gsConnectionUrl" type="url" inputmode="url"
+          placeholder="https://docs.google.com/spreadsheets/d/.../edit">
+      </div>
+    </div>
+
+    <details class="gsAdvanced">
+      <summary>Configuración de pestañas</summary>
+      <div class="gsAdvancedBody">
+        <div>
+          <label>Alabanza</label>
+          <input id="gsWorshipSheetName" value="{MES}" placeholder="{MES}">
+          <div class="muted">Usa <strong>{MES}</strong> para ENERO, FEBRERO, MARZO…</div>
+        </div>
+        <div>
+          <label>Jóvenes</label>
+          <input id="gsYouthSheetName" value="jovenes">
+        </div>
+        <div>
+          <label>Multimedia</label>
+          <input id="gsMediaSheetName" value="MULTIMEDIA ">
+        </div>
+      </div>
+    </details>
+
+    <div class="gsConnectionActions">
+      <button id="gsSaveConnection" class="btn primary" type="button">Conectar archivo</button>
+      <button id="gsDisconnectConnection" class="btn secondary" type="button">Desconectar año</button>
+    </div>
+
+    <div class="note" style="margin-top:.8rem">
+      <strong>Importante:</strong> el archivo debe ser accesible por la misma cuenta de Google
+      donde está publicado el Apps Script de Flash Program. Si pertenece a otra cuenta,
+      compártelo con esa cuenta con permiso de Editor.
+    </div>
+
+    <div class="gsFutureOptions">
+      <button class="btn secondary" type="button" disabled>Crear archivo nuevo · Próximamente</button>
+      <button class="btn secondary" type="button" disabled>Conectar cuenta Google · Próximamente</button>
+    </div>
+  </div>
+
+  <div id="googleSheetsReadOnlyNote" class="muted" style="display:none;margin-top:.7rem">
+    Solo el Administrador del equipo puede conectar o cambiar archivos de Google Sheets.
+  </div>
+
+  <h3 style="margin:1rem 0 .35rem">Archivos conectados</h3>
+  <div id="gsConnectionsList" class="gsYearList">
+    <div class="muted">Cargando…</div>
+  </div>
+</div></div></section>
 
 <div id="songEditModal" class="modalBackdrop" aria-hidden="true">
   <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="songEditTitle">
@@ -3808,13 +3973,13 @@ async function sendGoogleSheetsFallback(payload){
 }
 
 async function syncConfirmedMonthToGoogleSheets(module,services,year,monthZeroBased){
-  if(!window.currentTeam?.sheet_sync_enabled){
+  if(!hasGoogleSheetsConnection(year)){
     return {
       ok:true,
       skipped:true,
       verified:false,
       result:null,
-      transport:"disabled-for-team"
+      transport:"no-connection-for-year"
     };
   }
 
@@ -4476,7 +4641,7 @@ async function confirmW(){
    renderW();
    updateHome();
 
-   if(btn)btn.textContent=window.currentTeam?.sheet_sync_enabled?"Google Sheets…":"Finalizando…";
+   if(btn)btn.textContent=hasGoogleSheetsConnection(Y)?"Google Sheets…":"Finalizando…";
 
    try{
      const sheetResult=await syncConfirmedMonthToGoogleSheets("alabanza",loaded,Y,M);
@@ -4525,7 +4690,7 @@ async function confirmJ(){
    renderJ();
    updateHome();
 
-   if(btn)btn.textContent=window.currentTeam?.sheet_sync_enabled?"Google Sheets…":"Finalizando…";
+   if(btn)btn.textContent=hasGoogleSheetsConnection(Y)?"Google Sheets…":"Finalizando…";
 
    try{
      const sheetResult=await syncConfirmedMonthToGoogleSheets("jovenes",loaded,Y,M);
@@ -4571,7 +4736,7 @@ async function confirmM(){
    renderM();
    updateHome();
 
-   if(btn)btn.textContent=window.currentTeam?.sheet_sync_enabled?"Google Sheets…":"Finalizando…";
+   if(btn)btn.textContent=hasGoogleSheetsConnection(Y)?"Google Sheets…":"Finalizando…";
 
    try{
      const sheetResult=await syncConfirmedMonthToGoogleSheets("multimedia",loaded,Y,M);
@@ -5633,6 +5798,216 @@ refreshRoles();renderVols();refreshPeople();refreshMediaRoleControl();renderMedi
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
 
+
+  // =========================================================
+  // V53 · GOOGLE SHEETS POR EQUIPO / AÑO
+  // =========================================================
+  const googleSheetConnections=new Map();
+
+  function extractGoogleSpreadsheetId(value){
+    const text=String(value||'').trim();
+    if(!text)return '';
+    const urlMatch=text.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/i);
+    if(urlMatch?.[1])return urlMatch[1];
+    if(/^[a-zA-Z0-9_-]{20,}$/.test(text))return text;
+    return '';
+  }
+
+  function canonicalGoogleSheetUrl(id){
+    return id?`https://docs.google.com/spreadsheets/d/${id}/edit`:'';
+  }
+
+  function hasGoogleSheetsConnection(year){
+    const row=googleSheetConnections.get(Number(year));
+    return !!(row&&row.active&&row.spreadsheet_id);
+  }
+  window.hasGoogleSheetsConnection=hasGoogleSheetsConnection;
+
+  function updateGoogleSheetsSettingsVisibility(){
+    const adminControls=document.getElementById('googleSheetsAdminControls');
+    const readOnlyNote=document.getElementById('googleSheetsReadOnlyNote');
+    const isAdmin=window.currentTeam?.role==='admin';
+    if(adminControls)adminControls.style.display=isAdmin?'block':'none';
+    if(readOnlyNote)readOnlyNote.style.display=isAdmin?'none':'block';
+  }
+
+  function renderGoogleSheetConnections(){
+    const status=document.getElementById('googleSheetsConnectionStatus');
+    const list=document.getElementById('gsConnectionsList');
+    const rows=[...googleSheetConnections.values()]
+      .filter(row=>row.active)
+      .sort((a,b)=>Number(a.year)-Number(b.year));
+
+    if(status){
+      status.classList.toggle('connected',rows.length>0);
+      status.innerHTML=rows.length
+        ? `<div class="gsStatusTitle">Google Sheets conectado</div>
+           <div class="gsStatusMeta">${rows.length} ${rows.length===1?'año configurado':'años configurados'} para ${escapeTeamHtml(window.currentTeam?.name||'este equipo')}.</div>`
+        : `<div class="gsStatusTitle">Google Sheets no configurado</div>
+           <div class="gsStatusMeta">Puedes confirmar programación en Flash Program; no se enviará a Sheets hasta conectar un archivo.</div>`;
+    }
+
+    if(!list)return;
+    if(!rows.length){
+      list.innerHTML='<div class="muted">No hay archivos conectados.</div>';
+      return;
+    }
+
+    list.innerHTML=rows.map(row=>{
+      const url=row.spreadsheet_url||canonicalGoogleSheetUrl(row.spreadsheet_id);
+      return `<div class="gsYearRow">
+        <div class="gsYearBadge">${Number(row.year)}</div>
+        <div class="gsYearInfo" title="${escapeTeamHtml(url)}">${escapeTeamHtml(url)}</div>
+        <a class="btn secondary" href="${escapeTeamHtml(url)}" target="_blank" rel="noopener noreferrer">Abrir archivo</a>
+      </div>`;
+    }).join('');
+  }
+
+  function fillGoogleSheetsForm(year){
+    const y=Number(year);
+    const row=googleSheetConnections.get(y);
+    const yearInput=document.getElementById('gsConnectionYear');
+    const urlInput=document.getElementById('gsConnectionUrl');
+    const worshipInput=document.getElementById('gsWorshipSheetName');
+    const youthInput=document.getElementById('gsYouthSheetName');
+    const mediaInput=document.getElementById('gsMediaSheetName');
+
+    if(yearInput)yearInput.value=String(y||new Date().getFullYear());
+    if(urlInput)urlInput.value=row?.spreadsheet_url||canonicalGoogleSheetUrl(row?.spreadsheet_id)||'';
+    if(worshipInput)worshipInput.value=row?.worship_sheet_name||'{MES}';
+    if(youthInput)youthInput.value=row?.youth_sheet_name||'jovenes';
+    if(mediaInput)mediaInput.value=row?.multimedia_sheet_name??'MULTIMEDIA ';
+  }
+
+  async function loadGoogleSheetsConnections(){
+    googleSheetConnections.clear();
+    updateGoogleSheetsSettingsVisibility();
+
+    if(!window.currentTeam||!window.supabaseClient){
+      renderGoogleSheetConnections();
+      return [];
+    }
+
+    const {data,error}=await window.supabaseClient
+      .from('sheet_connections')
+      .select('year,spreadsheet_id,spreadsheet_url,worship_sheet_name,youth_sheet_name,multimedia_sheet_name,active')
+      .order('year',{ascending:true});
+
+    if(error)throw error;
+
+    (data||[]).forEach(row=>googleSheetConnections.set(Number(row.year),row));
+    renderGoogleSheetConnections();
+
+    const currentYear=Number(document.getElementById('gsConnectionYear')?.value)||new Date().getFullYear();
+    fillGoogleSheetsForm(currentYear);
+    return data||[];
+  }
+  window.loadGoogleSheetsConnections=loadGoogleSheetsConnections;
+
+  async function refreshTeamAfterSheetsChange(){
+    const team=await loadMyTeam();
+    if(team)applyTeamToProfile(team);
+  }
+
+  async function saveGoogleSheetsConnection(){
+    if(window.currentTeam?.role!=='admin'){
+      window.showAppToast?.('Solo el Administrador puede conectar Google Sheets.','error',1600);
+      return;
+    }
+
+    const year=Number(document.getElementById('gsConnectionYear')?.value);
+    const rawUrl=document.getElementById('gsConnectionUrl')?.value||'';
+    const spreadsheetId=extractGoogleSpreadsheetId(rawUrl);
+
+    if(!Number.isInteger(year)||year<2024||year>2100){
+      window.showAppToast?.('Ingresa un año válido.','error',1500);
+      return;
+    }
+
+    if(!spreadsheetId){
+      window.showAppToast?.('El enlace de Google Sheets no es válido.','error',1800);
+      return;
+    }
+
+    const worship=String(document.getElementById('gsWorshipSheetName')?.value||'{MES}').trim()||'{MES}';
+    const youth=String(document.getElementById('gsYouthSheetName')?.value||'jovenes').trim()||'jovenes';
+    const mediaRaw=String(document.getElementById('gsMediaSheetName')?.value??'MULTIMEDIA ');
+    const media=mediaRaw.length?mediaRaw:'MULTIMEDIA ';
+
+    const btn=document.getElementById('gsSaveConnection');
+    const old=btn?.textContent||'Conectar archivo';
+    if(btn){btn.disabled=true;btn.textContent='Guardando…'}
+
+    try{
+      const payload={
+        team_id:window.currentTeam.id,
+        year,
+        spreadsheet_id:spreadsheetId,
+        spreadsheet_url:canonicalGoogleSheetUrl(spreadsheetId),
+        worship_sheet_name:worship,
+        youth_sheet_name:youth,
+        multimedia_sheet_name:media,
+        active:true,
+        updated_at:new Date().toISOString()
+      };
+
+      const {error}=await window.supabaseClient
+        .from('sheet_connections')
+        .upsert(payload,{onConflict:'team_id,year'});
+
+      if(error)throw error;
+
+      await loadGoogleSheetsConnections();
+      await refreshTeamAfterSheetsChange();
+      window.showAppToast?.(`Google Sheets ${year} conectado.`,'success',1200);
+    }catch(error){
+      console.error('Error conectando Google Sheets:',error);
+      window.showAppToast?.('No se pudo conectar el archivo: '+(error.message||error),'error',2200);
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent=old}
+    }
+  }
+
+  async function disconnectGoogleSheetsConnection(){
+    if(window.currentTeam?.role!=='admin')return;
+
+    const year=Number(document.getElementById('gsConnectionYear')?.value);
+    if(!hasGoogleSheetsConnection(year)){
+      window.showAppToast?.(`No hay un archivo conectado para ${year}.`,'info',1200);
+      return;
+    }
+
+    const ok=await window.appConfirm(
+      `¿Desconectar el archivo de Google Sheets para ${year}?\\n\\nLa programación seguirá guardándose en Flash Program.`,
+      {title:'Desconectar Google Sheets',confirmText:'Desconectar',tone:'danger',icon:'↗'}
+    );
+    if(!ok)return;
+
+    const btn=document.getElementById('gsDisconnectConnection');
+    const old=btn?.textContent||'Desconectar año';
+    if(btn){btn.disabled=true;btn.textContent='Desconectando…'}
+
+    try{
+      const {error}=await window.supabaseClient
+        .from('sheet_connections')
+        .delete()
+        .eq('team_id',window.currentTeam.id)
+        .eq('year',year);
+
+      if(error)throw error;
+
+      await loadGoogleSheetsConnections();
+      await refreshTeamAfterSheetsChange();
+      fillGoogleSheetsForm(year);
+      window.showAppToast?.(`Google Sheets ${year} desconectado.`,'success',1200);
+    }catch(error){
+      console.error('Error desconectando Google Sheets:',error);
+      window.showAppToast?.('No se pudo desconectar el archivo.','error',1800);
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent=old}
+    }
+  }
+
   const loginScreen = document.getElementById('loginScreen');
   const loginForm = document.getElementById('loginForm');
   const loginEmail = document.getElementById('loginEmail');
@@ -5664,6 +6039,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   const copyTeamCode = document.getElementById('copyTeamCode');
   const resetTeamCode = document.getElementById('resetTeamCode');
   const teamMembersList = document.getElementById('teamMembersList');
+
+  const gsConnectionYear=document.getElementById('gsConnectionYear');
+  const gsSaveConnection=document.getElementById('gsSaveConnection');
+  const gsDisconnectConnection=document.getElementById('gsDisconnectConnection');
+
+  gsConnectionYear?.addEventListener('change',()=>fillGoogleSheetsForm(gsConnectionYear.value));
+  gsSaveConnection?.addEventListener('click',saveGoogleSheetsConnection);
+  gsDisconnectConnection?.addEventListener('click',disconnectGoogleSheetsConnection);
+
+  if(gsConnectionYear)gsConnectionYear.value=String(new Date().getFullYear());
 
   window.currentTeam = null;
   let authMode = 'login';
@@ -5726,14 +6111,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
-    const sheetsStatus=document.getElementById('googleSheetsConnectionStatus');
-    if(sheetsStatus){
-      sheetsStatus.textContent=team?.sheet_sync_enabled
-        ? 'Google Sheets conectado para este equipo'
-        : 'Google Sheets no configurado para este equipo';
-    }
-
     applyAccessMode();
+    updateGoogleSheetsSettingsVisibility();
   }
 
   async function refreshTeamSettings(){
@@ -6033,6 +6412,8 @@ Tú pasarás a ser Editor.`,
     }
 
     if(!team){
+      googleSheetConnections.clear();
+      renderGoogleSheetConnections();
       applyTeamToProfile(null);
       showTeamGate(true);
       setAppLoading(false);
@@ -6054,9 +6435,12 @@ Tú pasarás a ser Editor.`,
     ]);
 
     try{
-      await refreshTeamSettings();
+      await Promise.all([
+        refreshTeamSettings(),
+        loadGoogleSheetsConnections()
+      ]);
     }catch(teamUiError){
-      console.error('Error actualizando panel del equipo:',teamUiError);
+      console.error('Error actualizando Configuración del equipo:',teamUiError);
     }
 
     console.log(`Datos del equipo listos en ${Math.round(performance.now()-bootStarted)} ms`);
