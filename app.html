@@ -1898,7 +1898,7 @@ body.readonly-mode .songDbTable [data-col="actions"]{
 <div class="card s6"><h2>Configuración</h2><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div>
 
 <div id="googleSheetsCard" class="card s6 gsConnectionCard">
-  <h2>Google Sheets</h2>
+  <h2>Google Sheets</h2><div class="muted" style="margin:-.25rem 0 .8rem">Integración privada del equipo principal.</div>
 
   <div id="googleSheetsConnectionStatus" class="gsStatusBox">
     <div class="gsStatusTitle">Comprobando conexión…</div>
@@ -1948,10 +1948,7 @@ body.readonly-mode .songDbTable [data-col="actions"]{
       compártelo con esa cuenta con permiso de Editor.
     </div>
 
-    <div class="gsFutureOptions">
-      <button class="btn secondary" type="button" disabled>Crear archivo nuevo · Próximamente</button>
-      <button class="btn secondary" type="button" disabled>Conectar cuenta Google · Próximamente</button>
-    </div>
+    
   </div>
 
   <div id="googleSheetsReadOnlyNote" class="muted" style="display:none;margin-top:.7rem">
@@ -3973,7 +3970,7 @@ async function sendGoogleSheetsFallback(payload){
 }
 
 async function syncConfirmedMonthToGoogleSheets(module,services,year,monthZeroBased){
-  if(!hasGoogleSheetsConnection(year)){
+  if(window.currentTeam?.private_google_sheets_enabled!==true || !hasGoogleSheetsConnection(year)){
     return {
       ok:true,
       skipped:true,
@@ -5824,11 +5821,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.hasGoogleSheetsConnection=hasGoogleSheetsConnection;
 
   function updateGoogleSheetsSettingsVisibility(){
+    const card=document.getElementById('googleSheetsCard');
     const adminControls=document.getElementById('googleSheetsAdminControls');
     const readOnlyNote=document.getElementById('googleSheetsReadOnlyNote');
+
+    const featureEnabled=window.currentTeam?.private_google_sheets_enabled===true;
     const isAdmin=window.currentTeam?.role==='admin';
-    if(adminControls)adminControls.style.display=isAdmin?'block':'none';
-    if(readOnlyNote)readOnlyNote.style.display=isAdmin?'none':'block';
+
+    // Esta integración es privada: solo aparece al Admin del equipo principal.
+    if(card)card.style.display=(featureEnabled&&isAdmin)?'block':'none';
+    if(adminControls)adminControls.style.display=(featureEnabled&&isAdmin)?'block':'none';
+    if(readOnlyNote)readOnlyNote.style.display='none';
   }
 
   function renderGoogleSheetConnections(){
@@ -5883,7 +5886,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     googleSheetConnections.clear();
     updateGoogleSheetsSettingsVisibility();
 
-    if(!window.currentTeam||!window.supabaseClient){
+    if(!window.currentTeam||!window.supabaseClient||window.currentTeam.private_google_sheets_enabled!==true){
       renderGoogleSheetConnections();
       return [];
     }
@@ -6080,12 +6083,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     if(error)throw error;
     const row=Array.isArray(data)?data[0]:data;
     if(!row)return null;
+
+    const {data:teamConfig,error:teamConfigError}=await window.supabaseClient
+      .from('teams')
+      .select('private_google_sheets_enabled')
+      .eq('id',row.team_id)
+      .maybeSingle();
+
+    if(teamConfigError)throw teamConfigError;
+
     return {
       id:row.team_id,
       name:row.team_name,
       role:row.role,
       join_code:row.join_code||null,
-      sheet_sync_enabled:row.sheet_sync_enabled===true
+      sheet_sync_enabled:row.sheet_sync_enabled===true,
+      private_google_sheets_enabled:teamConfig?.private_google_sheets_enabled===true
     };
   }
 
