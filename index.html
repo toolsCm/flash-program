@@ -4,8 +4,10 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V26-SUPABASE-DISPONIBILIDAD">
 <title>Programación V29 · Filtros + Bloqueos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&display=swap">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&display=swap');
 :root{--bg:#0f1115;--panel:#15181e;--panel2:#1b1f26;--panel3:#222831;--text:#f2f4f7;--muted:#9aa4b2;--line:#2b313a;--side:#111419;--hover:#1c222a;--accent:#7c9cf5;--accentSoft:#1c2947;--success:#17351f;--successText:#b9f6c7;--blue:#9ec0df;--blue2:#c2d7ea;--bhead:#7ea7b2;--green:#dfe8dc;--green2:#c8d9c3;--ghead:#d3dde1}
 body[data-theme="light"]{--bg:#f3f4f6;--panel:#f8f9fa;--panel2:#fff;--panel3:#eceff2;--text:#202124;--muted:#6f7782;--line:#dfe3e8;--side:#eceef1;--hover:#e1e5e9;--accent:#506fd8;--accentSoft:#eef2ff;--success:#ecfdf3;--successText:#166534}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color-scheme:dark}body[data-theme="light"]{color-scheme:light}body{transition:background .22s,color .22s}button,input,select,textarea{font:inherit;color:inherit}option{background:var(--panel2);color:var(--text)}button{cursor:pointer}
@@ -2741,6 +2743,7 @@ async function loadVolunteersFromSupabase(){
 
  volunteers=nextWorship;
  mediaVolunteers=nextMedia;
+ if(volunteerBootstrapDone)invalidateScheduleReferenceMaps();
  renderVols();
  renderMediaVolunteers();
  refreshPeople();
@@ -3053,6 +3056,7 @@ async function loadSongsFromSupabase(){
    item.cat=legacyGroupForSong(item);
    return item;
  });
+ if(songBootstrapDone)invalidateScheduleReferenceMaps();
  refreshSongFilterOptions();
  renderSongs();renderW();renderJ();
  return true;
@@ -3727,24 +3731,49 @@ function setScheduleStatus(module,message,type="loaded"){
  box.innerHTML=`<div class="note ${cls}">${message}</div>`;
 }
 
-async function getScheduleReferenceMaps(){
- const [{data:people,error:peopleError},{data:roleRows,error:roleError},{data:songRows,error:songError}]=await Promise.all([
-   window.supabaseClient.from("volunteers").select("id,name"),
-   window.supabaseClient.from("roles").select("id,name,module,sort_order"),
-   window.supabaseClient.from("songs").select("id,name,artist,category,bpm,base_key,active")
- ]);
- if(peopleError)throw peopleError;
- if(roleError)throw roleError;
- if(songError)throw songError;
+let scheduleReferenceMapsCache=null;
+let scheduleReferenceMapsPromise=null;
+let scheduleReferenceMapsCachedAt=0;
 
- return {
-   volunteerById:new Map((people||[]).map(v=>[v.id,v])),
-   volunteerByName:new Map((people||[]).map(v=>[String(v.name||"").trim().toLocaleLowerCase("es"),v])),
-   roleById:new Map((roleRows||[]).map(r=>[r.id,r])),
-   roleByKey:new Map((roleRows||[]).map(r=>[`${r.module}:${r.name}`,r])),
-   songById:new Map((songRows||[]).map(s=>[s.id,s])),
-   songByName:new Map((songRows||[]).map(s=>[cleanHistorySongName(s.name).toLocaleLowerCase("es"),s]))
- };
+function invalidateScheduleReferenceMaps(){
+ scheduleReferenceMapsCache=null;
+ scheduleReferenceMapsCachedAt=0;
+}
+
+async function getScheduleReferenceMaps(){
+ const now=Date.now();
+ if(scheduleReferenceMapsCache && (now-scheduleReferenceMapsCachedAt)<60000){
+   return scheduleReferenceMapsCache;
+ }
+ if(scheduleReferenceMapsPromise)return scheduleReferenceMapsPromise;
+
+ scheduleReferenceMapsPromise=(async()=>{
+   const [{data:people,error:peopleError},{data:roleRows,error:roleError},{data:songRows,error:songError}]=await Promise.all([
+     window.supabaseClient.from("volunteers").select("id,name"),
+     window.supabaseClient.from("roles").select("id,name,module,sort_order"),
+     window.supabaseClient.from("songs").select("id,name,artist,category,bpm,base_key,active")
+   ]);
+   if(peopleError)throw peopleError;
+   if(roleError)throw roleError;
+   if(songError)throw songError;
+
+   scheduleReferenceMapsCache={
+     volunteerById:new Map((people||[]).map(v=>[v.id,v])),
+     volunteerByName:new Map((people||[]).map(v=>[String(v.name||"").trim().toLocaleLowerCase("es"),v])),
+     roleById:new Map((roleRows||[]).map(r=>[r.id,r])),
+     roleByKey:new Map((roleRows||[]).map(r=>[`${r.module}:${r.name}`,r])),
+     songById:new Map((songRows||[]).map(s=>[s.id,s])),
+     songByName:new Map((songRows||[]).map(s=>[cleanHistorySongName(s.name).toLocaleLowerCase("es"),s]))
+   };
+   scheduleReferenceMapsCachedAt=Date.now();
+   return scheduleReferenceMapsCache;
+ })();
+
+ try{
+   return await scheduleReferenceMapsPromise;
+ }finally{
+   scheduleReferenceMapsPromise=null;
+ }
 }
 
 async function loadConfirmedHistoryFromSupabase(){
@@ -3759,6 +3788,7 @@ async function loadConfirmedHistoryFromSupabase(){
  if(serviceError)throw serviceError;
  if(!services?.length){
    hist=[];
+   historyDbLoaded=true;
    return true;
  }
 
@@ -3805,6 +3835,7 @@ async function loadConfirmedHistoryFromSupabase(){
  });
 
  hist=rebuilt.sort((a,b)=>a.date.localeCompare(b.date));
+ historyDbLoaded=true;
  return true;
 }
 
@@ -4077,6 +4108,7 @@ async function saveConfirmedMonth(module,data,Y,M){
  }
 
  await loadConfirmedHistoryFromSupabase();
+ confirmedScheduleCache.delete(scheduleMonthKey(module,Y,M));
  const loaded=await fetchConfirmedMonth(module,Y,M);
  return loaded;
 }
@@ -4253,31 +4285,49 @@ async function loadHomeConfirmedMonthPublic(){
  }
 }
 
+let publicBootstrapDone=false;
+let publicBootstrapPromise=null;
+
 async function bootstrapPublicView(){
+ if(publicBootstrapDone)return true;
+ if(publicBootstrapPromise)return publicBootstrapPromise;
  if(!window.supabaseClient)return false;
- try{
-   setAppLoading(true,'Estamos cargando la página.');
 
-   if(window.bootstrapVolunteersSupabase)await window.bootstrapVolunteersSupabase();
-   if(window.bootstrapSongsSupabase)await window.bootstrapSongsSupabase();
-   if(window.bootstrapAvailabilitySupabase)await window.bootstrapAvailabilitySupabase();
+ publicBootstrapPromise=(async()=>{
+   const started=performance.now();
+   try{
+     setAppLoading(true,'Estamos cargando la página.');
 
-   await loadConfirmedHistoryFromSupabase();
+     // Prioridad: mostrar programación actual e Inicio lo antes posible.
+     await Promise.all([
+       applyConfirmedMonth("alabanza",+wy.value,+wm.value,{silent:true}),
+       applyConfirmedMonth("jovenes",+jy.value,+jm.value,{silent:true}),
+       applyConfirmedMonth("multimedia",+my.value,+mm.value,{silent:true})
+     ]);
 
-   await Promise.all([
-     applyConfirmedMonth("alabanza",+wy.value,+wm.value,{silent:true}),
-     applyConfirmedMonth("jovenes",+jy.value,+jm.value,{silent:true}),
-     applyConfirmedMonth("multimedia",+my.value,+mm.value,{silent:true})
-   ]);
+     updateHome();
+     publicBootstrapDone=true;
+     setAppLoading(false);
 
-   await loadHomeConfirmedMonthPublic();
-   return true;
- }catch(error){
-   console.error("Error cargando vista pública:",error);
-   return false;
- }finally{
-   setAppLoading(false);
- }
+     // Catálogos secundarios terminan en segundo plano.
+     Promise.allSettled([
+       window.bootstrapVolunteersSupabase?.(),
+       window.bootstrapSongsSupabase?.(),
+       window.bootstrapAvailabilitySupabase?.()
+     ]).then(()=>console.log("Catálogos públicos listos."));
+
+     console.log(`Vista pública lista en ${Math.round(performance.now()-started)} ms`);
+     return true;
+   }catch(error){
+     console.error("Error cargando vista pública:",error);
+     return false;
+   }finally{
+     setAppLoading(false);
+     publicBootstrapPromise=null;
+   }
+ })();
+
+ return publicBootstrapPromise;
 }
 window.bootstrapPublicView=bootstrapPublicView;
 window.loadHomeConfirmedMonthPublic=loadHomeConfirmedMonthPublic;
@@ -4290,15 +4340,19 @@ window.bootstrapSchedulesSupabase=async function(){
    try{
      if(!window.supabaseClient)return false;
 
-     await loadConfirmedHistoryFromSupabase();
-
      await Promise.all([
+       ensureHistoryLoaded(),
        applySavedMonth("alabanza",+wy.value,+wm.value,{silent:false}),
        applySavedMonth("jovenes",+jy.value,+jm.value,{silent:false}),
        applySavedMonth("multimedia",+my.value,+mm.value,{silent:false})
      ]);
 
-     await loadHomeConfirmedMonth();
+     const sameHomeMonth=
+       (+hy.value===+wy.value)&&(+hm.value===+wm.value)&&
+       (+hy.value===+my.value)&&(+hm.value===+mm.value);
+
+     if(sameHomeMonth)updateHome();
+     else await loadHomeConfirmedMonth();
 
      scheduleBootstrapDone=true;
      console.log("Programación mensual Supabase lista.");
@@ -4315,7 +4369,28 @@ window.bootstrapSchedulesSupabase=async function(){
  return scheduleBootstrapPromise;
 };
 
-function history(){let t=ht.value,q=hq.value.toLowerCase(),rows=hist.filter(x=>x.type===t&&(!q||(x.name+" "+x.detail).toLowerCase().includes(q)));hout.innerHTML=rows.length?`<table style="width:100%;border-collapse:collapse">${rows.map(x=>`<tr><td style="padding:7px;border-bottom:1px solid #ddd">${pretty(x.date)}</td><td>${x.name}</td><td>${x.detail}</td><td>${x.module}</td></tr>`).join("")}</table>`:'<div class="note">Sin resultados todavía.</div>'}
+let historyDbLoaded=false;
+let historyDbPromise=null;
+
+async function ensureHistoryLoaded(){
+ if(historyDbLoaded)return true;
+ if(historyDbPromise)return historyDbPromise;
+ historyDbPromise=(async()=>{
+   await loadConfirmedHistoryFromSupabase();
+   historyDbLoaded=true;
+   return true;
+ })();
+ try{return await historyDbPromise}
+ finally{historyDbPromise=null}
+}
+
+async function history(){
+ hout.innerHTML='<div class="note">Cargando historial…</div>';
+ try{await ensureHistoryLoaded()}
+ catch(error){console.error(error);hout.innerHTML='<div class="note">No se pudo cargar el historial.</div>';return}
+ let t=ht.value,q=hq.value.toLowerCase(),rows=hist.filter(x=>x.type===t&&(!q||(x.name+" "+x.detail).toLowerCase().includes(q)));
+ hout.innerHTML=rows.length?`<table style="width:100%;border-collapse:collapse">${rows.map(x=>`<tr><td style="padding:7px;border-bottom:1px solid #ddd">${pretty(x.date)}</td><td>${x.name}</td><td>${x.detail}</td><td>${x.module}</td></tr>`).join("")}</table>`:'<div class="note">Sin resultados todavía.</div>'
+}
 
 function imageW(){
  let data=(Array.isArray(cw)&&cw.length?cw:wmonth);
@@ -5115,19 +5190,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     console.log('Perfil cargado:', window.currentProfile);
 
-    if (window.bootstrapVolunteersSupabase) {
-      await window.bootstrapVolunteersSupabase();
-    }
-    if (window.bootstrapSongsSupabase) {
-      await window.bootstrapSongsSupabase();
-    }
-    if (window.bootstrapAvailabilitySupabase) {
-      await window.bootstrapAvailabilitySupabase();
-    }
-    if (window.bootstrapSchedulesSupabase) {
-      await window.bootstrapSchedulesSupabase();
-    }
+    const bootStarted=performance.now();
+    await Promise.all([
+      window.bootstrapVolunteersSupabase?.(),
+      window.bootstrapSongsSupabase?.(),
+      window.bootstrapAvailabilitySupabase?.(),
+      window.bootstrapSchedulesSupabase?.()
+    ]);
 
+    console.log(`Datos de usuario listos en ${Math.round(performance.now()-bootStarted)} ms`);
     setAppLoading(false);
     return window.currentProfile;
   }
@@ -5271,11 +5342,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.supabaseClient.auth.onAuthStateChange(
     async (event, session) => {
 
+      // getSession() ya procesó el estado inicial arriba.
+      if(event==="INITIAL_SESSION")return;
+
       mostrarEstadoSesion(session);
 
       if (session) {
         await cargarPerfilUsuario(session);
       }else{
+        publicBootstrapDone=false;
         await window.bootstrapPublicView?.();
       }
 
@@ -5294,9 +5369,8 @@ document.addEventListener("DOMContentLoaded",()=>{
     const y=document.getElementById(yearId),m=document.getElementById(monthId);
     const reload=async()=>{
       if(!window.supabaseClient)return;
-      const {data:{session}}=await window.supabaseClient.auth.getSession();
       try{
-        if(session)await applySavedMonth(module,+y.value,+m.value);
+        if(window.currentProfile)await applySavedMonth(module,+y.value,+m.value);
         else await applyConfirmedMonth(module,+y.value,+m.value,{silent:true});
       }catch(error){console.error("Error cambiando mes de programación:",error)}
     };
@@ -5310,8 +5384,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 
   const hyEl=document.getElementById("hy"),hmEl=document.getElementById("hm");
   const loadHome=async()=>{
-    const {data:{session}}=await window.supabaseClient.auth.getSession();
-    if(session){
+    if(window.currentProfile){
       if(typeof loadHomeConfirmedMonth==="function")loadHomeConfirmedMonth();
     }else{
       if(typeof window.loadHomeConfirmedMonthPublic==="function")window.loadHomeConfirmedMonthPublic();
@@ -5322,49 +5395,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 });
 </script>
 
-<script>
-window.__APP_BUILD = 'V48-PUBLIC-READONLY-AUTH-EDIT';
 
-if (typeof persistSongToSupabase === 'function') {
-  window.persistSongToSupabase = persistSongToSupabase;
-}
-if (typeof loadSongsFromSupabase === 'function') {
-  window.loadSongsFromSupabase = loadSongsFromSupabase;
-}
-window.queueScheduleDraftSave = queueScheduleDraftSave;
-window.saveScheduleDraft = saveScheduleDraft;
-window.applySavedMonth = applySavedMonth;
-window.syncConfirmedMonthToGoogleSheets = syncConfirmedMonthToGoogleSheets;
-window.sendGoogleSheetsBeacon = sendGoogleSheetsBeacon;
-window.sendGoogleSheetsFallback = sendGoogleSheetsFallback;
-window.getMediaPosterData = getMediaPosterData;
-window.GOOGLE_SHEETS_BRIDGE_URL = GOOGLE_SHEETS_BRIDGE_URL;
-
-document.addEventListener('DOMContentLoaded', async () => {
-  console.log('APP BUILD:', window.__APP_BUILD);
-  console.log('Canciones Supabase cargado:', typeof window.bootstrapSongsSupabase);
-  console.log('Disponibilidad Supabase cargada:', typeof window.bootstrapAvailabilitySupabase);
-  console.log('Programación Supabase cargada:', typeof window.bootstrapSchedulesSupabase);
-  console.log('Autoguardado de borradores:', typeof window.queueScheduleDraftSave);
-
-  try {
-    const { data: { session } } = await window.supabaseClient.auth.getSession();
-    if (session && typeof window.bootstrapSongsSupabase === 'function') {
-      await window.bootstrapSongsSupabase();
-    }
-    if (session && typeof window.bootstrapAvailabilitySupabase === 'function') {
-      await window.bootstrapAvailabilitySupabase();
-    }
-    if (session && typeof window.bootstrapSchedulesSupabase === 'function') {
-      await window.bootstrapSchedulesSupabase();
-    }else if(!session && typeof window.bootstrapPublicView === 'function'){
-      await window.bootstrapPublicView();
-    }
-  } catch (error) {
-    console.error('Error en arranque de Canciones Supabase:', error);
-  }
-});
-</script>
 
 
 <script id="v44-critical-bindings">
