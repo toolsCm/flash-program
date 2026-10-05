@@ -2,8 +2,8 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V66-GUIDE-ONCE-NO-GENERATE">
-<title>Flash Program</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="DEMO-V3-NAMES-BLUR-EXIT">
+<title>Flash Program · Versión de prueba</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&display=swap">
@@ -844,20 +844,518 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--indigo-500)}
 }
 </style>
 
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- DEMO: JSON temporal en memoria. No usa Supabase. -->
 <script>
-  const APP_PUBLIC_URL = 'https://toolscm.github.io/flash-program/app.html';
-const SUPABASE_URL = 'https://zozvvfpjkidycwbpmnff.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_YI6a1hsqoqkIBbESpq_wJg_8dMRGTWS';
+const APP_PUBLIC_URL = 'https://toolscm.github.io/flash-program/demo.html';
 
-  window.supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+(function(){
+  const DEMO_USER_ID='demo-user-admin';
+  const DEMO_TEAM_ID='demo-team';
+  const DEMO_SESSION={
+    user:{
+      id:DEMO_USER_ID,
+      email:'demo@flashprogram.local'
+    }
+  };
 
-  console.log('Supabase cargado:', typeof window.supabase);
-  console.log('Cliente Supabase listo:', !!window.supabaseClient);
+  let idCounter=1000;
+  const makeId=(prefix)=>`${prefix}-${++idCounter}`;
+  const clone=(value)=>value==null?value:JSON.parse(JSON.stringify(value));
+
+  const worshipSeed=[
+    {name:"Felipe",primary:"Voz principal",secondary:["Coros"],min:1,max:2,youth:true,active:true},
+    {name:"Mariana",primary:"Voz principal",secondary:["Coros"],min:1,max:2,youth:true,active:true},
+    {name:"Natalia",primary:"Voz principal",secondary:["Coros"],min:1,max:2,youth:false,active:true},
+    {name:"Gabriela",primary:"Voz principal",secondary:["Coros","Piano"],min:1,max:2,youth:true,active:true},
+    {name:"Valentina",primary:"Voz principal",secondary:["Coros"],min:1,max:2,youth:true,active:true},
+    {name:"Sebastián",primary:"Guitarra",secondary:["Piano","Bajo","Batería","Coros"],min:1,max:3,youth:true,active:true},
+    {name:"Alejandro",primary:"Piano",secondary:["Guitarra","Bajo","Batería","Coros"],min:1,max:3,youth:true,active:true},
+    {name:"Mateo",primary:"Guitarra",secondary:["Coros"],min:1,max:3,youth:true,active:true},
+    {name:"Santiago",primary:"Bajo",secondary:[],min:1,max:4,youth:true,active:true},
+    {name:"Tomás",primary:"Bajo",secondary:[],min:1,max:2,youth:false,active:true},
+    {name:"Julián",primary:"Batería",secondary:[],min:1,max:3,youth:true,active:true},
+    {name:"Esteban",primary:"Batería",secondary:[],min:1,max:3,youth:false,active:true},
+    {name:"Nicolás",primary:"Piano",secondary:[],min:1,max:2,youth:false,active:true},
+    {name:"Isabella",primary:"Piano",secondary:["Coros"],min:1,max:2,youth:true,active:true},
+    {name:"Carolina",primary:"Coros",secondary:[],min:1,max:3,youth:true,active:true},
+    {name:"Martín",primary:"Coros",secondary:[],min:1,max:3,youth:true,active:true},
+    {name:"Paula",primary:"Coros",secondary:[],min:1,max:2,youth:false,active:true},
+    {name:"Verónica",primary:"Coros",secondary:[],min:1,max:2,youth:false,active:true}
+  ];
+
+  const mediaSeed=[
+    {name:"Ricardo",roles:["PC"],min:2,active:true},
+    {name:"Emilio",roles:["PC","Camara","Diapositivas"],min:2,active:true},
+    {name:"Óscar",roles:["PC","Diapositivas"],min:2,active:true},
+    {name:"Sebastián",roles:["PC","Camara","Diapositivas"],min:2,active:true},
+    {name:"Santiago",roles:["PC","Diapositivas"],min:2,active:true},
+    {name:"Mauricio",roles:["PC","Diapositivas"],min:2,active:true},
+    {name:"Julián",roles:["Camara"],min:2,active:true},
+    {name:"Diego",roles:["Camara","Diapositivas"],min:2,active:true},
+    {name:"Isabella",roles:["Diapositivas"],min:2,active:true}
+  ];
+
+  const songSeed=[
+    {name:"Santo por siempre",artist:"La IBI",category:"Lenta",bpm:72,key:"G",singer:"Felipe",moods:["Adoración"],tones:{Juan:"G",Rut:"A"}},
+    {name:"Dios incomparable",artist:"Generación 12",category:"Lenta",bpm:70,key:"A",singer:"Natalia",moods:["Adoración"],tones:{Diana:"A",Luisa:"G"}},
+    {name:"La bondad de Dios",artist:"Bethel",category:"Lenta",bpm:68,key:"G",singer:"Gabriela",moods:["Gratitud","Adoración"],tones:{Luisa:"G",Juan:"A"}},
+    {name:"Libre soy",artist:"Barak",category:"Rápida",bpm:128,key:"D",singer:"Valentina",moods:["Celebración"],tones:{Camila:"D",Rut:"E"}},
+    {name:"Alaba",artist:"Evan Craft",category:"Rápida",bpm:132,key:"D",singer:"Felipe",moods:["Celebración"],tones:{Juan:"D",Camilo:"B"}},
+    {name:"Fiesta en el desierto",artist:"Montesanto",category:"Rápida",bpm:130,key:"D",singer:"Mariana",moods:["Celebración"],tones:{Rut:"D",Juan:"E"}},
+    {name:"Tu gozo",artist:"Barak",category:"Rápida",bpm:126,key:"C",singer:"Gabriela",moods:["Celebración"],tones:{Luisa:"C",Camila:"D"}},
+    {name:"Por amor",artist:"Aline Barros",category:"Lenta",bpm:66,key:"G",singer:"Felipe",moods:["Santa Cena","Amor"],tones:{Juan:"G",Rut:"A"}},
+    {name:"Todo lo haces nuevo",artist:"Montesanto",category:"Media",bpm:98,key:"E",singer:"Mariana",moods:["Fe","Esperanza"],tones:{Rut:"E",Juan:"D"}},
+    {name:"Eres fiel",artist:"Coalo Zamorano",category:"Media",bpm:104,key:"G",singer:"Natalia",moods:["Gratitud"],tones:{Diana:"G",Luisa:"A"}},
+    {name:"Vivo estás",artist:"Hillsong Young & Free",category:"Rápida",bpm:138,key:"A",singer:"Valentina",moods:["Celebración"],tones:{Camila:"A",Rut:"G"}},
+    {name:"Aquí estoy",artist:"Generación 12",category:"Lenta",bpm:64,key:"C",singer:"Gabriela",moods:["Entrega","Adoración"],tones:{Luisa:"C",Juan:"D"}}
+  ];
+
+  function slug(v){
+    return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  }
+
+  function seedDatabase(){
+    const db={
+      profiles:[{id:DEMO_USER_ID,display_name:"Administrador Demo",app_role:"admin"}],
+      teams:[{
+        id:DEMO_TEAM_ID,
+        name:"Equipo de demostración",
+        join_code:"FP-DEMO26",
+        sheet_sync_enabled:false,
+        private_google_sheets_enabled:false,
+        created_at:new Date().toISOString(),
+        updated_at:new Date().toISOString()
+      }],
+      team_members:[
+        {team_id:DEMO_TEAM_ID,user_id:DEMO_USER_ID,role:"admin",display_name:"Administrador Demo"},
+        {team_id:DEMO_TEAM_ID,user_id:"demo-editor",role:"editor",display_name:"Andrea Demo"},
+        {team_id:DEMO_TEAM_ID,user_id:"demo-viewer",role:"viewer",display_name:"Felipe Demo"}
+      ],
+      roles:[],
+      volunteers:[],
+      volunteer_roles:[],
+      volunteer_module_settings:[],
+      availability:[],
+      songs:[],
+      moods:[],
+      song_moods:[],
+      song_singer_keys:[],
+      services:[],
+      assignments:[],
+      service_songs:[],
+      app_settings:[],
+      sheet_connections:[]
+    };
+
+    const worshipRoles=[
+      ["Voz principal",1],["Coros",2],["Piano",3],
+      ["Guitarra",4],["Bajo",5],["Batería",6]
+    ];
+    const mediaRoles=[["PC",1],["Cámara",2],["Diapositivas",3]];
+
+    worshipRoles.forEach(([name,sort])=>db.roles.push({
+      id:`role-a-${slug(name)}`,name,module:"alabanza",sort_order:sort
+    }));
+    mediaRoles.forEach(([name,sort])=>db.roles.push({
+      id:`role-m-${slug(name)}`,name,module:"multimedia",sort_order:sort
+    }));
+
+    const allPeople=new Map();
+    [...worshipSeed,...mediaSeed].forEach(person=>{
+      if(!allPeople.has(person.name)){
+        allPeople.set(person.name,{
+          id:`vol-${slug(person.name)}`,
+          name:person.name,
+          active:person.active!==false,
+          created_at:new Date(Date.UTC(2026,0,1+allPeople.size)).toISOString(),
+          team_id:DEMO_TEAM_ID
+        });
+      }
+    });
+    db.volunteers=[...allPeople.values()];
+
+    const roleBy=(module,name)=>db.roles.find(r=>r.module===module&&r.name===name);
+    const volByName=name=>db.volunteers.find(v=>v.name===name);
+
+    worshipSeed.forEach(person=>{
+      const v=volByName(person.name);
+      [person.primary,...(person.secondary||[])].filter(Boolean).forEach(roleName=>{
+        const r=roleBy("alabanza",roleName);
+        if(r)db.volunteer_roles.push({
+          id:makeId("vr"),volunteer_id:v.id,role_id:r.id,is_primary:roleName===person.primary
+        });
+      });
+      db.volunteer_module_settings.push({
+        id:makeId("vms"),volunteer_id:v.id,module:"alabanza",
+        min_per_month:Number(person.min)||0,max_per_month:Number(person.max)||1,
+        avoid_consecutive:true
+      });
+      if(person.youth){
+        db.volunteer_module_settings.push({
+          id:makeId("vms"),volunteer_id:v.id,module:"jovenes",
+          min_per_month:0,max_per_month:null,avoid_consecutive:true
+        });
+      }
+    });
+
+    mediaSeed.forEach(person=>{
+      const v=volByName(person.name);
+      (person.roles||[]).forEach(uiRole=>{
+        const dbRole=uiRole==="Camara"?"Cámara":uiRole;
+        const r=roleBy("multimedia",dbRole);
+        if(r)db.volunteer_roles.push({
+          id:makeId("vr"),volunteer_id:v.id,role_id:r.id,is_primary:false
+        });
+      });
+      db.volunteer_module_settings.push({
+        id:makeId("vms"),volunteer_id:v.id,module:"multimedia",
+        min_per_month:Number(person.min)||0,max_per_month:null,avoid_consecutive:false
+      });
+    });
+
+    const moodNames=[...new Set(songSeed.flatMap(s=>s.moods||[]))];
+    moodNames.forEach(name=>db.moods.push({
+      id:`mood-${slug(name)}`,name,team_id:DEMO_TEAM_ID
+    }));
+    const moodByName=name=>db.moods.find(m=>m.name===name);
+
+    songSeed.forEach((song,index)=>{
+      const singer=volByName(song.singer);
+      const id=`song-${index+1}`;
+      db.songs.push({
+        id,team_id:DEMO_TEAM_ID,name:song.name,artist:song.artist,
+        category:song.category,bpm:song.bpm,base_key:song.key,
+        primary_singer_id:singer?.id||null,active:true,
+        created_at:new Date(Date.UTC(2026,1,index+1)).toISOString()
+      });
+      (song.moods||[]).forEach(mood=>{
+        const row=moodByName(mood);
+        if(row)db.song_moods.push({id:makeId("sm"),team_id:DEMO_TEAM_ID,song_id:id,mood_id:row.id});
+      });
+      Object.entries(song.tones||{}).forEach(([person,key])=>{
+        const v=volByName(person);
+        if(v)db.song_singer_keys.push({
+          id:makeId("ssk"),team_id:DEMO_TEAM_ID,song_id:id,volunteer_id:v.id,song_key:key
+        });
+      });
+    });
+
+    [
+      ["Felipe","2026-10-18","alabanza"],
+      ["Alejandro","2026-10-11","alabanza"],
+      ["Julián","2026-10-24","alabanza"],
+      ["Diego","2026-10-14","multimedia"],
+      ["Óscar","2026-10-21","multimedia"]
+    ].forEach(([name,date,module])=>{
+      const v=volByName(name);
+      if(v)db.availability.push({
+        id:makeId("av"),team_id:DEMO_TEAM_ID,volunteer_id:v.id,module,unavailable_date:date
+      });
+    });
+
+    const worshipDates=["2026-10-04","2026-10-11","2026-10-18","2026-10-25"];
+    const youthDates=["2026-10-03","2026-10-10","2026-10-17","2026-10-24","2026-10-31"];
+    const mediaDates=[
+      "2026-10-03","2026-10-04","2026-10-07","2026-10-10","2026-10-11",
+      "2026-10-14","2026-10-17","2026-10-18","2026-10-21","2026-10-24",
+      "2026-10-25","2026-10-28","2026-10-31"
+    ];
+
+    const worshipPeople=[
+      ["Felipe","Martín","Carolina","Alejandro","Mateo","Sebastián","Santiago","Julián"],
+      ["Mariana","Paula","Verónica","Gabriela","Mateo","Sebastián","Tomás","Esteban"],
+      ["Natalia","Martín","Carolina","Isabella","Sebastián","Alejandro","Santiago","Julián"],
+      ["Valentina","Paula","Verónica","Nicolás","Mateo","Sebastián","Tomás","Esteban"]
+    ];
+    const worshipSongIndexes=[
+      [4,6,0,1,7],
+      [5,8,2,11],
+      [10,4,9,0],
+      [6,5,2,1]
+    ];
+
+    function addWorshipService(module,date,people,songIndexes,isSanta=false,name=null){
+      const serviceId=`svc-${module}-${date}`;
+      db.services.push({
+        id:serviceId,team_id:DEMO_TEAM_ID,service_date:date,module,
+        name:name||(module==="jovenes"?"Jóvenes":"Servicio dominical"),
+        is_extra:false,is_santa_cena:isSanta,status:"confirmed"
+      });
+      const roles=[
+        ["Voz principal",people[0],1],
+        ["Coros",people[1],1],["Coros",people[2],2],
+        ["Piano",people[3],1],
+        ["Guitarra",people[4],1],["Guitarra",people[5],2],
+        ["Bajo",people[6],1],["Batería",people[7],1]
+      ];
+      roles.forEach(([roleName,personName,slot])=>{
+        const v=volByName(personName),r=roleBy("alabanza",roleName);
+        if(v&&r)db.assignments.push({
+          id:makeId("as"),team_id:DEMO_TEAM_ID,service_id:serviceId,
+          role_id:r.id,volunteer_id:v.id,slot_order:slot
+        });
+      });
+      songIndexes.forEach((songIndex,pos)=>{
+        const song=db.songs[songIndex];
+        if(!song)return;
+        const lead=people[0];
+        const tone=songSeed[songIndex]?.tones?.[lead]||song.base_key||"";
+        db.service_songs.push({
+          id:makeId("ss"),team_id:DEMO_TEAM_ID,service_id:serviceId,
+          song_id:song.id,position:pos+1,song_key:tone,
+          special_label:(isSanta&&pos===songIndexes.length-1)?"SANTA CENA":null
+        });
+      });
+    }
+
+    worshipDates.forEach((date,i)=>addWorshipService(
+      "alabanza",date,worshipPeople[i],worshipSongIndexes[i],i===0
+    ));
+
+    youthDates.forEach((date,i)=>{
+      const base=worshipPeople[i%worshipPeople.length];
+      const shifted=[base[0],base[1],base[2],base[3],base[4],base[5],base[6],base[7]];
+      addWorshipService("jovenes",date,shifted,[i%6,(i+3)%10,(i+5)%11],false,"Jóvenes");
+    });
+
+    const mediaPeople=["Ricardo","Emilio","Óscar","Sebastián","Santiago","Mauricio","Julián","Diego","Isabella"];
+    mediaDates.forEach((date,i)=>{
+      const id=`svc-multimedia-${date}`;
+      db.services.push({
+        id,team_id:DEMO_TEAM_ID,service_date:date,module:"multimedia",name:"Multimedia",
+        is_extra:false,is_santa_cena:false,status:"confirmed"
+      });
+      const assignments=[
+        ["PC",mediaPeople[i%6]],
+        ["Cámara",["Julián","Diego","Emilio","Sebastián"][i%4]],
+        ["Diapositivas",["Isabella","Óscar","Santiago","Mauricio","Diego"][i%5]]
+      ];
+      assignments.forEach(([roleName,personName])=>{
+        const v=volByName(personName),r=roleBy("multimedia",roleName);
+        if(v&&r)db.assignments.push({
+          id:makeId("as"),team_id:DEMO_TEAM_ID,service_id:id,
+          role_id:r.id,volunteer_id:v.id,slot_order:1
+        });
+      });
+    });
+
+    return db;
+  }
+
+  window.DEMO_JSON=seedDatabase();
+
+  const teamScoped=new Set([
+    "volunteers","songs","moods","availability","services",
+    "assignments","service_songs","song_moods","song_singer_keys","app_settings","sheet_connections"
+  ]);
+
+  function tableRows(name){
+    if(!Array.isArray(window.DEMO_JSON[name]))window.DEMO_JSON[name]=[];
+    return window.DEMO_JSON[name];
+  }
+
+  function addDefaults(table,row){
+    const out={...clone(row)};
+    if(out.id==null && !["assignments","service_songs","song_moods","song_singer_keys","volunteer_roles","volunteer_module_settings"].includes(table)){
+      out.id=makeId(slug(table)||"row");
+    }
+    if(teamScoped.has(table) && out.team_id==null)out.team_id=DEMO_TEAM_ID;
+    if(out.created_at==null && ["volunteers","songs"].includes(table))out.created_at=new Date().toISOString();
+    if(out.updated_at==null && ["app_settings","sheet_connections"].includes(table))out.updated_at=new Date().toISOString();
+    return out;
+  }
+
+  function cascadeDelete(table,removed){
+    const ids=new Set(removed.map(r=>r.id).filter(Boolean));
+    if(table==="services"){
+      window.DEMO_JSON.assignments=tableRows("assignments").filter(r=>!ids.has(r.service_id));
+      window.DEMO_JSON.service_songs=tableRows("service_songs").filter(r=>!ids.has(r.service_id));
+    }
+    if(table==="volunteers"){
+      window.DEMO_JSON.volunteer_roles=tableRows("volunteer_roles").filter(r=>!ids.has(r.volunteer_id));
+      window.DEMO_JSON.volunteer_module_settings=tableRows("volunteer_module_settings").filter(r=>!ids.has(r.volunteer_id));
+      window.DEMO_JSON.availability=tableRows("availability").filter(r=>!ids.has(r.volunteer_id));
+      window.DEMO_JSON.song_singer_keys=tableRows("song_singer_keys").filter(r=>!ids.has(r.volunteer_id));
+    }
+    if(table==="songs"){
+      window.DEMO_JSON.song_moods=tableRows("song_moods").filter(r=>!ids.has(r.song_id));
+      window.DEMO_JSON.song_singer_keys=tableRows("song_singer_keys").filter(r=>!ids.has(r.song_id));
+      window.DEMO_JSON.service_songs=tableRows("service_songs").filter(r=>!ids.has(r.song_id));
+    }
+    if(table==="moods"){
+      window.DEMO_JSON.song_moods=tableRows("song_moods").filter(r=>!ids.has(r.mood_id));
+    }
+  }
+
+  class DemoQuery{
+    constructor(table){
+      this.table=table;
+      this.op=null;
+      this.payload=null;
+      this.filters=[];
+      this.orders=[];
+      this.limitN=null;
+      this.singleMode=null;
+      this.onConflict=null;
+      this.returning=false;
+    }
+    select(){ if(!this.op)this.op="select"; this.returning=true; return this; }
+    insert(payload){ this.op="insert"; this.payload=Array.isArray(payload)?payload:[payload]; return this; }
+    update(payload){ this.op="update"; this.payload=payload||{}; return this; }
+    upsert(payload,opts={}){ this.op="upsert"; this.payload=Array.isArray(payload)?payload:[payload]; this.onConflict=opts.onConflict||null; return this; }
+    delete(){ this.op="delete"; return this; }
+    eq(key,value){ this.filters.push(row=>row?.[key]===value); return this; }
+    is(key,value){ this.filters.push(row=>row?.[key]===value); return this; }
+    in(key,values){ const set=new Set(values||[]); this.filters.push(row=>set.has(row?.[key])); return this; }
+    gte(key,value){ this.filters.push(row=>row?.[key]>=value); return this; }
+    lt(key,value){ this.filters.push(row=>row?.[key]<value); return this; }
+    order(key,opts={}){ this.orders.push({key,ascending:opts.ascending!==false}); return this; }
+    limit(n){ this.limitN=Number(n); return this; }
+    single(){ this.singleMode="single"; return this; }
+    maybeSingle(){ this.singleMode="maybe"; return this; }
+    _matches(row){ return this.filters.every(fn=>fn(row)); }
+    _sort(rows){
+      if(!this.orders.length)return rows;
+      return rows.sort((a,b)=>{
+        for(const {key,ascending} of this.orders){
+          const av=a?.[key],bv=b?.[key];
+          if(av===bv)continue;
+          const cmp=av==null?-1:bv==null?1:(typeof av==="number"&&typeof bv==="number"?av-bv:String(av).localeCompare(String(bv),"es"));
+          if(cmp!==0)return ascending?cmp:-cmp;
+        }
+        return 0;
+      });
+    }
+    async execute(){
+      try{
+        const rows=tableRows(this.table);
+        const op=this.op||"select";
+        let result=[];
+
+        if(op==="select"){
+          result=this._sort(rows.filter(row=>this._matches(row)).map(clone));
+          if(Number.isFinite(this.limitN))result=result.slice(0,this.limitN);
+        }
+
+        if(op==="insert"){
+          const inserted=(this.payload||[]).map(row=>addDefaults(this.table,row));
+          rows.push(...inserted);
+          result=inserted.map(clone);
+        }
+
+        if(op==="update"){
+          const updated=[];
+          rows.forEach((row,index)=>{
+            if(this._matches(row)){
+              rows[index]={...row,...clone(this.payload)};
+              updated.push(clone(rows[index]));
+            }
+          });
+          result=updated;
+        }
+
+        if(op==="upsert"){
+          const conflictKeys=String(this.onConflict||"id").split(",").map(s=>s.trim()).filter(Boolean);
+          const changed=[];
+          (this.payload||[]).forEach(raw=>{
+            const row=addDefaults(this.table,raw);
+            const idx=rows.findIndex(existing=>conflictKeys.every(key=>existing?.[key]===row?.[key]));
+            if(idx>=0){
+              rows[idx]={...rows[idx],...row};
+              changed.push(clone(rows[idx]));
+            }else{
+              rows.push(row);
+              changed.push(clone(row));
+            }
+          });
+          result=changed;
+        }
+
+        if(op==="delete"){
+          const removed=rows.filter(row=>this._matches(row));
+          window.DEMO_JSON[this.table]=rows.filter(row=>!this._matches(row));
+          cascadeDelete(this.table,removed);
+          result=removed.map(clone);
+        }
+
+        if(this.singleMode){
+          const first=result[0]||null;
+          return {data:first,error:null};
+        }
+        return {data:result,error:null};
+      }catch(error){
+        console.error("Demo JSON error:",error);
+        return {data:null,error:{message:error?.message||String(error)}};
+      }
+    }
+    then(resolve,reject){ return this.execute().then(resolve,reject); }
+  }
+
+  async function demoRpc(name,args={}){
+    const team=tableRows("teams")[0];
+    const members=tableRows("team_members");
+
+    if(name==="get_my_team"){
+      const membership=members.find(m=>m.user_id===DEMO_USER_ID);
+      return {data:[{
+        team_id:team.id,team_name:team.name,role:membership?.role||"admin",
+        join_code:team.join_code,sheet_sync_enabled:false
+      }],error:null};
+    }
+    if(name==="get_team_members"){
+      return {data:members.map(clone),error:null};
+    }
+    if(name==="set_team_member_role"){
+      const row=members.find(m=>m.user_id===args.p_user_id);
+      if(row)row.role=args.p_role;
+      return {data:true,error:null};
+    }
+    if(name==="transfer_team_admin"){
+      members.forEach(m=>{
+        if(m.user_id===DEMO_USER_ID)m.role="editor";
+        if(m.user_id===args.p_user_id)m.role="admin";
+      });
+      return {data:true,error:null};
+    }
+    if(name==="reset_team_join_code"){
+      team.join_code="FP-DEMO"+String(Math.floor(Math.random()*90)+10);
+      return {data:team.join_code,error:null};
+    }
+    if(name==="create_team"||name==="join_team_by_code"){
+      return {data:[{team_id:team.id}],error:null};
+    }
+    return {data:null,error:null};
+  }
+
+  const authListeners=[];
+  const demoAuth={
+    async getSession(){ return {data:{session:DEMO_SESSION},error:null}; },
+    async signOut(){
+      location.href="index.html";
+      return {error:null};
+    },
+    async signInWithPassword(){ return {data:{session:DEMO_SESSION,user:DEMO_SESSION.user},error:null}; },
+    async signUp(){ return {data:{session:DEMO_SESSION,user:DEMO_SESSION.user},error:null}; },
+    onAuthStateChange(callback){
+      authListeners.push(callback);
+      return {data:{subscription:{unsubscribe(){}}}};
+    }
+  };
+
+  window.supabaseClient={
+    from(table){ return new DemoQuery(table); },
+    rpc(name,args){ return demoRpc(name,args); },
+    auth:demoAuth
+  };
+
+  window.resetDemoJson=()=>{
+    window.DEMO_JSON=seedDatabase();
+    location.reload();
+  };
+
+  console.log("Flash Program Demo: JSON temporal listo.", window.DEMO_JSON);
+})();
 </script>
 
 <style id="v41-mobile-ui">
@@ -4552,6 +5050,9 @@ body[data-theme="light"] #home .homeTable th:first-child{
 </style>
 
 
+
+
+
 <style id="v66-programming-no-generate">
 .generateDatesControl{
   display:none !important;
@@ -4577,94 +5078,119 @@ body[data-theme="light"] #home .homeTable th:first-child{
 </style>
 
 
-<style id="flash-app-guide">
-.appGuideButton{
-  position:fixed;
-  right:1rem;
-  bottom:1rem;
-  z-index:1140;
-  min-height:3rem;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  gap:.4rem;
-  padding:.55rem .8rem;
-  border:1px solid color-mix(in srgb,var(--accent) 55%,var(--line));
-  border-radius:999px;
-  background:var(--accentSoft);
-  color:var(--text);
-  font-weight:850;
-  box-shadow:0 .75rem 2rem rgba(0,0,0,.20);
+<style id="flash-demo-mode">
+body.demo-mode{padding-top:2.55rem}
+.demoPersistentBanner{
+  position:fixed;top:0;left:0;right:0;z-index:130000;min-height:2.55rem;
+  display:flex;align-items:center;justify-content:center;gap:.6rem;padding:.45rem .85rem;
+  border-bottom:1px solid #5b4a1d;background:#2b2414;color:#f6e6ae;font-size:.82rem;text-align:center
 }
-.appGuideOverlay{
-  position:fixed;
-  inset:0;
-  z-index:1130;
-  display:none;
-  pointer-events:none;
+.demoPersistentBanner strong{color:#fff0bd;letter-spacing:.04em}
+body.demo-mode .sidebar{top:2.55rem !important;height:calc(100vh - 2.55rem) !important}
+body.demo-mode .top{top:2.55rem !important}
+body.demo-mode #loginScreen,body.demo-mode .teamGate{display:none !important}
+
+.demoGuideButton{
+  position:fixed;right:1rem;bottom:1rem;z-index:1150;min-height:3rem;
+  display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem .8rem;
+  border:1px solid color-mix(in srgb,var(--accent) 55%,var(--line));border-radius:999px;
+  background:var(--accentSoft);color:var(--text);font-weight:850;box-shadow:0 .75rem 2rem rgba(0,0,0,.2)
 }
-.appGuideOverlay.open{display:block}
-.appGuidePanel{
-  position:absolute;
-  right:1rem;
-  bottom:4.8rem;
-  width:min(24rem,calc(100vw - 2rem));
-  padding:1rem;
-  border:1px solid var(--line);
-  border-radius:1rem;
-  background:var(--panel);
-  color:var(--text);
-  box-shadow:0 1.2rem 3.5rem rgba(0,0,0,.35);
-  pointer-events:auto;
+.demoGuideOverlay{position:fixed;inset:0;z-index:1140;display:none;pointer-events:none}
+.demoGuideOverlay.open{display:block}
+.demoGuidePanel{
+  position:absolute;right:1rem;bottom:4.8rem;width:min(24rem,calc(100vw - 2rem));padding:1rem;
+  border:1px solid var(--line);border-radius:1rem;background:var(--panel);color:var(--text);
+  box-shadow:0 1.2rem 3.5rem rgba(0,0,0,.35);pointer-events:auto
 }
-.appGuideHead{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:.75rem;
-  margin-bottom:.65rem;
+.demoGuideHead{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;margin-bottom:.65rem}
+.demoGuideHead h3{margin:.2rem 0 0 !important}
+.demoGuideCounter{color:var(--muted);font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.demoGuideHead button{
+  width:2.75rem;height:2.75rem;min-width:2.75rem;border:1px solid var(--line);
+  border-radius:.65rem;background:var(--panel2);color:var(--text);font-size:1.25rem
 }
-.appGuideHead h3{margin:.2rem 0 0 !important}
-.appGuideCounter{
-  color:var(--muted);
-  font-size:.74rem;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:.04em;
-}
-.appGuideHead button{
-  width:2.75rem;height:2.75rem;min-width:2.75rem;
-  border:1px solid var(--line);border-radius:.65rem;
-  background:var(--panel2);color:var(--text);font-size:1.25rem;
-}
-.appGuideText{
-  color:var(--muted);
-  font-size:.9rem;
-  line-height:1.5;
-  min-height:4.2rem;
-}
-.appGuideActions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:.5rem;
-  margin-top:.8rem;
-}
-.app-guide-target{
+.demoGuideText{color:var(--muted);font-size:.9rem;line-height:1.5;min-height:4.2rem}
+.demoGuideActions{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.8rem}
+.demo-guide-target{
   outline:.2rem solid var(--accent) !important;
   outline-offset:.2rem !important;
   box-shadow:0 0 0 .35rem color-mix(in srgb,var(--accent) 18%,transparent) !important;
   border-radius:.65rem !important;
 }
 @media(max-width:47.5rem){
-  .appGuideButton{
-    right:.75rem;
-    bottom:5.45rem;
+  body.demo-mode{padding-top:3.15rem}
+  .demoPersistentBanner{min-height:3.15rem;flex-direction:column;gap:.05rem;padding:.35rem .6rem;font-size:.74rem}
+  body.demo-mode .top{top:3.15rem !important}
+  body.demo-mode .sidebar{top:3.15rem !important;height:calc(100vh - 3.15rem) !important}
+  .demoGuideButton{right:.75rem;bottom:5.45rem}
+  .demoGuidePanel{left:.55rem;right:.55rem;width:auto;bottom:5.25rem}
+}
+</style>
+
+
+<style id="v67-demo-blur-exit">
+.demoPersistentBanner{
+  justify-content:space-between !important;
+}
+.demoBannerText{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:.6rem;
+  flex:1;
+}
+.demoGoApp{
+  min-height:2.15rem;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:.35rem .7rem;
+  border:1px solid #f4e4a7;
+  border-radius:.55rem;
+  background:#fff2bd;
+  color:#201a0b;
+  text-decoration:none;
+  font-size:.76rem;
+  font-weight:900;
+  white-space:nowrap;
+}
+.demoGuideOverlay.open{
+  background:rgba(4,6,10,.30) !important;
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+}
+.demoGuidePanel{
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+.demo-guide-target{
+  position:relative !important;
+  z-index:1145 !important;
+  filter:none !important;
+}
+@media(max-width:47.5rem){
+  .demoPersistentBanner{
+    flex-direction:row !important;
+    gap:.45rem !important;
   }
-  .appGuidePanel{
-    left:.55rem;
-    right:.55rem;
-    width:auto;
-    bottom:5.25rem;
+  .demoBannerText{
+    min-width:0;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:.02rem;
+    text-align:left;
+  }
+  .demoBannerText span{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:58vw;
+  }
+  .demoGoApp{
+    min-height:2.35rem;
+    padding:.35rem .55rem;
+    font-size:.72rem;
   }
 }
 </style>
@@ -4915,7 +5441,7 @@ body[data-theme="light"] #home .homeTable th:first-child{
 
     <a
       id="loginDemoLink"
-      href="/flash-program/demo.html"
+      href="demo.html"
       style="
         width:100%;
         min-height:42px;
@@ -5396,10 +5922,10 @@ const months=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto",
 ["hm","wm","jm","mm"].forEach(id=>{months.forEach((m,i)=>document.getElementById(id).add(new Option(m,i)));document.getElementById(id).value=9});
 let roles=["Voz principal","Coros","Piano","Guitarra","Bajo","Batería"];
 let volunteers=[
-{name:"Juan",primary:"Voz principal",secondary:["Coros"],min:1,max:2,active:true},{name:"Rut",primary:"Voz principal",secondary:["Coros"],min:1,max:2,active:true},{name:"Diana",primary:"Voz principal",secondary:["Coros"],min:1,max:2,active:true},{name:"Luisa",primary:"Voz principal",secondary:["Coros","Piano"],min:1,max:1,active:true},{name:"Camila",primary:"Voz principal",secondary:["Coros"],min:1,max:1,active:true},
-{name:"Camilo",primary:"Guitarra",secondary:["Piano","Bajo","Batería","Coros"],min:1,max:2,active:true},{name:"Moisés",primary:"Piano",secondary:["Guitarra","Bajo","Batería","Coros"],min:1,max:2,active:true},{name:"Samuel",primary:"Guitarra",secondary:[],min:1,max:2,active:true},{name:"Brayan",primary:"Bajo",secondary:[],min:2,max:4,active:true},{name:"Sebas",primary:"Bajo",secondary:[],min:1,max:1,active:true},{name:"Daniel",primary:"Batería",secondary:[],min:1,max:3,active:true},{name:"Anders",primary:"Batería",secondary:[],min:1,max:3,active:true},{name:"Alber",primary:"Piano",secondary:[],min:1,max:1,active:true},{name:"Ana",primary:"Piano",secondary:[],min:1,max:1,active:true},{name:"Angie",primary:"Coros",secondary:[],min:1,max:2,active:true},{name:"Harold",primary:"Coros",secondary:[],min:1,max:2,active:true},{name:"Estela",primary:"Coros",secondary:[],min:1,max:2,active:true},{name:"Adriana",primary:"Coros",secondary:[],min:1,max:2,active:true}];
+{name:"Felipe",primary:"Voz principal",secondary:["Coros"],min:1,max:2,active:true},{name:"Mariana",primary:"Voz principal",secondary:["Coros"],min:1,max:2,active:true},{name:"Natalia",primary:"Voz principal",secondary:["Coros"],min:1,max:2,active:true},{name:"Gabriela",primary:"Voz principal",secondary:["Coros","Piano"],min:1,max:1,active:true},{name:"Valentina",primary:"Voz principal",secondary:["Coros"],min:1,max:1,active:true},
+{name:"Sebastián",primary:"Guitarra",secondary:["Piano","Bajo","Batería","Coros"],min:1,max:2,active:true},{name:"Alejandro",primary:"Piano",secondary:["Guitarra","Bajo","Batería","Coros"],min:1,max:2,active:true},{name:"Mateo",primary:"Guitarra",secondary:[],min:1,max:2,active:true},{name:"Santiago",primary:"Bajo",secondary:[],min:2,max:4,active:true},{name:"Tomás",primary:"Bajo",secondary:[],min:1,max:1,active:true},{name:"Julián",primary:"Batería",secondary:[],min:1,max:3,active:true},{name:"Esteban",primary:"Batería",secondary:[],min:1,max:3,active:true},{name:"Nicolás",primary:"Piano",secondary:[],min:1,max:1,active:true},{name:"Isabella",primary:"Piano",secondary:[],min:1,max:1,active:true},{name:"Carolina",primary:"Coros",secondary:[],min:1,max:2,active:true},{name:"Martín",primary:"Coros",secondary:[],min:1,max:2,active:true},{name:"Paula",primary:"Coros",secondary:[],min:1,max:2,active:true},{name:"Verónica",primary:"Coros",secondary:[],min:1,max:2,active:true}];
 let songs=[
-{name:"Santo por siempre",artist:"La IBI",cat:"Adoración",singer:"Juan",key:"G"},{name:"Dios incomparable",artist:"Generación 12",cat:"Adoración",singer:"Diana",key:"A"},{name:"La bondad de Dios",artist:"Bethel",cat:"Adoración",singer:"Luisa",key:"G"},{name:"Libre soy",artist:"Barak",cat:"Alabanza",singer:"Camila",key:"D"},{name:"Alaba",artist:"Evan Craft",cat:"Alabanza",singer:"Juan",key:"D",tones:{Juan:"D",Camilo:"B"}},{name:"Fiesta en el desierto",artist:"Montesanto",cat:"Alabanza",singer:"Rut",key:"D"},{name:"Tu gozo",artist:"Barak",cat:"Alabanza",singer:"Luisa",key:"C"},{name:"Por amor",artist:"Aline Barros",cat:"Santa Cena",singer:"Juan",key:"G"}];
+{name:"Santo por siempre",artist:"La IBI",cat:"Adoración",singer:"Felipe",key:"G"},{name:"Dios incomparable",artist:"Generación 12",cat:"Adoración",singer:"Natalia",key:"A"},{name:"La bondad de Dios",artist:"Bethel",cat:"Adoración",singer:"Gabriela",key:"G"},{name:"Libre soy",artist:"Barak",cat:"Alabanza",singer:"Valentina",key:"D"},{name:"Alaba",artist:"Evan Craft",cat:"Alabanza",singer:"Felipe",key:"D",tones:{Juan:"D",Camilo:"B"}},{name:"Fiesta en el desierto",artist:"Montesanto",cat:"Alabanza",singer:"Mariana",key:"D"},{name:"Tu gozo",artist:"Barak",cat:"Alabanza",singer:"Gabriela",key:"C"},{name:"Por amor",artist:"Aline Barros",cat:"Santa Cena",singer:"Felipe",key:"G"}];
 songs.forEach(s=>{
  s.tones=s.tones||{};
  s.moods=Array.isArray(s.moods)?s.moods:[];
@@ -5440,15 +5966,15 @@ let supabaseMoodRows=[];
 function toneFor(song,singer){return (song.tones&&song.tones[singer])||song.key||""}
 let mediaRoles=["PC","Camara","Diapositivas"];
 let mediaVolunteers=[
-{name:"Frainer",roles:["PC"],min:4,active:true},
-{name:"Samuel C.",roles:["PC","Camara","Diapositivas"],min:4,active:true},
-{name:"Andrés",roles:["PC","Diapositivas"],min:4,active:true},
-{name:"Camilo",roles:["PC","Camara","Diapositivas"],min:4,active:true},
-{name:"Brayan",roles:["PC","Diapositivas"],min:4,active:true},
-{name:"Cristian",roles:["PC","Diapositivas"],min:4,active:true},
-{name:"Daniel",roles:["Camara"],min:4,active:true},
-{name:"Samuel U.",roles:["Camara","Diapositivas"],min:4,active:true},
-{name:"Ana",roles:["Diapositivas"],min:4,active:true}
+{name:"Ricardo",roles:["PC"],min:4,active:true},
+{name:"Emilio",roles:["PC","Camara","Diapositivas"],min:4,active:true},
+{name:"Óscar",roles:["PC","Diapositivas"],min:4,active:true},
+{name:"Sebastián",roles:["PC","Camara","Diapositivas"],min:4,active:true},
+{name:"Santiago",roles:["PC","Diapositivas"],min:4,active:true},
+{name:"Mauricio",roles:["PC","Diapositivas"],min:4,active:true},
+{name:"Julián",roles:["Camara"],min:4,active:true},
+{name:"Diego",roles:["Camara","Diapositivas"],min:4,active:true},
+{name:"Isabella",roles:["Diapositivas"],min:4,active:true}
 ];
 
 // Copias de la lista local actual. Solo se usan una vez si Supabase aún está vacío.
@@ -6773,7 +7299,7 @@ async function loadVolunteersFromSupabase(){
  renderMediaVolunteers();
  refreshPeople();
  renderW();renderJ();renderM();
- setVolunteerSyncStatus(`Voluntarios en base de datos · ${volunteers.length} Alabanza · ${mediaVolunteers.length} Multimedia`);
+ setVolunteerSyncStatus(`Voluntarios de la versión de prueba · ${volunteers.length} Alabanza · ${mediaVolunteers.length} Multimedia`);
  return true;
 }
 
@@ -7409,7 +7935,7 @@ async function loadAvailabilityFromSupabase(){
    if(r.module==="multimedia")um.push(item);
  });
  renderAvail();
- setAvailabilitySyncStatus(`Disponibilidad en base de datos · ${uw.length} Alabanza · ${um.length} Multimedia`);
+ setAvailabilitySyncStatus(`Disponibilidad de la versión de prueba · ${uw.length} Alabanza · ${um.length} Multimedia`);
  return true;
 }
 
@@ -7656,7 +8182,7 @@ async function saveScheduleDraft(module,{silent=true}={}){
  draftScheduleCache.set(scheduleMonthKey(module,Y,M),deepCopy(data));
 
  if(!silent){
-   setScheduleStatus(module,"Borrador guardado automáticamente en la base de datos.","draft");
+   setScheduleStatus(module,"Cambios temporales actualizados.","draft");
  }
  return true;
 }
@@ -7706,7 +8232,7 @@ async function applySavedMonth(module,Y,M,{silent=false}={}){
    if(!silent){
      setScheduleStatus(
        module,
-       `Borrador recuperado desde la base de datos${draft.updated_at?` · guardado ${new Date(draft.updated_at).toLocaleString()}`:""}.`,
+       `Cambios temporales recuperados${draft.updated_at?` · guardado ${new Date(draft.updated_at).toLocaleString()}`:""}.`,
        "draft"
      );
    }
@@ -8017,7 +8543,7 @@ async function applyConfirmedMonth(module,Y,M,{silent=false}={}){
    if(data.length){
      wmonth=deepCopy(data);cw=deepCopy(data);
      renderW();
-     if(!silent)setScheduleStatus(module,`Programación confirmada cargada desde la base de datos · ${data.length} servicios.`,"loaded");
+     if(!silent)setScheduleStatus(module,`Programación de prueba cargada · ${data.length} servicios.`,"loaded");
    }else{
      cw=null;
      wmonth=getDates(+Y,+M,[0]).map((d,i)=>({date:d,extra:false,name:"Servicio dominical",santa:i===0,assign:[],songs:[]}));
@@ -8029,7 +8555,7 @@ async function applyConfirmedMonth(module,Y,M,{silent=false}={}){
    if(data.length){
      jmonth=deepCopy(data);cj=deepCopy(data);
      renderJ();
-     if(!silent)setScheduleStatus(module,`Programación de Jóvenes cargada desde la base de datos · ${data.length} servicios.`,"loaded");
+     if(!silent)setScheduleStatus(module,`Programación de prueba de Jóvenes cargada · ${data.length} servicios.`,"loaded");
    }else{
      cj=null;
      jmonth=getDates(+Y,+M,[6]).map(d=>({date:d,extra:false,name:"Jóvenes",santa:false,assign:[],songs:[]}));
@@ -8041,7 +8567,7 @@ async function applyConfirmedMonth(module,Y,M,{silent=false}={}){
    if(data.length){
      mmonth=deepCopy(data);cm=deepCopy(data);
      renderM();
-     if(!silent)setScheduleStatus(module,`Programación Multimedia cargada desde la base de datos · ${data.length} fechas.`,"loaded");
+     if(!silent)setScheduleStatus(module,`Programación Multimedia de prueba cargada · ${data.length} fechas.`,"loaded");
    }else{
      cm=null;
      mmonth=getDates(+Y,+M,[0,3,6]).map(d=>({date:d,extra:false,name:"Multimedia",PC:"",Camara:"",Diapositivas:""}));
@@ -9971,10 +10497,8 @@ Tú pasarás a ser Editor.`,
 
     if(topAuthBtn){
       if(window.currentProfile){
-        topAuthBtn.textContent=editable?'Cerrar sesión':'Cerrar sesión';
-        topAuthBtn.title=editable
-          ? `Sesión: ${window.currentProfile.display_name||window.currentProfile.email||role} · ${role}`
-          : `Sesión: ${window.currentProfile.display_name||window.currentProfile.email||role} · Solo lectura`;
+        topAuthBtn.textContent='Salir de demo';
+        topAuthBtn.title='Volver al inicio de Flash Program';
       }else{
         topAuthBtn.textContent='Iniciar sesión';
         topAuthBtn.title='Inicia sesión para editar';
@@ -10111,7 +10635,6 @@ Tú pasarás a ser Editor.`,
 
     console.log(`Datos del equipo listos en ${Math.round(performance.now()-bootStarted)} ms`);
     setAppLoading(false);
-    window.maybeStartFirstLoginGuide?.();
     return window.currentProfile;
   }
 
@@ -10727,28 +11250,42 @@ document.addEventListener("click",(e)=>{
 })();
 </script>
 
-<button id="appGuideButton" class="appGuideButton" type="button" aria-label="Abrir guía">
+<div id="demoPersistentBanner" class="demoPersistentBanner" role="status">
+  <div class="demoBannerText">
+    <strong>VERSIÓN DE PRUEBA</strong>
+    <span>Los datos no quedan almacenados.</span>
+  </div>
+  <a class="demoGoApp" href="app.html?fresh=1">Ir a la app</a>
+</div>
+
+
+
+
+
+
+
+<button id="demoGuideButton" class="demoGuideButton" type="button" aria-label="Abrir guía">
   ? <span>Guía</span>
 </button>
-<div id="appGuideOverlay" class="appGuideOverlay" aria-hidden="true">
-  <div id="appGuidePanel" class="appGuidePanel" role="dialog" aria-labelledby="appGuideTitle">
-    <div class="appGuideHead">
+<div id="demoGuideOverlay" class="demoGuideOverlay" aria-hidden="true">
+  <div id="demoGuidePanel" class="demoGuidePanel" role="dialog" aria-labelledby="demoGuideTitle">
+    <div class="demoGuideHead">
       <div>
-        <span id="appGuideCounter" class="appGuideCounter">1 de 3</span>
-        <h3 id="appGuideTitle">Guía rápida</h3>
+        <span id="demoGuideCounter" class="demoGuideCounter">1 de 3</span>
+        <h3 id="demoGuideTitle">Guía rápida</h3>
       </div>
-      <button id="appGuideClose" type="button" aria-label="Cerrar guía">×</button>
+      <button id="demoGuideClose" type="button" aria-label="Cerrar guía">×</button>
     </div>
-    <div id="appGuideText" class="appGuideText"></div>
-    <div class="appGuideActions">
-      <button id="appGuidePrev" class="btn secondary" type="button">Anterior</button>
-      <button id="appGuideNext" class="btn primary" type="button">Siguiente</button>
+    <div id="demoGuideText" class="demoGuideText"></div>
+    <div class="demoGuideActions">
+      <button id="demoGuidePrev" class="btn secondary" type="button">Anterior</button>
+      <button id="demoGuideNext" class="btn primary" type="button">Siguiente</button>
     </div>
   </div>
 </div>
 
 
-<script id="flash-app-guide-js">
+<script id="flash-demo-guide">
 
 const FLASH_GUIDE_DATA={
   home:[
@@ -10805,27 +11342,29 @@ const FLASH_GUIDE_DATA={
   settings:[
     {target:"#teamSettingsCard",title:"1. Tu equipo",text:"Aquí ves el nombre del equipo y el código para que otras personas puedan unirse."},
     {target:"#teamMembersList",title:"2. Miembros y permisos",text:"El Administrador decide quién puede editar y quién tendrá solo lectura."},
-    {target:"#themeBtn",title:"3. Apariencia",text:"Cambia entre modo claro y oscuro cuando quieras."}
+    {target:"#teamSettingsCard",title:"3. Configuración",text:"En la aplicación real, Configuración reúne los datos del equipo, permisos y preferencias disponibles para tu cuenta."}
   ]
 };
 
-(()=>{
-  const button=document.getElementById("appGuideButton");
-  const overlay=document.getElementById("appGuideOverlay");
-  const panel=document.getElementById("appGuidePanel");
-  const title=document.getElementById("appGuideTitle");
-  const text=document.getElementById("appGuideText");
-  const counter=document.getElementById("appGuideCounter");
-  const prev=document.getElementById("appGuidePrev");
-  const next=document.getElementById("appGuideNext");
-  const close=document.getElementById("appGuideClose");
+document.addEventListener("DOMContentLoaded",()=>{
+  document.body.classList.add("demo-mode");
+
+  const button=document.getElementById("demoGuideButton");
+  const overlay=document.getElementById("demoGuideOverlay");
+  const panel=document.getElementById("demoGuidePanel");
+  const title=document.getElementById("demoGuideTitle");
+  const text=document.getElementById("demoGuideText");
+  const counter=document.getElementById("demoGuideCounter");
+  const prev=document.getElementById("demoGuidePrev");
+  const next=document.getElementById("demoGuideNext");
+  const close=document.getElementById("demoGuideClose");
   let step=0;
   let activeTarget=null;
 
   function visibleSection(){return document.querySelector(".panel.active")?.id||"home"}
 
   function clearTarget(){
-    if(activeTarget)activeTarget.classList.remove("app-guide-target");
+    if(activeTarget)activeTarget.classList.remove("demo-guide-target");
     activeTarget=null;
   }
 
@@ -10842,11 +11381,8 @@ const FLASH_GUIDE_DATA={
     if(mobile){
       panel.style.left=".55rem";
       panel.style.right=".55rem";
-      if(rect.top>window.innerHeight*.52){
-        panel.style.top="4rem";
-      }else{
-        panel.style.bottom="5.25rem";
-      }
+      if(rect.top>window.innerHeight*.52)panel.style.top="3.75rem";
+      else panel.style.bottom="5.25rem";
     }else{
       if(rect.left>window.innerWidth*.5){
         panel.style.left="1rem";
@@ -10854,11 +11390,8 @@ const FLASH_GUIDE_DATA={
       }else{
         panel.style.right="1rem";
       }
-      if(rect.top>window.innerHeight*.55){
-        panel.style.top="4.4rem";
-      }else{
-        panel.style.bottom="1rem";
-      }
+      if(rect.top>window.innerHeight*.55)panel.style.top="4.4rem";
+      else panel.style.bottom="1rem";
     }
   }
 
@@ -10867,6 +11400,7 @@ const FLASH_GUIDE_DATA={
     const steps=FLASH_GUIDE_DATA[visibleSection()]||FLASH_GUIDE_DATA.home;
     step=Math.max(0,Math.min(step,steps.length-1));
     const item=steps[step];
+
     title.textContent=item.title;
     text.textContent=item.text;
     counter.textContent=`${step+1} de ${steps.length}`;
@@ -10876,7 +11410,7 @@ const FLASH_GUIDE_DATA={
     const target=document.querySelector(item.target);
     if(target && target.offsetParent!==null){
       activeTarget=target;
-      target.classList.add("app-guide-target");
+      target.classList.add("demo-guide-target");
       target.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"});
       setTimeout(()=>positionPanel(target),260);
     }else{
@@ -10887,7 +11421,6 @@ const FLASH_GUIDE_DATA={
 
   function openGuide(){
     step=0;
-    button.style.display="inline-flex";
     overlay.classList.add("open");
     overlay.setAttribute("aria-hidden","false");
     renderStep();
@@ -10915,17 +11448,27 @@ const FLASH_GUIDE_DATA={
     nav.addEventListener("click",()=>{closeGuide();step=0});
   });
 
-  window.maybeStartFirstLoginGuide=()=>{
-    if(!window.currentProfile?.id||!window.currentTeam)return;
-    button.style.display="inline-flex";
-    const key=`flashProgramGuideSeen:${window.currentProfile.id}:v1`;
-    let seen=false;
-    try{seen=localStorage.getItem(key)==="1"}catch(_){}
-    if(seen)return;
-    try{localStorage.setItem(key,"1")}catch(_){}
+  const resetButton=document.createElement("button");
+  resetButton.type="button";
+  resetButton.className="btn secondary";
+  resetButton.textContent="Reiniciar versión de prueba";
+  resetButton.style.marginTop=".7rem";
+  resetButton.addEventListener("click",async()=>{
+    const ok=await window.appConfirm?.(
+      "¿Reiniciar la versión de prueba? Todos los cambios temporales desaparecerán.",
+      {title:"Reiniciar demo",confirmText:"Reiniciar",tone:"danger",icon:"↻"}
+    );
+    if(ok)window.resetDemoJson?.();
+  });
+  document.getElementById("teamSettingsCard")?.appendChild(resetButton);
+
+  let seen=false;
+  try{seen=sessionStorage.getItem("flashProgramDemoGuideSeen")==="1"}catch(_){}
+  if(!seen){
+    try{sessionStorage.setItem("flashProgramDemoGuideSeen","1")}catch(_){}
     setTimeout(openGuide,900);
-  };
-})();
+  }
+});
 </script>
 
 </body>
