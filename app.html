@@ -1248,6 +1248,67 @@ body.readonly-mode .songDbTable [data-col="actions"]{
 }
 </style>
 
+
+<style id="flash-integrated-dialogs">
+.fpUiToast{
+  position:fixed;top:1rem;left:50%;transform:translate(-50%,-.45rem);
+  z-index:120000;width:max-content;max-width:min(92vw,24rem);
+  padding:.68rem .9rem;border:1px solid var(--line);border-radius:.7rem;
+  background:var(--panel2);color:var(--text);
+  box-shadow:0 1rem 2.8rem rgba(0,0,0,.34);
+  font-size:.9rem;font-weight:700;line-height:1.35;
+  opacity:0;pointer-events:none;
+  transition:opacity .16s ease,transform .16s ease;
+}
+.fpUiToast.show{opacity:1;transform:translate(-50%,0)}
+.fpUiToast.error{border-color:#71383f;background:#281a1d}
+.fpUiToast.success{border-color:#315a3c;background:#17241b}
+.fpUiToast.info{border-color:#39476b;background:#191f31}
+
+.fpDialogLayer{
+  position:fixed;inset:0;z-index:119000;display:none;align-items:center;
+  justify-content:center;padding:1rem;background:rgba(5,7,10,.67);
+  backdrop-filter:blur(.3rem);
+}
+.fpDialogLayer.open{display:flex}
+.fpDialog{
+  width:min(100%,27rem);border:1px solid var(--line);border-radius:1rem;
+  background:var(--panel);box-shadow:0 1.5rem 4rem rgba(0,0,0,.48);overflow:hidden;
+}
+.fpDialogBody{padding:1.2rem 1.2rem .95rem}
+.fpDialogIcon{
+  width:2.35rem;height:2.35rem;display:grid;place-items:center;margin-bottom:.85rem;
+  border-radius:.65rem;background:var(--panel2);border:1px solid var(--line);font-weight:900;
+}
+.fpDialog.danger .fpDialogIcon{background:#2b191c;border-color:#71383f}
+.fpDialog h3{margin:0 0 .45rem;color:var(--text);font-size:1.08rem}
+.fpDialogMessage{color:var(--muted);font-size:.92rem;line-height:1.48;white-space:pre-line}
+.fpDialogInput{
+  width:100%;min-height:2.8rem;margin-top:.9rem;padding:.68rem .78rem;
+  border:1px solid var(--line);border-radius:.62rem;background:var(--panel2);
+  color:var(--text);font:inherit;
+}
+.fpDialogInput:focus{outline:.13rem solid #668cff;outline-offset:.1rem}
+.fpDialogActions{
+  display:flex;justify-content:flex-end;gap:.55rem;padding:.85rem 1.2rem 1.1rem;
+  border-top:1px solid var(--line);
+}
+.fpDialogActions button{
+  min-height:2.65rem;min-width:6.2rem;padding:.58rem .85rem;border-radius:.62rem;
+  font:inherit;font-weight:800;cursor:pointer;
+}
+.fpDialogCancel{border:1px solid var(--line);background:var(--panel2);color:var(--text)}
+.fpDialogAccept{border:1px solid var(--text);background:var(--text);color:var(--bg)}
+.fpDialog.danger .fpDialogAccept{border-color:#b8515d;background:#a9424d;color:#fff}
+@media(max-width:36rem){
+  .fpDialogLayer{align-items:flex-end;padding:.75rem}
+  .fpDialog{width:100%;border-radius:1rem}
+  .fpDialogActions{display:grid;grid-template-columns:1fr 1fr}
+  .fpDialogActions button{width:100%}
+}
+@media(prefers-reduced-motion:reduce){.fpUiToast{transition:none}}
+</style>
+
 </head>
 <body class="readonly-mode">
 
@@ -3091,7 +3152,12 @@ async function setVolunteerActiveInSupabase(id,active){
 async function deleteVolunteerFromSupabase(v){
  if(!v?.id)throw new Error("Este voluntario todavía no está registrado en la base de datos.");
  if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para eliminar voluntarios.");
- const ok=confirm(`¿Eliminar definitivamente a ${v.name}?\n\nSe eliminará de Alabanza, Multimedia, sus roles y sus indisponibilidades. Los registros históricos confirmados se conservarán cuando corresponda.`);
+ const ok=await window.appConfirm(
+   `¿Eliminar definitivamente a ${v.name}?
+
+Se eliminará de Alabanza, Multimedia, sus roles y sus indisponibilidades. Los registros históricos confirmados se conservarán cuando corresponda.`,
+   {title:"Eliminar voluntario",confirmText:"Eliminar",tone:"danger",icon:"!"}
+ );
  if(!ok)return false;
  const {error}=await window.supabaseClient.from("volunteers").delete().eq("id",v.id);
  if(error)throw error;
@@ -3462,7 +3528,12 @@ async function saveSongEditor(e){
 async function deleteSongFromSupabase(song){
  if(!song?.id)throw new Error("Esta canción todavía no está registrada en la base de datos.");
  if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para eliminar canciones.");
- const ok=confirm(`¿Eliminar definitivamente “${song.name}”?\n\nTambién se eliminarán sus moods asociados y tonos por cantante.`);
+ const ok=await window.appConfirm(
+   `¿Eliminar definitivamente “${song.name}”?
+
+También se eliminarán sus moods asociados y tonos por cantante.`,
+   {title:"Eliminar canción",confirmText:"Eliminar",tone:"danger",icon:"!"}
+ );
  if(!ok)return false;
  const {error}=await window.supabaseClient.from("songs").delete().eq("id",song.id);
  if(error){
@@ -4933,9 +5004,9 @@ menu.onclick=()=>{side.classList.add("open");overlay.classList.add("show")};over
 wg.onclick=genW;wf.onclick=fillW;wr.onclick=fillW;
 wLockResp.onclick=()=>{worshipLockResponsibilities=!worshipLockResponsibilities;localStorage.setItem("worship-lock-responsibilities",worshipLockResponsibilities?"1":"0");updateWorshipLockButtons()};
 wLockSongs.onclick=()=>{worshipLockSongs=!worshipLockSongs;localStorage.setItem("worship-lock-songs",worshipLockSongs?"1":"0");updateWorshipLockButtons()};
-wc.onclick=confirmW;we.onclick=()=>{let d=prompt("Fecha AAAA-MM-DD");if(!d)return;wmonth.push({date:d,extra:true,name:"Servicio especial",santa:false,assign:[],songs:[]});wmonth.sort((a,b)=>a.date.localeCompare(b.date));renderW();updateHome();queueScheduleDraftSave("alabanza")};
-jg.onclick=genJ;jf.onclick=fillJ;jr.onclick=fillJ;jc.onclick=confirmJ;je.onclick=()=>{let d=prompt("Fecha AAAA-MM-DD");if(!d)return;jmonth.push({date:d,extra:true,name:"Jóvenes especial",santa:false,assign:[],songs:[]});jmonth.sort((a,b)=>a.date.localeCompare(b.date));renderJ();updateHome();queueScheduleDraftSave("jovenes")};
-mg.onclick=genM;mf.onclick=fillM;mr.onclick=fillM;mc.onclick=confirmM;me.onclick=()=>{let d=prompt("Fecha AAAA-MM-DD");if(!d)return;mmonth.push({date:d,extra:true,PC:"",Camara:"",Diapositivas:""});mmonth.sort((a,b)=>a.date.localeCompare(b.date));renderM();updateHome();queueScheduleDraftSave("multimedia")};
+wc.onclick=confirmW;we.onclick=async()=>{let d=await window.appPrompt("Agregar servicio especial",{message:"Selecciona la fecha del servicio.",inputType:"date",confirmText:"Agregar"});if(!d)return;wmonth.push({date:d,extra:true,name:"Servicio especial",santa:false,assign:[],songs:[]});wmonth.sort((a,b)=>a.date.localeCompare(b.date));renderW();updateHome();queueScheduleDraftSave("alabanza");window.showAppToast("Servicio agregado.","success",1000)};
+jg.onclick=genJ;jf.onclick=fillJ;jr.onclick=fillJ;jc.onclick=confirmJ;je.onclick=async()=>{let d=await window.appPrompt("Agregar servicio de Jóvenes",{message:"Selecciona la fecha del servicio.",inputType:"date",confirmText:"Agregar"});if(!d)return;jmonth.push({date:d,extra:true,name:"Jóvenes especial",santa:false,assign:[],songs:[]});jmonth.sort((a,b)=>a.date.localeCompare(b.date));renderJ();updateHome();queueScheduleDraftSave("jovenes");window.showAppToast("Servicio agregado.","success",1000)};
+mg.onclick=genM;mf.onclick=fillM;mr.onclick=fillM;mc.onclick=confirmM;me.onclick=async()=>{let d=await window.appPrompt("Agregar servicio de Multimedia",{message:"Selecciona la fecha del servicio.",inputType:"date",confirmText:"Agregar"});if(!d)return;mmonth.push({date:d,extra:true,PC:"",Camara:"",Diapositivas:""});mmonth.sort((a,b)=>a.date.localeCompare(b.date));renderM();updateHome();queueScheduleDraftSave("multimedia");window.showAppToast("Servicio agregado.","success",1000)};
 
 seAddMood.onclick=async()=>{
  let mood=addMoodToCatalog(seNewMood.value);
@@ -5473,7 +5544,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         transfer.textContent='Hacer admin';
         transfer.title='Transferir la administración a esta persona';
         transfer.addEventListener('click',async()=>{
-          const ok=confirm(`¿Transferir la administración del equipo a ${member.display_name||'esta persona'}?\n\nTú pasarás a ser Editor.`);
+          const ok=await window.appConfirm(
+            `¿Transferir la administración del equipo a ${member.display_name||'esta persona'}?
+
+Tú pasarás a ser Editor.`,
+            {title:"Transferir administración",confirmText:"Transferir",tone:"danger",icon:"↔"}
+          );
           if(!ok)return;
           try{
             transfer.disabled=true;
@@ -5551,11 +5627,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     }catch{
       teamJoinCode?.select();
       document.execCommand('copy');
+      window.showAppToast?.('Código copiado.','success',1000);
     }
   });
 
   resetTeamCode?.addEventListener('click',async()=>{
-    if(!confirm('¿Generar un nuevo código? El código anterior dejará de funcionar.'))return;
+    const ok=await window.appConfirm(
+      '¿Generar un nuevo código? El código anterior dejará de funcionar.',
+      {title:'Nuevo código de equipo',confirmText:'Generar',tone:'danger',icon:'↻'}
+    );
+    if(!ok)return;
     try{
       resetTeamCode.disabled=true;
       const {data,error}=await window.supabaseClient.rpc('reset_team_join_code');
@@ -5563,6 +5644,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const newCode=typeof data==='string'?data:(Array.isArray(data)?data[0]:data);
       if(teamJoinCode)teamJoinCode.value=newCode||'';
       if(window.currentTeam)window.currentTeam.join_code=newCode||'';
+      window.showAppToast?.('Nuevo código generado.','success',1000);
     }catch(error){
       console.error(error);
       alert(error.message||'No se pudo generar un nuevo código.');
@@ -5972,6 +6054,153 @@ document.addEventListener("click",(e)=>{
     window.openLoginModal?.("login");
   }
 },true);
+</script>
+
+
+<div id="fpUiToast" class="fpUiToast" role="status" aria-live="polite"></div>
+<div id="fpDialogLayer" class="fpDialogLayer" aria-hidden="true">
+  <div id="fpDialog" class="fpDialog" role="dialog" aria-modal="true" aria-labelledby="fpDialogTitle">
+    <div class="fpDialogBody">
+      <div id="fpDialogIcon" class="fpDialogIcon">?</div>
+      <h3 id="fpDialogTitle">Confirmar</h3>
+      <div id="fpDialogMessage" class="fpDialogMessage"></div>
+      <input id="fpDialogInput" class="fpDialogInput" hidden>
+    </div>
+    <div class="fpDialogActions">
+      <button id="fpDialogCancel" class="fpDialogCancel" type="button">Cancelar</button>
+      <button id="fpDialogAccept" class="fpDialogAccept" type="button">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<script id="flash-integrated-dialogs-js">
+(()=>{
+  const toast=document.getElementById('fpUiToast');
+  const layer=document.getElementById('fpDialogLayer');
+  const dialog=document.getElementById('fpDialog');
+  const icon=document.getElementById('fpDialogIcon');
+  const title=document.getElementById('fpDialogTitle');
+  const message=document.getElementById('fpDialogMessage');
+  const input=document.getElementById('fpDialogInput');
+  const cancel=document.getElementById('fpDialogCancel');
+  const accept=document.getElementById('fpDialogAccept');
+
+  let toastTimer=null;
+  let resolver=null;
+  let activeMode='confirm';
+
+  function showAppToast(text,type='info',duration=1000){
+    if(!toast)return;
+    toast.textContent=String(text??'');
+    toast.className=`fpUiToast ${type}`;
+    requestAnimationFrame(()=>toast.classList.add('show'));
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>toast.classList.remove('show'),duration);
+  }
+
+  function finish(value){
+    if(!resolver)return;
+    const done=resolver;
+    resolver=null;
+    layer.classList.remove('open');
+    layer.setAttribute('aria-hidden','true');
+    input.hidden=true;
+    input.value='';
+    done(value);
+  }
+
+  function openDialog(opts={}){
+    if(resolver)finish(false);
+    activeMode=opts.mode||'confirm';
+
+    title.textContent=opts.title||'Confirmar';
+    message.textContent=opts.message||'';
+    cancel.textContent=opts.cancelText||'Cancelar';
+    accept.textContent=opts.confirmText||'Aceptar';
+    icon.textContent=opts.icon||(activeMode==='prompt'?'✎':'?');
+    dialog.classList.toggle('danger',opts.tone==='danger');
+
+    if(activeMode==='prompt'){
+      input.hidden=false;
+      input.type=opts.inputType||'text';
+      input.placeholder=opts.placeholder||'';
+      input.value=opts.value||'';
+      input.min=opts.min||'';
+      input.max=opts.max||'';
+    }else{
+      input.hidden=true;
+    }
+
+    layer.classList.add('open');
+    layer.setAttribute('aria-hidden','false');
+    setTimeout(()=>activeMode==='prompt'?input.focus():accept.focus(),0);
+
+    return new Promise(resolve=>{resolver=resolve});
+  }
+
+  window.showAppToast=showAppToast;
+
+  window.appConfirm=(msg,opts={})=>openDialog({
+    mode:'confirm',
+    title:opts.title||'Confirmar acción',
+    message:msg,
+    confirmText:opts.confirmText||'Aceptar',
+    cancelText:opts.cancelText||'Cancelar',
+    tone:opts.tone||'normal',
+    icon:opts.icon||'?'
+  });
+
+  window.appPrompt=async(titleText,opts={})=>{
+    const result=await openDialog({
+      mode:'prompt',
+      title:titleText||'Ingresar información',
+      message:opts.message||'',
+      confirmText:opts.confirmText||'Aceptar',
+      cancelText:opts.cancelText||'Cancelar',
+      tone:opts.tone||'normal',
+      icon:opts.icon||'✎',
+      inputType:opts.inputType||'text',
+      placeholder:opts.placeholder||'',
+      value:opts.value||'',
+      min:opts.min||'',
+      max:opts.max||''
+    });
+    return result===false?null:result;
+  };
+
+  accept.addEventListener('click',()=>{
+    if(activeMode==='prompt'){
+      const value=input.value.trim();
+      if(!value){
+        showAppToast('Completa el campo para continuar.','info',1000);
+        input.focus();
+        return;
+      }
+      finish(value);
+    }else{
+      finish(true);
+    }
+  });
+
+  cancel.addEventListener('click',()=>finish(false));
+  layer.addEventListener('click',(e)=>{if(e.target===layer)finish(false)});
+
+  document.addEventListener('keydown',(e)=>{
+    if(!layer.classList.contains('open'))return;
+    if(e.key==='Escape'){
+      e.preventDefault();finish(false);
+    }else if(e.key==='Enter' && activeMode==='prompt' && document.activeElement===input){
+      e.preventDefault();accept.click();
+    }
+  });
+
+  // Los avisos pequeños quedan integrados en Flash Program.
+  window.alert=(msg)=>{
+    const text=String(msg??'');
+    const isError=/no se pudo|error|permiso|verifica|no hay|todavía no/i.test(text);
+    showAppToast(text,isError?'error':'info',isError?1800:1000);
+  };
+})();
 </script>
 
 </body>
