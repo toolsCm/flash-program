@@ -1309,6 +1309,27 @@ body.readonly-mode .songDbTable [data-col="actions"]{
 @media(prefers-reduced-motion:reduce){.fpUiToast{transition:none}}
 </style>
 
+
+<style id="v52-fast-csv">
+.csvImportProgressWrap{display:none;margin-top:.75rem}
+.csvImportProgressWrap.show{display:block}
+.csvImportProgress{
+  width:100%;height:.62rem;display:block;appearance:none;-webkit-appearance:none;
+  border:0;border-radius:999px;overflow:hidden;background:var(--panel-3);
+}
+.csvImportProgress::-webkit-progress-bar{background:var(--panel-3);border-radius:999px}
+.csvImportProgress::-webkit-progress-value{background:#668cff;border-radius:999px}
+.csvImportProgress::-moz-progress-bar{background:#668cff;border-radius:999px}
+.csvImportPercent{margin-top:.35rem;font-size:.78rem;color:var(--muted);text-align:right}
+.csvImportWarning{
+  display:none;margin-top:.65rem;padding:.68rem .78rem;border-radius:.6rem;
+  border:1px solid #5d4e2d;background:#292317;color:#ecdba6;
+  font-size:.84rem;line-height:1.4;
+}
+.csvImportWarning.show{display:block}
+.csvImportLocked{pointer-events:none;opacity:.66}
+</style>
+
 </head>
 <body class="readonly-mode">
 
@@ -1846,6 +1867,13 @@ body.readonly-mode .songDbTable [data-col="actions"]{
         Los moods múltiples pueden separarse con <strong>|</strong>.
       </div>
       <button id="downloadCsvTemplate" class="btn secondary" type="button">Descargar plantilla CSV</button>
+      <div id="csvProgressWrap" class="csvImportProgressWrap">
+        <progress id="csvProgress" class="csvImportProgress" max="100" value="0"></progress>
+        <div id="csvProgressPercent" class="csvImportPercent">0%</div>
+      </div>
+      <div id="csvImportWarning" class="csvImportWarning">
+        No salgas de esta ventana ni recargues la página hasta que termine de cargar la lista de canciones.
+      </div>
       <div id="csvStatus" class="importStatus muted"></div>
     </div>
     <div class="modalActions">
@@ -5022,10 +5050,15 @@ openAddSong.onclick=openAddSongEditor;
 openImportSongs.onclick=()=>{
  songCsvInput.value="";
  csvStatus.textContent="";
+ setCsvImportRunning(false);
+ setCsvImportProgress(0,"");
+ csvProgressWrap?.classList.remove("show");
+ csvImportWarning?.classList.remove("show");
  songImportModal.classList.add("open");
  songImportModal.setAttribute("aria-hidden","false")
 };
 songImportCancel.onclick=()=>{
+ if(csvImportRunning)return;
  songImportModal.classList.remove("open");
  songImportModal.setAttribute("aria-hidden","true")
 };
@@ -5091,16 +5124,27 @@ function normalizeHeader(v){
   .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
   .replace(/\s+/g,"_");
 }
-function importSongsCsvText(text){
+
+function parseSongsCsvText(text){
  const lines=text.replace(/^\uFEFF/,"").split(/\r?\n/).filter(l=>l.trim());
  if(lines.length<2)throw new Error("El CSV no contiene filas de datos.");
+
  const delimiter=(lines[0].split(";").length>lines[0].split(",").length)?";":",";
  const headers=parseCsvLine(lines[0],delimiter).map(normalizeHeader);
- let imported=0,skipped=0;
+ let processed=0,skipped=0,duplicatesMerged=0;
+
+ const existingByKey=new Map(
+   songs.map(s=>[
+     `${String(s.name||"").trim().toLocaleLowerCase("es")}|||${String(s.artist||"").trim().toLocaleLowerCase("es")}`,
+     s
+   ])
+ );
+ const parsedByKey=new Map();
 
  for(let r=1;r<lines.length;r++){
    const vals=parseCsvLine(lines[r],delimiter);
    const row={};headers.forEach((h,i)=>row[h]=(vals[i]??"").trim());
+
    const name=row.nombre||row.cancion||row.song||row.name;
    if(!name){skipped++;continue}
 
@@ -5113,44 +5157,254 @@ function importSongsCsvText(text){
    bpm=Number.isFinite(bpm)&&bpm>0?Math.min(300,Math.round(bpm)):null;
 
    const moodRaw=row.mood||row.moods||row.tematica||row.tematicas||"";
-   const moods=moodRaw.split(/[|;]/).map(x=>x.trim()).filter(Boolean).map(addMoodToCatalog);
+   const moods=[...new Set(moodRaw.split(/[|;]/).map(x=>x.trim()).filter(Boolean))];
 
    const singer=row.cantante||row.voz||row.singer||"";
    const key=row.tono||row.key||row.tono_base||"";
 
-   let song={
+   const mapKey=`${name.trim().toLocaleLowerCase("es")}|||${artist.trim().toLocaleLowerCase("es")}`;
+   const existing=existingByKey.get(mapKey);
+
+   const song={
+     id:existing?.id||null,
      name,artist,category,bpm,moods,
      singer,key,
-     tones:singer&&key?{[singer]:key}:{}
+     tones:{
+       ...(existing?.tones||{}),
+       ...(singer&&key?{[singer]:key}:{})
+     }
    };
    song.cat=legacyGroupForSong(song);
 
-   const existing=songs.findIndex(s=>s.name.trim().toLowerCase()===name.trim().toLowerCase() && (s.artist||"").trim().toLowerCase()===artist.trim().toLowerCase());
-   if(existing>=0){
-     songs[existing]={...songs[existing],...song,tones:{...(songs[existing].tones||{}),...(song.tones||{})}};
-   }else songs.push(song);
-   imported++;
+   if(parsedByKey.has(mapKey))duplicatesMerged++;
+   parsedByKey.set(mapKey,song);
+   processed++;
  }
- refreshSongFilterOptions();renderSongs();renderW();renderJ();
- return {imported,skipped}
+
+ return {
+   rows:[...parsedByKey.values()],
+   processed,
+   skipped,
+   duplicatesMerged
+ };
 }
+
+function setCsvImportProgress(value,text){
+ const n=Math.max(0,Math.min(100,Math.round(Number(value)||0)));
+ if(csvProgress)csvProgress.value=n;
+ if(csvProgressPercent)csvProgressPercent.textContent=`${n}%`;
+ if(text!==undefined&&csvStatus)csvStatus.textContent=text;
+}
+
+let csvImportRunning=false;
+
+function setCsvImportRunning(running){
+ csvImportRunning=!!running;
+ csvProgressWrap?.classList.toggle("show",csvImportRunning);
+ csvImportWarning?.classList.toggle("show",csvImportRunning);
+ if(importCsvBtn)importCsvBtn.disabled=csvImportRunning;
+ if(songImportCancel)songImportCancel.disabled=csvImportRunning;
+ if(songCsvInput)songCsvInput.disabled=csvImportRunning;
+ if(downloadCsvTemplate)downloadCsvTemplate.disabled=csvImportRunning;
+}
+
+window.addEventListener("beforeunload",(event)=>{
+ if(!csvImportRunning)return;
+ event.preventDefault();
+ event.returnValue="";
+});
+
+async function persistSongsCsvBatch(parsed){
+ if(!window.supabaseClient)throw new Error("La base de datos no está disponible.");
+ if(!canEditDatabase())throw new Error("Tu usuario no tiene permisos para modificar canciones.");
+ const teamId=window.currentTeam?.id;
+ if(!teamId)throw new Error("No hay un equipo activo.");
+
+ const rows=parsed.rows||[];
+ if(!rows.length)return {saved:0};
+
+ setCsvImportProgress(12,`Preparando ${rows.length} canciones…`);
+
+ // Una sola carga del mapa de voluntarios y una sola creación de moods.
+ const volunteerMap=await getSupabaseVolunteerMap();
+ const allMoodNames=[...new Set(rows.flatMap(s=>s.moods||[]).map(v=>String(v||"").trim()).filter(Boolean))];
+ const moodRows=await ensureSupabaseMoods(allMoodNames);
+ const moodByName=new Map(moodRows.map(m=>[String(m.name||"").trim().toLocaleLowerCase("es"),m]));
+
+ setCsvImportProgress(28,"Preparando canciones para guardar…");
+
+ const existingPayloads=[];
+ const newPayloads=[];
+
+ for(const song of rows){
+   const singerRow=song.singer
+     ? volunteerMap.byName.get(String(song.singer).trim().toLocaleLowerCase("es"))
+     : null;
+
+   const payload={
+     team_id:teamId,
+     name:String(song.name||"").trim(),
+     artist:String(song.artist||"").trim()||null,
+     category:["Lenta","Media","Rápida"].includes(song.category)?song.category:"Media",
+     bpm:Number.isFinite(Number(song.bpm))&&Number(song.bpm)>0?Math.min(300,Math.round(Number(song.bpm))):null,
+     base_key:String(song.key||"").trim()||null,
+     primary_singer_id:singerRow?.id||null,
+     active:true
+   };
+
+   if(song.id)existingPayloads.push({...payload,id:song.id});
+   else newPayloads.push(payload);
+ }
+
+ setCsvImportProgress(40,"Guardando canciones…");
+
+ if(existingPayloads.length){
+   const {error}=await window.supabaseClient
+     .from("songs")
+     .upsert(existingPayloads,{onConflict:"id"});
+   if(error)throw error;
+ }
+
+ if(newPayloads.length){
+   const {error}=await window.supabaseClient
+     .from("songs")
+     .insert(newPayloads);
+   if(error)throw error;
+ }
+
+ // Recuperar IDs definitivos de las canciones del equipo una sola vez.
+ setCsvImportProgress(58,"Relacionando canciones…");
+ const {data:dbSongs,error:songsError}=await window.supabaseClient
+   .from("songs")
+   .select("id,name,artist")
+   .eq("team_id",teamId);
+ if(songsError)throw songsError;
+
+ const dbSongByKey=new Map(
+   (dbSongs||[]).map(s=>[
+     `${String(s.name||"").trim().toLocaleLowerCase("es")}|||${String(s.artist||"").trim().toLocaleLowerCase("es")}`,
+     s
+   ])
+ );
+
+ const songIds=[];
+ const moodLinks=[];
+ const toneLinks=[];
+
+ for(const song of rows){
+   const key=`${String(song.name||"").trim().toLocaleLowerCase("es")}|||${String(song.artist||"").trim().toLocaleLowerCase("es")}`;
+   const dbSong=dbSongByKey.get(key);
+   if(!dbSong)continue;
+   songIds.push(dbSong.id);
+
+   for(const moodName of (song.moods||[])){
+     const mood=moodByName.get(String(moodName||"").trim().toLocaleLowerCase("es"));
+     if(mood)moodLinks.push({song_id:dbSong.id,mood_id:mood.id,team_id:teamId});
+   }
+
+   for(const [person,tone] of Object.entries(song.tones||{})){
+     const v=volunteerMap.byName.get(String(person||"").trim().toLocaleLowerCase("es"));
+     if(v&&String(tone||"").trim()){
+       toneLinks.push({
+         song_id:dbSong.id,
+         volunteer_id:v.id,
+         song_key:String(tone).trim(),
+         team_id:teamId
+       });
+     }
+   }
+ }
+
+ const uniqueSongIds=[...new Set(songIds)];
+
+ setCsvImportProgress(70,"Guardando moods y tonalidades…");
+
+ if(uniqueSongIds.length){
+   const [moodDelete,toneDelete]=await Promise.all([
+     window.supabaseClient.from("song_moods").delete().in("song_id",uniqueSongIds),
+     window.supabaseClient.from("song_singer_keys").delete().in("song_id",uniqueSongIds)
+   ]);
+   if(moodDelete.error)throw moodDelete.error;
+   if(toneDelete.error)throw toneDelete.error;
+ }
+
+ // Inserciones en lotes para evitar peticiones enormes.
+ const chunkSize=750;
+ for(let i=0;i<moodLinks.length;i+=chunkSize){
+   const {error}=await window.supabaseClient.from("song_moods").insert(moodLinks.slice(i,i+chunkSize));
+   if(error)throw error;
+ }
+ setCsvImportProgress(82,"Guardando tonalidades…");
+
+ for(let i=0;i<toneLinks.length;i+=chunkSize){
+   const {error}=await window.supabaseClient.from("song_singer_keys").insert(toneLinks.slice(i,i+chunkSize));
+   if(error)throw error;
+ }
+
+ setCsvImportProgress(92,"Actualizando la lista…");
+ await loadSongsFromSupabase();
+
+ setCsvImportProgress(100,"Lista de canciones cargada.");
+ return {saved:rows.length};
+}
+
 importCsvBtn.onclick=()=>{
  const file=songCsvInput.files?.[0];
- if(!file){csvStatus.textContent="Selecciona primero un archivo CSV.";return}
+ if(!file){
+   csvStatus.textContent="Selecciona primero un archivo CSV.";
+   window.showAppToast?.("Selecciona un archivo CSV.","info",1000);
+   return;
+ }
+
  const reader=new FileReader();
+
  reader.onload=async()=>{
    try{
-     const result=importSongsCsvText(String(reader.result||""));
-     csvStatus.textContent="Guardando importación en la base de datos…";
-     for(const song of songs){await persistSongToSupabase(song,song.id||null,{reload:false})}
-     await loadSongsFromSupabase();
-     csvStatus.textContent=`Importación completada: ${result.imported} filas procesadas${result.skipped?`, ${result.skipped} omitidas`:""}.`;
-     setTimeout(()=>{songImportModal.classList.remove("open");songImportModal.setAttribute("aria-hidden","true")},650);
-   }catch(err){console.error(err);csvStatus.textContent="No se pudo importar: "+err.message}
+     setCsvImportRunning(true);
+     setCsvImportProgress(4,"Leyendo archivo…");
+
+     // Deja respirar la interfaz antes del parseo.
+     await new Promise(resolve=>setTimeout(resolve,25));
+
+     const parsed=parseSongsCsvText(String(reader.result||""));
+     setCsvImportProgress(8,`Archivo leído: ${parsed.processed} filas válidas.`);
+
+     await persistSongsCsvBatch(parsed);
+
+     const extra=[
+       parsed.skipped?`${parsed.skipped} omitidas`:"",
+       parsed.duplicatesMerged?`${parsed.duplicatesMerged} duplicadas combinadas`:""
+     ].filter(Boolean).join(" · ");
+
+     csvStatus.textContent=`Lista de canciones cargada. ${parsed.rows.length} canciones guardadas${extra?` · ${extra}`:""}.`;
+     window.showAppToast?.("Lista de canciones cargada.","success",1300);
+
+     setTimeout(()=>{
+       songImportModal.classList.remove("open");
+       songImportModal.setAttribute("aria-hidden","true");
+       setCsvImportRunning(false);
+       setCsvImportProgress(0,"");
+       songCsvInput.value="";
+     },1300);
+   }catch(err){
+     console.error(err);
+     setCsvImportRunning(false);
+     csvProgressWrap?.classList.add("show");
+     csvImportWarning?.classList.remove("show");
+     csvStatus.textContent="No se pudo importar: "+(err.message||err);
+     window.showAppToast?.("No se pudo cargar la lista de canciones.","error",1800);
+   }
  };
- reader.onerror=()=>csvStatus.textContent="No se pudo leer el archivo.";
+
+ reader.onerror=()=>{
+   setCsvImportRunning(false);
+   csvStatus.textContent="No se pudo leer el archivo.";
+   window.showAppToast?.("No se pudo leer el archivo.","error",1800);
+ };
+
  reader.readAsText(file,"UTF-8");
 };
+
 downloadCsvTemplate.onclick=()=>{
  const csv='nombre,artista,categoria,bpm,moods,cantante,tono\\nAlaba,Artista ejemplo,Rápida,128,"Celebración|Gratitud",Juan,D\\n';
  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
