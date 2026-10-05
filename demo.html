@@ -6898,7 +6898,7 @@ function renderHomeRows(dates){
      const homeMediaLabels={
        "PC":"PC 💻",
        "Camara":"Cámara 🎥",
-       "Diapositivas":"⏹️ Diapositivas prédicas"
+       "Diapositivas":"⏹️ Diapost."
      };
      tdMedia.innerHTML=`<div class="homeCellList">${mediaRoles.map(role=>`<div class="line"><span class="key">${homeMediaLabels[role]||role}:</span><span>${media[role]||"—"}</span></div>`).join("")}</div>`;
    }else tdMedia.innerHTML='<span class="homeEmpty">Pendiente de programar</span>';
