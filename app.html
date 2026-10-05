@@ -2,7 +2,7 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V65-MORE-FOCUS-SIDEBAR-FIX">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V66-GUIDE-ONCE-NO-GENERATE">
 <title>Flash Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4551,6 +4551,124 @@ body[data-theme="light"] #home .homeTable th:first-child{
 }
 </style>
 
+
+<style id="v66-programming-no-generate">
+.generateDatesControl{
+  display:none !important;
+}
+.compactControls{
+  grid-template-columns:7.3rem minmax(9rem,12rem) !important;
+}
+@media(max-width:47.5rem){
+  .compactControls{
+    grid-template-columns:5.3rem minmax(0,1fr) !important;
+  }
+
+  /* Mobile action order remains exactly:
+     Rellenar, Reequilibrar, Bloquear responsables, Bloquear canciones,
+     Añadir servicio, Confirmar. */
+  #worship .actionRow,
+  #youth .actionRow,
+  #media .actionRow{
+    display:flex !important;
+    flex-wrap:nowrap !important;
+  }
+}
+</style>
+
+
+<style id="flash-app-guide">
+.appGuideButton{
+  position:fixed;
+  right:1rem;
+  bottom:1rem;
+  z-index:1140;
+  min-height:3rem;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  gap:.4rem;
+  padding:.55rem .8rem;
+  border:1px solid color-mix(in srgb,var(--accent) 55%,var(--line));
+  border-radius:999px;
+  background:var(--accentSoft);
+  color:var(--text);
+  font-weight:850;
+  box-shadow:0 .75rem 2rem rgba(0,0,0,.20);
+}
+.appGuideOverlay{
+  position:fixed;
+  inset:0;
+  z-index:1130;
+  display:none;
+  pointer-events:none;
+}
+.appGuideOverlay.open{display:block}
+.appGuidePanel{
+  position:absolute;
+  right:1rem;
+  bottom:4.8rem;
+  width:min(24rem,calc(100vw - 2rem));
+  padding:1rem;
+  border:1px solid var(--line);
+  border-radius:1rem;
+  background:var(--panel);
+  color:var(--text);
+  box-shadow:0 1.2rem 3.5rem rgba(0,0,0,.35);
+  pointer-events:auto;
+}
+.appGuideHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:.75rem;
+  margin-bottom:.65rem;
+}
+.appGuideHead h3{margin:.2rem 0 0 !important}
+.appGuideCounter{
+  color:var(--muted);
+  font-size:.74rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.appGuideHead button{
+  width:2.75rem;height:2.75rem;min-width:2.75rem;
+  border:1px solid var(--line);border-radius:.65rem;
+  background:var(--panel2);color:var(--text);font-size:1.25rem;
+}
+.appGuideText{
+  color:var(--muted);
+  font-size:.9rem;
+  line-height:1.5;
+  min-height:4.2rem;
+}
+.appGuideActions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.5rem;
+  margin-top:.8rem;
+}
+.app-guide-target{
+  outline:.2rem solid var(--accent) !important;
+  outline-offset:.2rem !important;
+  box-shadow:0 0 0 .35rem color-mix(in srgb,var(--accent) 18%,transparent) !important;
+  border-radius:.65rem !important;
+}
+@media(max-width:47.5rem){
+  .appGuideButton{
+    right:.75rem;
+    bottom:5.45rem;
+  }
+  .appGuidePanel{
+    left:.55rem;
+    right:.55rem;
+    width:auto;
+    bottom:5.25rem;
+  }
+}
+</style>
+
 </head>
 <body class="readonly-mode">
 
@@ -4899,20 +5017,20 @@ body[data-theme="light"] #home .homeTable th:first-child{
   </div>
 </section>
 
-<section id="worship" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto"><button id="wg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="wf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="wr" class="btn secondary rebalanceBtn" title="Vuelve a repartir los campos desbloqueados para mejorar rotación y equilibrio">Reequilibrar</button><button id="wLockResp" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Responsables</button><button id="wLockSongs" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Canciones</button><button id="wc" class="btn success">Confirmar</button><button id="we" class="btn secondary">Añadir servicio</button></div><div class="worshipLockHint">Puedes fijar músicos o canciones por separado. “Rellenar vacíos” conserva lo ya elegido; “Reequilibrar” vuelve a repartir lo desbloqueado.</div><div class="worshipMixNote">Mezcla automática: 2 Rápidas + 2 Lentas, 1 Rápida + 1 Media + 2 Lentas, o 2 Rápidas + 1 Media + 1 Lenta. El orden también se mezcla aleatoriamente.</div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div><div id="wMobileCards" class="mobileScheduleCards"></div></div></section>
+<section id="worship" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto generateDatesControl"><button id="wg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="wf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="wr" class="btn secondary rebalanceBtn" title="Vuelve a repartir los campos desbloqueados para mejorar rotación y equilibrio">Reequilibrar</button><button id="wLockResp" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Responsables</button><button id="wLockSongs" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Canciones</button><button id="we" class="btn secondary">Añadir servicio</button><button id="wc" class="btn success" title="Guarda la programación para continuar editándola desde otro lugar cuando tengas la sesión iniciada">Confirmar</button></div><div class="worshipLockHint">Puedes fijar músicos o canciones por separado. “Rellenar vacíos” conserva lo ya elegido; “Reequilibrar” vuelve a repartir lo desbloqueado.</div><div class="worshipMixNote">Mezcla automática: 2 Rápidas + 2 Lentas, 1 Rápida + 1 Media + 2 Lentas, o 2 Rápidas + 1 Media + 1 Lenta. El orden también se mezcla aleatoriamente.</div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div><div id="wMobileCards" class="mobileScheduleCards"></div></div></section>
 
 <section id="youth" class="panel">
 <div class="card">
   <div class="row compactControls">
     <div><label>Año</label><input id="jy" type="number" value="2026"></div>
     <div><label>Mes</label><select id="jm"></select></div>
-    <div class="auto"><button id="jg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div>
+    <div class="auto generateDatesControl"><button id="jg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div>
   </div>
   <div class="row actionRow" style="margin-top:12px">
     <button id="jf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button>
     <button id="jr" class="btn secondary rebalanceBtn" title="Vuelve a repartir la programación para mejorar rotación y equilibrio">Reequilibrar</button>
-    <button id="jc" class="btn success">Confirmar</button>
     <button id="je" class="btn secondary">Añadir servicio</button>
+    <button id="jc" class="btn success" title="Guarda la programación para continuar editándola desde otro lugar cuando tengas la sesión iniciada">Confirmar</button>
   </div>
   <div id="jstatus" style="margin-top:10px"></div>
     <div class="sheet" style="margin-top:12px">
@@ -4925,7 +5043,7 @@ body[data-theme="light"] #home .homeTable th:first-child{
 </div>
 </section>
 
-<section id="media" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="my" type="number" value="2026"></div><div><label>Mes</label><select id="mm"></select></div><div class="auto"><button id="mg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="mf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="mr" class="btn secondary rebalanceBtn" title="Vuelve a repartir Multimedia para mejorar rotación y equilibrio">Reequilibrar</button><button id="mc" class="btn success">Confirmar</button><button id="me" class="btn secondary">Añadir servicio</button></div><div id="mstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="mtable"><thead><tr><th>FECHAS 📅</th><th>PC 💻</th><th>CAMARA 🎥</th><th>⏹️DIAPOSITVAS PREDICAS</th></tr></thead><tbody id="mbody"></tbody></table></div><div id="mMobileCards" class="mobileScheduleCards"></div></div></section>
+<section id="media" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="my" type="number" value="2026"></div><div><label>Mes</label><select id="mm"></select></div><div class="auto generateDatesControl"><button id="mg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="mf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="mr" class="btn secondary rebalanceBtn" title="Vuelve a repartir Multimedia para mejorar rotación y equilibrio">Reequilibrar</button><button id="me" class="btn secondary">Añadir servicio</button><button id="mc" class="btn success" title="Guarda la programación para continuar editándola desde otro lugar cuando tengas la sesión iniciada">Confirmar</button></div><div id="mstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="mtable"><thead><tr><th>FECHAS 📅</th><th>PC 💻</th><th>CAMARA 🎥</th><th>⏹️DIAPOSITVAS PREDICAS</th></tr></thead><tbody id="mbody"></tbody></table></div><div id="mMobileCards" class="mobileScheduleCards"></div></div></section>
 
 <section id="vols" class="panel">
 <div id="volunteerSyncStatus" class="note" style="margin-bottom:12px">Voluntarios: esperando conexión con la base de datos…</div>
@@ -6345,7 +6463,7 @@ function renderHomeRows(dates){
      const homeMediaLabels={
        "PC":"PC 💻",
        "Camara":"Cámara 🎥",
-       "Diapositivas":"📚 Diapost."
+       "Diapositivas":"⏹️ Diapost."
      };
      tdMedia.innerHTML=`<div class="homeCellList">${mediaRoles.map(role=>`<div class="line"><span class="key">${homeMediaLabels[role]||role}:</span><span>${media[role]||"—"}</span></div>`).join("")}</div>`;
    }else tdMedia.innerHTML='<span class="homeEmpty">Pendiente de programar</span>';
@@ -9993,6 +10111,7 @@ Tú pasarás a ser Editor.`,
 
     console.log(`Datos del equipo listos en ${Math.round(performance.now()-bootStarted)} ms`);
     setAppLoading(false);
+    window.maybeStartFirstLoginGuide?.();
     return window.currentProfile;
   }
 
@@ -10607,5 +10726,207 @@ document.addEventListener("click",(e)=>{
   relocateSongFilters();
 })();
 </script>
+
+<button id="appGuideButton" class="appGuideButton" type="button" aria-label="Abrir guía">
+  ? <span>Guía</span>
+</button>
+<div id="appGuideOverlay" class="appGuideOverlay" aria-hidden="true">
+  <div id="appGuidePanel" class="appGuidePanel" role="dialog" aria-labelledby="appGuideTitle">
+    <div class="appGuideHead">
+      <div>
+        <span id="appGuideCounter" class="appGuideCounter">1 de 3</span>
+        <h3 id="appGuideTitle">Guía rápida</h3>
+      </div>
+      <button id="appGuideClose" type="button" aria-label="Cerrar guía">×</button>
+    </div>
+    <div id="appGuideText" class="appGuideText"></div>
+    <div class="appGuideActions">
+      <button id="appGuidePrev" class="btn secondary" type="button">Anterior</button>
+      <button id="appGuideNext" class="btn primary" type="button">Siguiente</button>
+    </div>
+  </div>
+</div>
+
+
+<script id="flash-app-guide-js">
+
+const FLASH_GUIDE_DATA={
+  home:[
+    {target:"#homeWeekViewBtn",title:"Semana o Mes",text:"Cambia entre la vista semanal y la vista mensual de la programación."},
+    {target:"#prevWeek",title:"Navega por fechas",text:"Anterior y Siguiente mueven semanas cuando estás en Semana y meses completos cuando estás en Mes."},
+    {target:"#homeTableWrap",title:"Vista general",text:"Aquí ves rápidamente responsables, canciones y Multimedia de cada fecha."}
+  ],
+  worship:[
+    {target:"#wf",title:"1. Completa la programación",text:"Rellenar vacíos completa únicamente lo que falta. Reequilibrar vuelve a repartir lo desbloqueado para mejorar la rotación."},
+    {target:"#wLockResp",title:"2. Bloquea lo que quieras conservar",text:"Puedes bloquear responsables y canciones antes de reequilibrar para que esas partes no cambien."},
+    {target:"#worship .sheet",title:"3. Edita personas y canciones",text:"La programación no es estática: abre los selectores y cambia voluntarios o canciones manualmente cuando lo necesites."},
+    {target:"#we",title:"4. Añade un servicio",text:"Agrega una fecha especial adicional al mes y edítala igual que las demás."},
+    {target:"#wc",title:"5. Confirma y guarda",text:"Confirmar guarda la programación de tu equipo para poder continuar editándola desde otro lugar cuando tengas la sesión iniciada."}
+  ],
+  youth:[
+    {target:"#jf",title:"1. Completa la programación",text:"Rellenar vacíos completa lo pendiente y Reequilibrar vuelve a distribuir la programación de Jóvenes."},
+    {target:"#youth .sheet",title:"2. Edita personas y canciones",text:"Puedes cambiar manualmente responsables y canciones usando los selectores de la tabla."},
+    {target:"#je",title:"3. Añade un servicio",text:"Agrega una fecha especial de Jóvenes cuando la necesites."},
+    {target:"#jc",title:"4. Confirma y guarda",text:"Confirmar guarda los cambios del equipo para continuar editando desde otro lugar cuando tengas la sesión iniciada."}
+  ],
+  media:[
+    {target:"#mf",title:"1. Completa Multimedia",text:"Rellenar vacíos completa PC, Cámara y Diapositivas; Reequilibrar vuelve a repartir las asignaciones."},
+    {target:"#media .sheet",title:"2. Edita responsables",text:"Puedes cambiar cada responsable manualmente desde los selectores de la tabla."},
+    {target:"#me",title:"3. Añade un servicio",text:"Agrega una fecha adicional de Multimedia cuando sea necesario."},
+    {target:"#mc",title:"4. Confirma y guarda",text:"Confirmar guarda la programación para que puedas continuar editándola desde otro lugar cuando tengas la sesión iniciada."}
+  ],
+  vols:[
+    {target:"#openAddWorshipVolunteer",title:"1. Añade voluntarios",text:"Crea una persona de Alabanza y define su rol principal, roles secundarios y límites de participación."},
+    {target:"#openAddMediaVolunteer",title:"2. Configura Multimedia",text:"También puedes añadir personas para PC, Cámara o Diapositivas."},
+    {target:"#vols .list",title:"3. Administra el equipo",text:"Edita roles, estado y configuración de cada voluntario. Al guardar, los cambios quedan en tu equipo cuando tienes la sesión iniciada."}
+  ],
+  songs:[
+    {target:"#openAddSong",title:"1. Añade una canción",text:"Registra nombre, artista, categoría, BPM, moods, cantante y tonalidades."},
+    {target:"#sq",title:"2. Busca en vivo",text:"Mientras escribes, la lista se actualiza para mostrar únicamente las coincidencias."},
+    {target:"#addSongFilter",title:"3. Filtra en vivo",text:"Añade filtros de artista, categoría, BPM, mood, cantante o tonalidad; los resultados cambian inmediatamente."},
+    {target:".songDbWrap",title:"4. Administra el repertorio",text:"Desde la lista puedes revisar, editar o eliminar canciones. Los cambios quedan guardados en tu equipo cuando tienes la sesión iniciada."}
+  ],
+  avail:[
+    {target:"#awp",title:"1. Elige una persona",text:"Selecciona el voluntario al que vas a registrar una indisponibilidad."},
+    {target:"#awd",title:"2. Elige la fecha",text:"Marca el día exacto en el que no estará disponible."},
+    {target:"#awa",title:"3. Guarda",text:"La indisponibilidad queda asociada a tu equipo cuando tienes la sesión iniciada."}
+  ],
+  hist:[
+    {target:"#ht",title:"1. Selecciona el historial",text:"Consulta actividad por personas o por canciones."},
+    {target:"#hq",title:"2. Busca",text:"Filtra el historial por nombre, detalle o módulo."},
+    {target:"#hr",title:"3. Revisa resultados",text:"Aquí puedes comprobar cómo se ha utilizado la programación confirmada."}
+  ],
+  imgs:[
+    {target:"#iw",title:"1. Imagen de Alabanza",text:"Genera el render de Alabanza con la programación que tienes cargada."},
+    {target:"#ij",title:"2. Imagen de Jóvenes",text:"Genera la imagen de Alabanza Jóvenes usando el mismo diseño de la aplicación."},
+    {target:"#im",title:"3. Imagen de Multimedia",text:"Genera el render de Multimedia con responsables y fechas."},
+    {target:"#idown",title:"4. Descarga",text:"Cuando tengas una imagen generada, descárgala en PNG para compartirla."}
+  ],
+  settings:[
+    {target:"#teamSettingsCard",title:"1. Tu equipo",text:"Aquí ves el nombre del equipo y el código para que otras personas puedan unirse."},
+    {target:"#teamMembersList",title:"2. Miembros y permisos",text:"El Administrador decide quién puede editar y quién tendrá solo lectura."},
+    {target:"#themeBtn",title:"3. Apariencia",text:"Cambia entre modo claro y oscuro cuando quieras."}
+  ]
+};
+
+(()=>{
+  const button=document.getElementById("appGuideButton");
+  const overlay=document.getElementById("appGuideOverlay");
+  const panel=document.getElementById("appGuidePanel");
+  const title=document.getElementById("appGuideTitle");
+  const text=document.getElementById("appGuideText");
+  const counter=document.getElementById("appGuideCounter");
+  const prev=document.getElementById("appGuidePrev");
+  const next=document.getElementById("appGuideNext");
+  const close=document.getElementById("appGuideClose");
+  let step=0;
+  let activeTarget=null;
+
+  function visibleSection(){return document.querySelector(".panel.active")?.id||"home"}
+
+  function clearTarget(){
+    if(activeTarget)activeTarget.classList.remove("app-guide-target");
+    activeTarget=null;
+  }
+
+  function positionPanel(target){
+    if(!panel||!target)return;
+    const rect=target.getBoundingClientRect();
+    const mobile=window.matchMedia("(max-width:47.5rem)").matches;
+
+    panel.style.top="auto";
+    panel.style.bottom="";
+    panel.style.left="";
+    panel.style.right="";
+
+    if(mobile){
+      panel.style.left=".55rem";
+      panel.style.right=".55rem";
+      if(rect.top>window.innerHeight*.52){
+        panel.style.top="4rem";
+      }else{
+        panel.style.bottom="5.25rem";
+      }
+    }else{
+      if(rect.left>window.innerWidth*.5){
+        panel.style.left="1rem";
+        panel.style.right="auto";
+      }else{
+        panel.style.right="1rem";
+      }
+      if(rect.top>window.innerHeight*.55){
+        panel.style.top="4.4rem";
+      }else{
+        panel.style.bottom="1rem";
+      }
+    }
+  }
+
+  function renderStep(){
+    clearTarget();
+    const steps=FLASH_GUIDE_DATA[visibleSection()]||FLASH_GUIDE_DATA.home;
+    step=Math.max(0,Math.min(step,steps.length-1));
+    const item=steps[step];
+    title.textContent=item.title;
+    text.textContent=item.text;
+    counter.textContent=`${step+1} de ${steps.length}`;
+    prev.disabled=step===0;
+    next.textContent=step===steps.length-1?"Terminar":"Siguiente";
+
+    const target=document.querySelector(item.target);
+    if(target && target.offsetParent!==null){
+      activeTarget=target;
+      target.classList.add("app-guide-target");
+      target.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"});
+      setTimeout(()=>positionPanel(target),260);
+    }else{
+      panel.style.right="1rem";
+      panel.style.bottom="1rem";
+    }
+  }
+
+  function openGuide(){
+    step=0;
+    button.style.display="inline-flex";
+    overlay.classList.add("open");
+    overlay.setAttribute("aria-hidden","false");
+    renderStep();
+  }
+
+  function closeGuide(){
+    clearTarget();
+    overlay.classList.remove("open");
+    overlay.setAttribute("aria-hidden","true");
+  }
+
+  button?.addEventListener("click",openGuide);
+  close?.addEventListener("click",closeGuide);
+  prev?.addEventListener("click",()=>{if(step>0){step--;renderStep()}});
+  next?.addEventListener("click",()=>{
+    const steps=FLASH_GUIDE_DATA[visibleSection()]||FLASH_GUIDE_DATA.home;
+    if(step>=steps.length-1){closeGuide();return}
+    step++;renderStep();
+  });
+
+  document.querySelectorAll(".nav button[data-p]").forEach(nav=>{
+    nav.addEventListener("click",()=>{closeGuide();step=0});
+  });
+  document.querySelectorAll("[data-mobile-page]").forEach(nav=>{
+    nav.addEventListener("click",()=>{closeGuide();step=0});
+  });
+
+  window.maybeStartFirstLoginGuide=()=>{
+    if(!window.currentProfile?.id||!window.currentTeam)return;
+    button.style.display="inline-flex";
+    const key=`flashProgramGuideSeen:${window.currentProfile.id}:v1`;
+    let seen=false;
+    try{seen=localStorage.getItem(key)==="1"}catch(_){}
+    if(seen)return;
+    try{localStorage.setItem(key,"1")}catch(_){}
+    setTimeout(openGuide,900);
+  };
+})();
+</script>
+
 </body>
 </html>
