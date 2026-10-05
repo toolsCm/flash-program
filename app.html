@@ -1898,7 +1898,10 @@ body.readonly-mode .songDbTable [data-col="actions"]{
 <div class="card s6"><h2>Configuración</h2><label>Semanas sin repetir canción</label><input type="number" value="3"><label>Coros por servicio</label><input type="number" value="2"><label>Guitarras por servicio</label><input type="number" value="2"><button class="btn primary" style="margin-top:10px">Guardar</button></div>
 
 <div id="googleSheetsCard" class="card s6 gsConnectionCard">
-  <h2>Google Sheets</h2><div class="muted" style="margin:-.25rem 0 .8rem">Integración privada del equipo principal.</div>
+  <h2>Google Sheets</h2>
+<div id="privateSheetsScopeNote" class="muted" style="margin:-.25rem 0 .8rem">
+  Integración privada disponible únicamente para una cuenta autorizada.
+</div>
 
   <div id="googleSheetsConnectionStatus" class="gsStatusBox">
     <div class="gsStatusTitle">Comprobando conexión…</div>
@@ -3970,7 +3973,9 @@ async function sendGoogleSheetsFallback(payload){
 }
 
 async function syncConfirmedMonthToGoogleSheets(module,services,year,monthZeroBased){
-  if(window.currentTeam?.private_google_sheets_enabled!==true || !hasGoogleSheetsConnection(year)){
+  if(window.currentTeam?.private_google_sheets_enabled!==true ||
+     !window.isPrivateGoogleSheetsAccount?.() ||
+     !hasGoogleSheetsConnection(year)){
     return {
       ok:true,
       skipped:true,
@@ -5799,7 +5804,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   // =========================================================
   // V53 · GOOGLE SHEETS POR EQUIPO / AÑO
   // =========================================================
+  const PRIVATE_GOOGLE_SHEETS_EMAIL='camilomora8a55@gmail.com';
   const googleSheetConnections=new Map();
+
+  function isPrivateGoogleSheetsAccount(){
+    return String(window.currentProfile?.email||'').trim().toLocaleLowerCase('es')
+      === PRIVATE_GOOGLE_SHEETS_EMAIL.toLocaleLowerCase('es');
+  }
+  window.isPrivateGoogleSheetsAccount=isPrivateGoogleSheetsAccount;
 
   function extractGoogleSpreadsheetId(value){
     const text=String(value||'').trim();
@@ -5826,12 +5838,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     const readOnlyNote=document.getElementById('googleSheetsReadOnlyNote');
 
     const featureEnabled=window.currentTeam?.private_google_sheets_enabled===true;
-    const isAdmin=window.currentTeam?.role==='admin';
+    const allowedAccount=isPrivateGoogleSheetsAccount();
+    const visible=featureEnabled&&allowedAccount;
 
-    // Esta integración es privada: solo aparece al Admin del equipo principal.
-    if(card)card.style.display=(featureEnabled&&isAdmin)?'block':'none';
-    if(adminControls)adminControls.style.display=(featureEnabled&&isAdmin)?'block':'none';
+    // Google Sheets es una función privada de una sola cuenta.
+    if(card)card.style.display=visible?'block':'none';
+    if(adminControls)adminControls.style.display=visible?'block':'none';
     if(readOnlyNote)readOnlyNote.style.display='none';
+
+    const scopeNote=document.getElementById('privateSheetsScopeNote');
+    if(scopeNote&&visible){
+      scopeNote.textContent='Integración privada disponible únicamente para tu cuenta.';
+    }
   }
 
   function renderGoogleSheetConnections(){
@@ -5886,7 +5904,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     googleSheetConnections.clear();
     updateGoogleSheetsSettingsVisibility();
 
-    if(!window.currentTeam||!window.supabaseClient||window.currentTeam.private_google_sheets_enabled!==true){
+    if(!window.currentTeam||!window.supabaseClient||
+       window.currentTeam.private_google_sheets_enabled!==true||
+       !isPrivateGoogleSheetsAccount()){
       renderGoogleSheetConnections();
       return [];
     }
@@ -5913,8 +5933,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   async function saveGoogleSheetsConnection(){
-    if(window.currentTeam?.role!=='admin'){
-      window.showAppToast?.('Solo el Administrador puede conectar Google Sheets.','error',1600);
+    if(!isPrivateGoogleSheetsAccount()){
+      window.showAppToast?.('Google Sheets no está disponible para esta cuenta.','error',1600);
       return;
     }
 
@@ -5972,7 +5992,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   async function disconnectGoogleSheetsConnection(){
-    if(window.currentTeam?.role!=='admin')return;
+    if(!isPrivateGoogleSheetsAccount())return;
 
     const year=Number(document.getElementById('gsConnectionYear')?.value);
     if(!hasGoogleSheetsConnection(year)){
