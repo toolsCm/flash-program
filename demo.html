@@ -2,7 +2,7 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="DEMO-V1-INMEMORY-JSON">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="DEMO-V2-GUIDE-FIXED">
 <title>Flash Program · Versión de prueba</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5050,6 +5050,34 @@ body[data-theme="light"] #home .homeTable th:first-child{
 </style>
 
 
+
+
+
+<style id="v66-programming-no-generate">
+.generateDatesControl{
+  display:none !important;
+}
+.compactControls{
+  grid-template-columns:7.3rem minmax(9rem,12rem) !important;
+}
+@media(max-width:47.5rem){
+  .compactControls{
+    grid-template-columns:5.3rem minmax(0,1fr) !important;
+  }
+
+  /* Mobile action order remains exactly:
+     Rellenar, Reequilibrar, Bloquear responsables, Bloquear canciones,
+     Añadir servicio, Confirmar. */
+  #worship .actionRow,
+  #youth .actionRow,
+  #media .actionRow{
+    display:flex !important;
+    flex-wrap:nowrap !important;
+  }
+}
+</style>
+
+
 <style id="flash-demo-mode">
 body.demo-mode{padding-top:2.55rem}
 .demoPersistentBanner{
@@ -5058,9 +5086,10 @@ body.demo-mode{padding-top:2.55rem}
   border-bottom:1px solid #5b4a1d;background:#2b2414;color:#f6e6ae;font-size:.82rem;text-align:center
 }
 .demoPersistentBanner strong{color:#fff0bd;letter-spacing:.04em}
-body.demo-mode .sidebar{top:2.55rem !important;bottom:0 !important;height:calc(100vh - 2.55rem) !important}
+body.demo-mode .sidebar{top:2.55rem !important;height:calc(100vh - 2.55rem) !important}
 body.demo-mode .top{top:2.55rem !important}
 body.demo-mode #loginScreen,body.demo-mode .teamGate{display:none !important}
+
 .demoGuideButton{
   position:fixed;right:1rem;bottom:1rem;z-index:1150;min-height:3rem;
   display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem .8rem;
@@ -5078,29 +5107,24 @@ body.demo-mode #loginScreen,body.demo-mode .teamGate{display:none !important}
 .demoGuideHead h3{margin:.2rem 0 0 !important}
 .demoGuideCounter{color:var(--muted);font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
 .demoGuideHead button{
-  width:2.75rem;height:2.75rem;min-width:2.75rem;border:1px solid var(--line);border-radius:.65rem;
-  background:var(--panel2);color:var(--text);font-size:1.25rem
+  width:2.75rem;height:2.75rem;min-width:2.75rem;border:1px solid var(--line);
+  border-radius:.65rem;background:var(--panel2);color:var(--text);font-size:1.25rem
 }
 .demoGuideText{color:var(--muted);font-size:.9rem;line-height:1.5;min-height:4.2rem}
 .demoGuideActions{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.8rem}
 .demo-guide-target{
-  position:relative !important;z-index:1160 !important;outline:.2rem solid var(--accent) !important;
-  outline-offset:.18rem !important;box-shadow:0 0 0 .45rem color-mix(in srgb,var(--accent) 18%,transparent) !important
+  outline:.2rem solid var(--accent) !important;
+  outline-offset:.2rem !important;
+  box-shadow:0 0 0 .35rem color-mix(in srgb,var(--accent) 18%,transparent) !important;
+  border-radius:.65rem !important;
 }
-.demoGuideSpotlight{
-  position:fixed;inset:0;z-index:1135;background:rgba(4,6,10,.38);backdrop-filter:blur(.12rem);
-  pointer-events:none;opacity:0;transition:opacity .16s ease
-}
-.demoGuideSpotlight.show{opacity:1}
 @media(max-width:47.5rem){
   body.demo-mode{padding-top:3.15rem}
-  .demoPersistentBanner{
-    min-height:3.15rem;flex-direction:column;gap:.05rem;padding:.35rem .6rem;font-size:.74rem
-  }
+  .demoPersistentBanner{min-height:3.15rem;flex-direction:column;gap:.05rem;padding:.35rem .6rem;font-size:.74rem}
   body.demo-mode .top{top:3.15rem !important}
   body.demo-mode .sidebar{top:3.15rem !important;height:calc(100vh - 3.15rem) !important}
-  .demoGuideButton{right:.75rem;bottom:5.45rem;min-height:3rem}
-  .demoGuidePanel{left:.55rem;right:.55rem;bottom:5.25rem;width:auto;border-radius:1rem}
+  .demoGuideButton{right:.75rem;bottom:5.45rem}
+  .demoGuidePanel{left:.55rem;right:.55rem;width:auto;bottom:5.25rem}
 }
 </style>
 
@@ -5452,20 +5476,20 @@ body.demo-mode #loginScreen,body.demo-mode .teamGate{display:none !important}
   </div>
 </section>
 
-<section id="worship" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto"><button id="wg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="wf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="wr" class="btn secondary rebalanceBtn" title="Vuelve a repartir los campos desbloqueados para mejorar rotación y equilibrio">Reequilibrar</button><button id="wLockResp" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Responsables</button><button id="wLockSongs" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Canciones</button><button id="wc" class="btn success">Confirmar</button><button id="we" class="btn secondary">Añadir servicio</button></div><div class="worshipLockHint">Puedes fijar músicos o canciones por separado. “Rellenar vacíos” conserva lo ya elegido; “Reequilibrar” vuelve a repartir lo desbloqueado.</div><div class="worshipMixNote">Mezcla automática: 2 Rápidas + 2 Lentas, 1 Rápida + 1 Media + 2 Lentas, o 2 Rápidas + 1 Media + 1 Lenta. El orden también se mezcla aleatoriamente.</div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div><div id="wMobileCards" class="mobileScheduleCards"></div></div></section>
+<section id="worship" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto generateDatesControl"><button id="wg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="wf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="wr" class="btn secondary rebalanceBtn" title="Vuelve a repartir los campos desbloqueados para mejorar rotación y equilibrio">Reequilibrar</button><button id="wLockResp" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Responsables</button><button id="wLockSongs" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Canciones</button><button id="we" class="btn secondary">Añadir servicio</button><button id="wc" class="btn success" title="Guarda la programación para continuar editándola desde otro lugar cuando tengas la sesión iniciada">Confirmar</button></div><div class="worshipLockHint">Puedes fijar músicos o canciones por separado. “Rellenar vacíos” conserva lo ya elegido; “Reequilibrar” vuelve a repartir lo desbloqueado.</div><div class="worshipMixNote">Mezcla automática: 2 Rápidas + 2 Lentas, 1 Rápida + 1 Media + 2 Lentas, o 2 Rápidas + 1 Media + 1 Lenta. El orden también se mezcla aleatoriamente.</div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div><div id="wMobileCards" class="mobileScheduleCards"></div></div></section>
 
 <section id="youth" class="panel">
 <div class="card">
   <div class="row compactControls">
     <div><label>Año</label><input id="jy" type="number" value="2026"></div>
     <div><label>Mes</label><select id="jm"></select></div>
-    <div class="auto"><button id="jg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div>
+    <div class="auto generateDatesControl"><button id="jg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div>
   </div>
   <div class="row actionRow" style="margin-top:12px">
     <button id="jf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button>
     <button id="jr" class="btn secondary rebalanceBtn" title="Vuelve a repartir la programación para mejorar rotación y equilibrio">Reequilibrar</button>
-    <button id="jc" class="btn success">Confirmar</button>
     <button id="je" class="btn secondary">Añadir servicio</button>
+    <button id="jc" class="btn success" title="Guarda la programación para continuar editándola desde otro lugar cuando tengas la sesión iniciada">Confirmar</button>
   </div>
   <div id="jstatus" style="margin-top:10px"></div>
     <div class="sheet" style="margin-top:12px">
@@ -5478,7 +5502,7 @@ body.demo-mode #loginScreen,body.demo-mode .teamGate{display:none !important}
 </div>
 </section>
 
-<section id="media" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="my" type="number" value="2026"></div><div><label>Mes</label><select id="mm"></select></div><div class="auto"><button id="mg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="mf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="mr" class="btn secondary rebalanceBtn" title="Vuelve a repartir Multimedia para mejorar rotación y equilibrio">Reequilibrar</button><button id="mc" class="btn success">Confirmar</button><button id="me" class="btn secondary">Añadir servicio</button></div><div id="mstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="mtable"><thead><tr><th>FECHAS 📅</th><th>PC 💻</th><th>CAMARA 🎥</th><th>⏹️DIAPOSITVAS PREDICAS</th></tr></thead><tbody id="mbody"></tbody></table></div><div id="mMobileCards" class="mobileScheduleCards"></div></div></section>
+<section id="media" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="my" type="number" value="2026"></div><div><label>Mes</label><select id="mm"></select></div><div class="auto generateDatesControl"><button id="mg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="mf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="mr" class="btn secondary rebalanceBtn" title="Vuelve a repartir Multimedia para mejorar rotación y equilibrio">Reequilibrar</button><button id="me" class="btn secondary">Añadir servicio</button><button id="mc" class="btn success" title="Guarda la programación para continuar editándola desde otro lugar cuando tengas la sesión iniciada">Confirmar</button></div><div id="mstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="mtable"><thead><tr><th>FECHAS 📅</th><th>PC 💻</th><th>CAMARA 🎥</th><th>⏹️DIAPOSITVAS PREDICAS</th></tr></thead><tbody id="mbody"></tbody></table></div><div id="mMobileCards" class="mobileScheduleCards"></div></div></section>
 
 <section id="vols" class="panel">
 <div id="volunteerSyncStatus" class="note" style="margin-bottom:12px">Voluntarios: esperando conexión con la base de datos…</div>
@@ -11164,12 +11188,17 @@ document.addEventListener("click",(e)=>{
   <span>Los datos no quedan almacenados.</span>
 </div>
 
-<button id="demoGuideButton" class="demoGuideButton" type="button" aria-label="Abrir guía de esta sección">
+
+
+
+
+
+
+<button id="demoGuideButton" class="demoGuideButton" type="button" aria-label="Abrir guía">
   ? <span>Guía</span>
 </button>
-
 <div id="demoGuideOverlay" class="demoGuideOverlay" aria-hidden="true">
-  <div id="demoGuidePanel" class="demoGuidePanel" role="dialog" aria-modal="false" aria-labelledby="demoGuideTitle">
+  <div id="demoGuidePanel" class="demoGuidePanel" role="dialog" aria-labelledby="demoGuideTitle">
     <div class="demoGuideHead">
       <div>
         <span id="demoGuideCounter" class="demoGuideCounter">1 de 3</span>
@@ -11187,95 +11216,118 @@ document.addEventListener("click",(e)=>{
 
 
 <script id="flash-demo-guide">
+
+const FLASH_GUIDE_DATA={
+  home:[
+    {target:"#homeWeekViewBtn",title:"Semana o Mes",text:"Cambia entre la vista semanal y la vista mensual de la programación."},
+    {target:"#prevWeek",title:"Navega por fechas",text:"Anterior y Siguiente mueven semanas cuando estás en Semana y meses completos cuando estás en Mes."},
+    {target:"#homeTableWrap",title:"Vista general",text:"Aquí ves rápidamente responsables, canciones y Multimedia de cada fecha."}
+  ],
+  worship:[
+    {target:"#wf",title:"1. Completa la programación",text:"Rellenar vacíos completa únicamente lo que falta. Reequilibrar vuelve a repartir lo desbloqueado para mejorar la rotación."},
+    {target:"#wLockResp",title:"2. Bloquea lo que quieras conservar",text:"Puedes bloquear responsables y canciones antes de reequilibrar para que esas partes no cambien."},
+    {target:"#worship .sheet",title:"3. Edita personas y canciones",text:"La programación no es estática: abre los selectores y cambia voluntarios o canciones manualmente cuando lo necesites."},
+    {target:"#we",title:"4. Añade un servicio",text:"Agrega una fecha especial adicional al mes y edítala igual que las demás."},
+    {target:"#wc",title:"5. Confirma y guarda",text:"Confirmar guarda la programación de tu equipo para poder continuar editándola desde otro lugar cuando tengas la sesión iniciada."}
+  ],
+  youth:[
+    {target:"#jf",title:"1. Completa la programación",text:"Rellenar vacíos completa lo pendiente y Reequilibrar vuelve a distribuir la programación de Jóvenes."},
+    {target:"#youth .sheet",title:"2. Edita personas y canciones",text:"Puedes cambiar manualmente responsables y canciones usando los selectores de la tabla."},
+    {target:"#je",title:"3. Añade un servicio",text:"Agrega una fecha especial de Jóvenes cuando la necesites."},
+    {target:"#jc",title:"4. Confirma y guarda",text:"Confirmar guarda los cambios del equipo para continuar editando desde otro lugar cuando tengas la sesión iniciada."}
+  ],
+  media:[
+    {target:"#mf",title:"1. Completa Multimedia",text:"Rellenar vacíos completa PC, Cámara y Diapositivas; Reequilibrar vuelve a repartir las asignaciones."},
+    {target:"#media .sheet",title:"2. Edita responsables",text:"Puedes cambiar cada responsable manualmente desde los selectores de la tabla."},
+    {target:"#me",title:"3. Añade un servicio",text:"Agrega una fecha adicional de Multimedia cuando sea necesario."},
+    {target:"#mc",title:"4. Confirma y guarda",text:"Confirmar guarda la programación para que puedas continuar editándola desde otro lugar cuando tengas la sesión iniciada."}
+  ],
+  vols:[
+    {target:"#openAddWorshipVolunteer",title:"1. Añade voluntarios",text:"Crea una persona de Alabanza y define su rol principal, roles secundarios y límites de participación."},
+    {target:"#openAddMediaVolunteer",title:"2. Configura Multimedia",text:"También puedes añadir personas para PC, Cámara o Diapositivas."},
+    {target:"#vols .list",title:"3. Administra el equipo",text:"Edita roles, estado y configuración de cada voluntario. Al guardar, los cambios quedan en tu equipo cuando tienes la sesión iniciada."}
+  ],
+  songs:[
+    {target:"#openAddSong",title:"1. Añade una canción",text:"Registra nombre, artista, categoría, BPM, moods, cantante y tonalidades."},
+    {target:"#sq",title:"2. Busca en vivo",text:"Mientras escribes, la lista se actualiza para mostrar únicamente las coincidencias."},
+    {target:"#addSongFilter",title:"3. Filtra en vivo",text:"Añade filtros de artista, categoría, BPM, mood, cantante o tonalidad; los resultados cambian inmediatamente."},
+    {target:".songDbWrap",title:"4. Administra el repertorio",text:"Desde la lista puedes revisar, editar o eliminar canciones. Los cambios quedan guardados en tu equipo cuando tienes la sesión iniciada."}
+  ],
+  avail:[
+    {target:"#awp",title:"1. Elige una persona",text:"Selecciona el voluntario al que vas a registrar una indisponibilidad."},
+    {target:"#awd",title:"2. Elige la fecha",text:"Marca el día exacto en el que no estará disponible."},
+    {target:"#awa",title:"3. Guarda",text:"La indisponibilidad queda asociada a tu equipo cuando tienes la sesión iniciada."}
+  ],
+  hist:[
+    {target:"#ht",title:"1. Selecciona el historial",text:"Consulta actividad por personas o por canciones."},
+    {target:"#hq",title:"2. Busca",text:"Filtra el historial por nombre, detalle o módulo."},
+    {target:"#hr",title:"3. Revisa resultados",text:"Aquí puedes comprobar cómo se ha utilizado la programación confirmada."}
+  ],
+  imgs:[
+    {target:"#iw",title:"1. Imagen de Alabanza",text:"Genera el render de Alabanza con la programación que tienes cargada."},
+    {target:"#ij",title:"2. Imagen de Jóvenes",text:"Genera la imagen de Alabanza Jóvenes usando el mismo diseño de la aplicación."},
+    {target:"#im",title:"3. Imagen de Multimedia",text:"Genera el render de Multimedia con responsables y fechas."},
+    {target:"#idown",title:"4. Descarga",text:"Cuando tengas una imagen generada, descárgala en PNG para compartirla."}
+  ],
+  settings:[
+    {target:"#teamSettingsCard",title:"1. Tu equipo",text:"Aquí ves el nombre del equipo y el código para que otras personas puedan unirse."},
+    {target:"#teamMembersList",title:"2. Miembros y permisos",text:"El Administrador decide quién puede editar y quién tendrá solo lectura."},
+    {target:"#themeBtn",title:"3. Apariencia",text:"Cambia entre modo claro y oscuro cuando quieras."}
+  ]
+};
+
 document.addEventListener("DOMContentLoaded",()=>{
   document.body.classList.add("demo-mode");
 
-  const guideData={
-    home:[
-      {target:"#homeWeekViewBtn",title:"Semana o Mes",text:"Cambia entre la vista semanal y la vista mensual de la programación."},
-      {target:"#prevWeek",title:"Navegar por fechas",text:"Usa Anterior y Siguiente. En Semana avanzas por semanas; en Mes avanzas por meses."},
-      {target:"#homeTableWrap",title:"Vista general",text:"Aquí ves rápidamente responsables, canciones y Multimedia de cada fecha."}
-    ],
-    worship:[
-      {target:"#wg",title:"1. Generar fechas",text:"Crea las fechas del mes. Todavía no asigna personas ni canciones."},
-      {target:"#wf",title:"2. Rellenar vacíos",text:"Completa solamente espacios faltantes y conserva lo que ya hayas elegido."},
-      {target:"#wr",title:"3. Reequilibrar",text:"Vuelve a repartir los campos desbloqueados para mejorar la rotación."},
-      {target:"#wc",title:"4. Confirmar",text:"En esta versión de prueba confirma dentro del JSON temporal. Nada llega a Supabase."},
-      {target:"#we",title:"5. Añadir servicio",text:"Agrega una fecha especial adicional al mes."}
-    ],
-    youth:[
-      {target:"#jg",title:"1. Generar fechas",text:"Crea los sábados del mes para Alabanza Jóvenes."},
-      {target:"#jf",title:"2. Rellenar vacíos",text:"Completa responsables y canciones que estén pendientes."},
-      {target:"#jr",title:"3. Reequilibrar",text:"Vuelve a distribuir la programación de Jóvenes."},
-      {target:"#jc",title:"4. Confirmar",text:"Guarda la programación solo durante esta sesión de prueba."}
-    ],
-    media:[
-      {target:"#mg",title:"1. Generar fechas",text:"Crea las fechas de Multimedia del mes."},
-      {target:"#mf",title:"2. Rellenar vacíos",text:"Completa PC, Cámara y Diapositivas que estén pendientes."},
-      {target:"#mr",title:"3. Reequilibrar",text:"Redistribuye responsables buscando una mejor rotación."},
-      {target:"#mc",title:"4. Confirmar",text:"Actualiza únicamente el JSON temporal de esta demo."}
-    ],
-    vols:[
-      {target:"#openAddWorshipVolunteer",title:"1. Añadir voluntario",text:"Agrega una persona de Alabanza con su rol principal y secundarios."},
-      {target:"#openAddMediaVolunteer",title:"2. Añadir Multimedia",text:"También puedes crear voluntarios solo para funciones de Multimedia."},
-      {target:"#vols .list",title:"3. Editar o desactivar",text:"Usa las acciones de cada persona para editar roles o cambiar su estado."},
-      {target:"#volunteerEditModal",title:"4. Guardar cambios",text:"Los cambios se aplican al JSON temporal de la demo y desaparecen al recargar."}
-    ],
-    songs:[
-      {target:"#openAddSong",title:"1. Añadir canción",text:"Crea una canción con artista, categoría, BPM, moods y tonalidad."},
-      {target:"#sq",title:"2. Buscar",text:"Escribe y verás los resultados filtrarse mientras buscas."},
-      {target:"#addSongFilter",title:"3. Añadir filtros",text:"Combina artista, categoría, BPM, mood, cantante o tonalidad."},
-      {target:"#openImportSongs",title:"4. Importar lista",text:"Puedes probar una importación CSV. Los datos se quedan solo en memoria."},
-      {target:".songDbWrap",title:"5. Editar repertorio",text:"Edita o elimina canciones igual que en la aplicación real."}
-    ],
-    avail:[
-      {target:"#awp",title:"1. Selecciona una persona",text:"Elige quién no estará disponible."},
-      {target:"#awd",title:"2. Selecciona una fecha",text:"Marca el día exacto de indisponibilidad."},
-      {target:"#awa",title:"3. Guardar indisponibilidad",text:"La fecha queda registrada solamente durante esta sesión de prueba."}
-    ],
-    hist:[
-      {target:"#ht",title:"1. Tipo de historial",text:"Elige si quieres consultar personas o canciones."},
-      {target:"#hq",title:"2. Buscar",text:"Busca por nombre, rol, canción o módulo."},
-      {target:"#hr",title:"3. Consultar",text:"Muestra la actividad confirmada de esta versión de prueba."}
-    ],
-    imgs:[
-      {target:"#iw",title:"1. Generar imagen",text:"Genera la imagen mensual de Alabanza usando la programación actual."},
-      {target:"#im",title:"2. Multimedia",text:"También puedes generar el render de Multimedia."},
-      {target:"#idown",title:"3. Descargar",text:"Descarga el PNG generado, igual que en la aplicación real."}
-    ],
-    settings:[
-      {target:"#teamSettingsCard",title:"1. Equipo",text:"La demo simula un equipo privado con permisos de Administrador."},
-      {target:"#teamMembersList",title:"2. Miembros",text:"Aquí verías los miembros y sus permisos dentro de un equipo real."},
-      {target:"#themeBtn",title:"3. Tema",text:"Puedes cambiar entre modo claro y oscuro. Solo la preferencia visual puede quedar en tu navegador."}
-    ]
-  };
-
   const button=document.getElementById("demoGuideButton");
   const overlay=document.getElementById("demoGuideOverlay");
+  const panel=document.getElementById("demoGuidePanel");
   const title=document.getElementById("demoGuideTitle");
   const text=document.getElementById("demoGuideText");
   const counter=document.getElementById("demoGuideCounter");
   const prev=document.getElementById("demoGuidePrev");
   const next=document.getElementById("demoGuideNext");
   const close=document.getElementById("demoGuideClose");
-
-  const spotlight=document.createElement("div");
-  spotlight.className="demoGuideSpotlight";
-  document.body.appendChild(spotlight);
-
   let step=0;
   let activeTarget=null;
 
-  function visibleSection(){ return document.querySelector(".panel.active")?.id||"home"; }
+  function visibleSection(){return document.querySelector(".panel.active")?.id||"home"}
+
   function clearTarget(){
     if(activeTarget)activeTarget.classList.remove("demo-guide-target");
     activeTarget=null;
-    spotlight.classList.remove("show");
   }
+
+  function positionPanel(target){
+    if(!panel||!target)return;
+    const rect=target.getBoundingClientRect();
+    const mobile=window.matchMedia("(max-width:47.5rem)").matches;
+
+    panel.style.top="auto";
+    panel.style.bottom="";
+    panel.style.left="";
+    panel.style.right="";
+
+    if(mobile){
+      panel.style.left=".55rem";
+      panel.style.right=".55rem";
+      if(rect.top>window.innerHeight*.52)panel.style.top="3.75rem";
+      else panel.style.bottom="5.25rem";
+    }else{
+      if(rect.left>window.innerWidth*.5){
+        panel.style.left="1rem";
+        panel.style.right="auto";
+      }else{
+        panel.style.right="1rem";
+      }
+      if(rect.top>window.innerHeight*.55)panel.style.top="4.4rem";
+      else panel.style.bottom="1rem";
+    }
+  }
+
   function renderStep(){
     clearTarget();
-    const section=visibleSection();
-    const steps=guideData[section]||guideData.home;
+    const steps=FLASH_GUIDE_DATA[visibleSection()]||FLASH_GUIDE_DATA.home;
     step=Math.max(0,Math.min(step,steps.length-1));
     const item=steps[step];
 
@@ -11289,16 +11341,21 @@ document.addEventListener("DOMContentLoaded",()=>{
     if(target && target.offsetParent!==null){
       activeTarget=target;
       target.classList.add("demo-guide-target");
-      spotlight.classList.add("show");
-      setTimeout(()=>target.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"}),40);
+      target.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"});
+      setTimeout(()=>positionPanel(target),260);
+    }else{
+      panel.style.right="1rem";
+      panel.style.bottom="1rem";
     }
   }
+
   function openGuide(){
     step=0;
     overlay.classList.add("open");
     overlay.setAttribute("aria-hidden","false");
     renderStep();
   }
+
   function closeGuide(){
     clearTarget();
     overlay.classList.remove("open");
@@ -11307,18 +11364,18 @@ document.addEventListener("DOMContentLoaded",()=>{
 
   button?.addEventListener("click",openGuide);
   close?.addEventListener("click",closeGuide);
-  prev?.addEventListener("click",()=>{if(step>0){step--;renderStep();}});
+  prev?.addEventListener("click",()=>{if(step>0){step--;renderStep()}});
   next?.addEventListener("click",()=>{
-    const steps=guideData[visibleSection()]||guideData.home;
-    if(step>=steps.length-1){closeGuide();return;}
+    const steps=FLASH_GUIDE_DATA[visibleSection()]||FLASH_GUIDE_DATA.home;
+    if(step>=steps.length-1){closeGuide();return}
     step++;renderStep();
   });
 
   document.querySelectorAll(".nav button[data-p]").forEach(nav=>{
-    nav.addEventListener("click",()=>{closeGuide();step=0;});
+    nav.addEventListener("click",()=>{closeGuide();step=0});
   });
   document.querySelectorAll("[data-mobile-page]").forEach(nav=>{
-    nav.addEventListener("click",()=>{closeGuide();step=0;});
+    nav.addEventListener("click",()=>{closeGuide();step=0});
   });
 
   const resetButton=document.createElement("button");
@@ -11335,7 +11392,12 @@ document.addEventListener("DOMContentLoaded",()=>{
   });
   document.getElementById("teamSettingsCard")?.appendChild(resetButton);
 
-  setTimeout(openGuide,900);
+  let seen=false;
+  try{seen=sessionStorage.getItem("flashProgramDemoGuideSeen")==="1"}catch(_){}
+  if(!seen){
+    try{sessionStorage.setItem("flashProgramDemoGuideSeen","1")}catch(_){}
+    setTimeout(openGuide,900);
+  }
 });
 </script>
 
