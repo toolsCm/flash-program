@@ -2,7 +2,7 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V64-HOME-MONTH-NAV-PROGRAM-BLUR">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V65-MORE-FOCUS-SIDEBAR-FIX">
 <title>Flash Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4426,6 +4426,127 @@ body[data-theme="light"] #home .homeTable th:first-child{
   }
   #home .homeMediaCell .key{
     font-size:.7rem;
+  }
+}
+</style>
+
+
+<style id="v65-sidebar-footer-fix">
+/* Evita la superposición de los dos juegos antiguos de iconos.
+   v8SideTools queda como único control visible. */
+.sidebarFooter{
+  display:none !important;
+}
+
+#v8SideTools{
+  position:absolute !important;
+  left:.62rem !important;
+  right:.62rem !important;
+  bottom:.72rem !important;
+  display:grid !important;
+  gap:.28rem !important;
+}
+
+#v8SideTools .v8SideBtn{
+  width:100% !important;
+  min-height:2.75rem !important;
+  height:auto !important;
+  padding:.55rem .7rem !important;
+  justify-content:flex-start !important;
+  gap:.7rem !important;
+  border-radius:.6rem !important;
+  overflow:hidden;
+}
+
+#v8SideTools .v8SideBtn span:first-child{
+  width:1.3rem;
+  min-width:1.3rem;
+  display:grid;
+  place-items:center;
+  font-size:1.05rem;
+  line-height:1;
+}
+
+#v8SideTools .v8SideBtn span:last-child{
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.sidebar.collapsed #v8SideTools{
+  left:.45rem !important;
+  right:.45rem !important;
+}
+
+.sidebar.collapsed #v8SideTools .v8SideBtn{
+  width:100% !important;
+  min-height:2.75rem !important;
+  padding:0 !important;
+  justify-content:center !important;
+}
+
+.sidebar.collapsed #v8SideTools .v8SideBtn span:last-child{
+  display:none !important;
+}
+
+.sidebar.collapsed #v8SideTools .v8SideBtn span:first-child{
+  width:auto;
+  min-width:0;
+  font-size:1.08rem;
+}
+</style>
+
+
+<style id="v65-more-focus-theme-contrast">
+@media(max-width:47.5rem){
+  /* Más usa el mismo enfoque/desenfoque que Programación */
+  #mobileMoreMenu{
+    z-index:1110 !important;
+  }
+
+  body.mobile-more-focus #mobileMoreBtn{
+    background:var(--accentSoft) !important;
+    color:var(--text) !important;
+    box-shadow:0 0 0 .12rem color-mix(in srgb,var(--accent) 24%,transparent);
+  }
+
+  #mobileMoreMenu.open{
+    box-shadow:0 1rem 3rem rgba(0,0,0,.38);
+    border-color:color-mix(in srgb,var(--accent) 55%,var(--line)) !important;
+  }
+
+  #mobileMoreMenu>button{
+    min-height:3.25rem !important;
+    font-size:.9rem;
+  }
+
+  /* El botón de tema debe contrastar claramente con el tema actual:
+     oscuro -> botón claro / claro -> botón oscuro. */
+  body[data-theme="dark"] #mobileThemeToggle{
+    background:#f8fafc !important;
+    color:#111827 !important;
+    border-color:#f8fafc !important;
+    box-shadow:0 .25rem .8rem rgba(255,255,255,.08);
+  }
+
+  body[data-theme="dark"] #mobileThemeToggle:hover,
+  body[data-theme="dark"] #mobileThemeToggle:focus-visible{
+    background:#ffffff !important;
+    color:#0f172a !important;
+  }
+
+  body[data-theme="light"] #mobileThemeToggle{
+    background:#111827 !important;
+    color:#ffffff !important;
+    border-color:#111827 !important;
+    box-shadow:0 .25rem .8rem rgba(17,24,39,.14);
+  }
+
+  body[data-theme="light"] #mobileThemeToggle:hover,
+  body[data-theme="light"] #mobileThemeToggle:focus-visible{
+    background:#020617 !important;
+    color:#ffffff !important;
   }
 }
 </style>
@@ -10317,10 +10438,16 @@ document.addEventListener("click",(e)=>{
       :"Cambiar a tema oscuro";
   }
 
-  function setProgramFocus(open){
+  function setMobileMenuFocus(mode){
+    const open=mode==="program"||mode==="more";
     programBackdrop?.classList.toggle("show",open);
     programBackdrop?.setAttribute("aria-hidden",String(!open));
-    document.body.classList.toggle("mobile-program-focus",open);
+    document.body.classList.toggle("mobile-program-focus",mode==="program");
+    document.body.classList.toggle("mobile-more-focus",mode==="more");
+  }
+
+  function setProgramFocus(open){
+    setMobileMenuFocus(open?"program":null);
   }
 
   function openPage(page){
@@ -10332,9 +10459,9 @@ document.addEventListener("click",(e)=>{
     if(programBtn)programBtn.classList.toggle("active",["worship","youth","media"].includes(page));
     programMenu?.classList.remove("open");
     programMenu?.setAttribute("aria-hidden","true");
-    setProgramFocus(false);
     moreMenu?.classList.remove("open");
     moreMenu?.setAttribute("aria-hidden","true");
+    setMobileMenuFocus(null);
   }
 
   bottomNav?.addEventListener("click",event=>{
@@ -10370,21 +10497,24 @@ document.addEventListener("click",(e)=>{
   programBackdrop?.addEventListener("click",()=>{
     programMenu?.classList.remove("open");
     programMenu?.setAttribute("aria-hidden","true");
-    setProgramFocus(false);
+    moreMenu?.classList.remove("open");
+    moreMenu?.setAttribute("aria-hidden","true");
+    setMobileMenuFocus(null);
   });
 
   moreBtn?.addEventListener("click",()=>{
     const open=!moreMenu.classList.contains("open");
     programMenu?.classList.remove("open");
     programMenu?.setAttribute("aria-hidden","true");
-    setProgramFocus(false);
     moreMenu.classList.toggle("open",open);
     moreMenu.setAttribute("aria-hidden",String(!open));
+    setMobileMenuFocus(open?"more":null);
   });
 
   closeMore?.addEventListener("click",()=>{
     moreMenu.classList.remove("open");
     moreMenu.setAttribute("aria-hidden","true");
+    setMobileMenuFocus(null);
   });
 
   mobileThemeToggle?.addEventListener("click",()=>{
@@ -10393,6 +10523,7 @@ document.addEventListener("click",(e)=>{
     refreshMobileThemeLabel();
     moreMenu.classList.remove("open");
     moreMenu.setAttribute("aria-hidden","true");
+    setMobileMenuFocus(null);
   });
   refreshMobileThemeLabel();
 
