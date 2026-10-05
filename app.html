@@ -2,7 +2,7 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V67-GUIDE-PREF-FRESH-DEMO">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V68-PROGRAM-BUILDER-MVP">
 <title>Flash Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4687,6 +4687,291 @@ body[data-theme="light"] #home .homeTable th:first-child{
 }
 </style>
 
+
+<style id="v68-program-builder">
+.legacyProgramNav{display:none !important}
+
+.programHubHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  margin-bottom:.8rem;
+}
+.programCards{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:.8rem;
+}
+.programCard{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:.65rem;
+  min-height:10.5rem;
+  padding:1rem;
+  border:1px solid var(--line);
+  border-radius:.85rem;
+  background:var(--panel2);
+}
+.programCardTop{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:.6rem;
+}
+.programCard h3{margin:0 !important}
+.programTypeBadge{
+  display:inline-flex;
+  align-items:center;
+  min-height:1.8rem;
+  padding:.22rem .45rem;
+  border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));
+  border-radius:999px;
+  background:var(--accentSoft);
+  color:var(--text);
+  font-size:.7rem;
+  font-weight:850;
+  white-space:nowrap;
+}
+.programCardMeta{
+  color:var(--muted);
+  font-size:.8rem;
+  line-height:1.4;
+  flex:1;
+}
+.programCardActions{
+  display:flex;
+  gap:.45rem;
+  margin-top:auto;
+}
+.programCardActions .btn{flex:1}
+
+.customProgramHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:1rem;
+}
+.customProgramControls{
+  margin-top:1rem;
+}
+.customProgramSheet{
+  overflow:auto !important;
+  -webkit-overflow-scrolling:touch;
+}
+.customProgramTable{
+  width:100%;
+  min-width:42rem;
+  border-collapse:collapse;
+}
+.customProgramTable th{
+  position:sticky;
+  top:0;
+  z-index:3;
+  padding:.7rem .62rem;
+  border:1px solid var(--line);
+  background:color-mix(in srgb,var(--accent) 72%,var(--panel3));
+  color:#fff;
+  font-size:.74rem;
+  text-align:center;
+}
+.customProgramTable td{
+  padding:.45rem .5rem;
+  border:1px solid var(--line);
+  vertical-align:middle;
+}
+.customProgramTable tbody tr:nth-child(odd) td{
+  background:color-mix(in srgb,var(--accentSoft) 72%,var(--panel2));
+}
+.customProgramTable tbody tr:nth-child(even) td{
+  background:color-mix(in srgb,var(--panel3) 62%,var(--panel2));
+}
+body[data-theme="light"] .customProgramTable tbody tr:nth-child(odd) td{background:#eef2ff}
+body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td{background:#f7f8fb}
+body[data-theme="light"] .customProgramTable th{background:#5c6bc0;color:#fff}
+
+.customProgramTable th:first-child,
+.customProgramTable td:first-child{
+  position:sticky;
+  left:0;
+  z-index:5;
+  width:6rem;
+  min-width:6rem;
+  max-width:6rem;
+  text-align:center;
+  box-shadow:.22rem 0 .5rem rgba(0,0,0,.08);
+}
+.customProgramTable th:first-child{z-index:8}
+.customProgramTable tbody tr:nth-child(odd) td:first-child{
+  background:color-mix(in srgb,var(--accentSoft) 72%,var(--panel2));
+}
+.customProgramTable tbody tr:nth-child(even) td:first-child{
+  background:color-mix(in srgb,var(--panel3) 62%,var(--panel2));
+}
+body[data-theme="light"] .customProgramTable tbody tr:nth-child(odd) td:first-child{background:#eef2ff}
+body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-child{background:#f7f8fb}
+
+.customProgramCell{
+  display:flex;
+  align-items:center;
+  gap:.35rem;
+  min-width:10rem;
+}
+.customProgramCell input,
+.customProgramCell select{
+  width:100%;
+  min-width:0;
+}
+.customCellLock{
+  width:2.75rem;
+  min-width:2.75rem;
+  height:2.75rem;
+  padding:0 !important;
+}
+
+.programBuilderModalCard{width:min(58rem,100%) !important}
+.programBuilderBody{
+  padding:1rem;
+  display:grid;
+  gap:1rem;
+}
+.programBuilderTop{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.75rem;
+}
+.programBuilderWeekdays,
+.programColumnsEditor{
+  padding:.85rem;
+  border:1px solid var(--line);
+  border-radius:.75rem;
+  background:var(--panel2);
+}
+.weekdayChecks{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:.45rem;
+  margin:.55rem 0;
+}
+.weekdayChecks label{
+  display:flex;
+  align-items:center;
+  gap:.45rem;
+  min-height:2.75rem;
+  padding:.5rem .6rem;
+  border:1px solid var(--line);
+  border-radius:.6rem;
+  background:var(--panel);
+}
+.weekdayChecks input{
+  width:1.25rem !important;
+  height:1.25rem !important;
+  min-height:0 !important;
+}
+.programColumnsHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.75rem;
+  margin-bottom:.65rem;
+}
+.programBuilderColumns{
+  display:grid;
+  gap:.55rem;
+}
+.programColumnRow{
+  display:grid;
+  grid-template-columns:minmax(10rem,1.1fr) minmax(9rem,.8fr) minmax(10rem,1fr) auto;
+  gap:.5rem;
+  align-items:end;
+  padding:.65rem;
+  border:1px solid var(--line);
+  border-radius:.65rem;
+  background:var(--panel);
+}
+.programColumnOptions{
+  display:none;
+}
+.programColumnRow[data-type="list"] .programColumnOptions{
+  display:block;
+}
+.programColumnActions{
+  display:flex;
+  gap:.3rem;
+}
+.programColumnActions button{
+  width:2.75rem;
+  min-width:2.75rem;
+  min-height:2.75rem;
+  padding:0 !important;
+}
+.programColumnFlags{
+  grid-column:1/-1;
+  display:flex;
+  flex-wrap:wrap;
+  gap:.6rem;
+}
+.programColumnFlags label{
+  display:flex;
+  align-items:center;
+  gap:.35rem;
+  min-height:2.5rem;
+}
+.programColumnFlags input{
+  width:1.1rem !important;
+  height:1.1rem !important;
+  min-height:0 !important;
+}
+.programBuilderActions{align-items:center}
+
+.mobileProgramList{
+  display:grid;
+  gap:.35rem;
+}
+.mobileProgramList button{
+  width:100%;
+  min-height:3rem;
+  text-align:left;
+  padding:.65rem .75rem;
+  border:1px solid var(--line);
+  border-radius:.65rem;
+  background:var(--panel2);
+  color:var(--text);
+  font-weight:800;
+}
+.mobileProgramList .mobileCreateProgram{
+  background:var(--text);
+  color:var(--bg);
+  border-color:var(--text);
+}
+
+@media(max-width:64rem){
+  .programCards{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:47.5rem){
+  .programHubHead,
+  .customProgramHead{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+  .programHubHead .btn,
+  .customProgramHead>.btn{width:100%}
+  .programCards{grid-template-columns:1fr}
+  .programBuilderTop{grid-template-columns:1fr}
+  .weekdayChecks{grid-template-columns:1fr 1fr}
+  .programColumnRow{
+    grid-template-columns:1fr;
+  }
+  .programColumnActions{
+    justify-content:flex-end;
+  }
+  .customProgramTable{
+    min-width:40rem;
+  }
+}
+</style>
+
 </head>
 <body class="readonly-mode">
 
@@ -4980,9 +5265,10 @@ body[data-theme="light"] #home .homeTable th:first-child{
 <div id="overlay" class="overlay"></div>
 <aside id="side" class="sidebar"><div class="brand"><div class="brandMark">F</div><div class="brandText">Flash Program</div></div><div class="nav">
 <button data-p="home" data-tip="Inicio" class="active"><span class="ico">⌂</span><span class="label">Inicio</span></button>
-<button data-p="worship" data-tip="Alabanza"><span class="ico">♪</span><span class="label">Alabanza</span></button>
-<button data-p="youth" data-tip="Alabanza Jóvenes"><span class="ico">♬</span><span class="label">Alabanza Jóvenes</span></button>
-<button data-p="media" data-tip="Multimedia"><span class="ico">▣</span><span class="label">Multimedia</span></button>
+<button data-p="programs" data-tip="Programación"><span class="ico">▦</span><span class="label">Programación</span></button>
+<button data-p="worship" data-tip="Alabanza" class="legacyProgramNav"><span class="ico">♪</span><span class="label">Alabanza</span></button>
+<button data-p="youth" data-tip="Alabanza Jóvenes" class="legacyProgramNav"><span class="ico">♬</span><span class="label">Alabanza Jóvenes</span></button>
+<button data-p="media" data-tip="Multimedia" class="legacyProgramNav"><span class="ico">▣</span><span class="label">Multimedia</span></button>
 <button data-p="vols" data-tip="Voluntarios"><span class="ico">◌</span><span class="label">Voluntarios</span></button>
 <button data-p="songs" data-tip="Canciones"><span class="ico">♫</span><span class="label">Canciones</span></button>
 <button data-p="avail" data-tip="Disponibilidad"><span class="ico">□</span><span class="label">Disponibilidad</span></button>
@@ -5030,6 +5316,52 @@ body[data-theme="light"] #home .homeTable th:first-child{
           </tr>
         </thead>
         <tbody id="week"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+
+<section id="programs" class="panel">
+  <div class="programHubHead card">
+    <div>
+      <h2 style="margin-bottom:.3rem">Programación</h2>
+      <div class="muted">Todas las programaciones del equipo están aquí. Las nuevas programaciones pueden tener columnas y funciones diferentes.</div>
+    </div>
+    <button id="createCustomProgramBtn" class="btn primary" type="button">+ Crear programación</button>
+  </div>
+  <div id="programCards" class="programCards"></div>
+</section>
+
+<section id="customProgram" class="panel">
+  <div class="card">
+    <div class="customProgramHead">
+      <div>
+        <button id="backToPrograms" class="btn secondary" type="button">‹ Programaciones</button>
+        <h2 id="customProgramTitle" style="margin:.8rem 0 .2rem">Programación</h2>
+        <div id="customProgramMeta" class="muted"></div>
+      </div>
+      <button id="editCustomProgramStructure" class="btn secondary" type="button">Editar estructura</button>
+    </div>
+
+    <div class="row compactControls customProgramControls">
+      <div><label>Año</label><input id="customProgramYear" type="number" min="2024" max="2100"></div>
+      <div><label>Mes</label><select id="customProgramMonth"></select></div>
+    </div>
+
+    <div class="row actionRow customProgramActions" style="margin-top:12px">
+      <button id="customProgramFill" class="btn primary fillEmptyBtn" type="button">Rellenar vacíos</button>
+      <button id="customProgramRebalance" class="btn secondary rebalanceBtn" type="button">Reequilibrar</button>
+      <button id="customProgramAddService" class="btn secondary" type="button">Añadir servicio</button>
+      <button id="customProgramConfirm" class="btn success" type="button">Confirmar</button>
+    </div>
+
+    <div id="customProgramStatus" class="muted" style="margin-top:.55rem"></div>
+
+    <div class="sheet customProgramSheet" style="margin-top:12px">
+      <table id="customProgramTable" class="customProgramTable">
+        <thead id="customProgramHeadRow"></thead>
+        <tbody id="customProgramBody"></tbody>
       </table>
     </div>
   </div>
@@ -5430,6 +5762,66 @@ body[data-theme="light"] #home .homeTable th:first-child{
     </form>
   </div>
 </div>
+
+<div id="programBuilderModal" class="modalBackdrop" aria-hidden="true">
+  <div class="modalCard programBuilderModalCard">
+    <form id="programBuilderForm">
+      <div class="modalHeader">
+        <div>
+          <h2 id="programBuilderTitle">Crear programación</h2>
+          <div class="muted">Fecha siempre está incluida. Añade, edita, reordena o elimina las demás columnas.</div>
+        </div>
+        <button id="programBuilderClose" class="modalClose" type="button" aria-label="Cerrar">×</button>
+      </div>
+
+      <div class="programBuilderBody">
+        <div class="programBuilderTop">
+          <div>
+            <label>Nombre de la programación</label>
+            <input id="programBuilderName" required maxlength="80" placeholder="Ej. Maestros, Ujieres, Recepción">
+          </div>
+          <div>
+            <label>Descripción (opcional)</label>
+            <input id="programBuilderDescription" maxlength="180" placeholder="Para qué se usa esta programación">
+          </div>
+        </div>
+
+        <div class="programBuilderWeekdays">
+          <label>Días que se crean automáticamente</label>
+          <div id="programWeekdayChecks" class="weekdayChecks">
+            <label><input type="checkbox" value="0"> Domingo</label>
+            <label><input type="checkbox" value="1"> Lunes</label>
+            <label><input type="checkbox" value="2"> Martes</label>
+            <label><input type="checkbox" value="3"> Miércoles</label>
+            <label><input type="checkbox" value="4"> Jueves</label>
+            <label><input type="checkbox" value="5"> Viernes</label>
+            <label><input type="checkbox" value="6"> Sábado</label>
+          </div>
+          <div class="muted">Si no marcas ningún día, la programación funcionará solo con fechas añadidas manualmente.</div>
+        </div>
+
+        <div class="programColumnsEditor">
+          <div class="programColumnsHead">
+            <div>
+              <h3>Columnas</h3>
+              <div class="muted">Puedes cambiar el nombre y la función de cada columna.</div>
+            </div>
+            <button id="addProgramColumn" class="btn secondary" type="button">+ Añadir columna</button>
+          </div>
+          <div id="programBuilderColumns" class="programBuilderColumns"></div>
+        </div>
+      </div>
+
+      <div class="modalActions programBuilderActions">
+        <button id="deleteCustomProgramBtn" class="btn danger" type="button" style="display:none">Eliminar programación</button>
+        <span style="flex:1"></span>
+        <button id="programBuilderCancel" class="btn secondary" type="button">Cancelar</button>
+        <button class="btn primary" type="submit">Guardar programación</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 </main>
 
 <script>
@@ -10138,7 +10530,8 @@ Tú pasarás a ser Editor.`,
       window.bootstrapVolunteersSupabase?.(),
       window.bootstrapSongsSupabase?.(),
       window.bootstrapAvailabilitySupabase?.(),
-      window.bootstrapSchedulesSupabase?.()
+      window.bootstrapSchedulesSupabase?.(),
+      window.bootstrapCustomProgramsSupabase?.()
     ]);
 
     try{
@@ -10557,9 +10950,7 @@ document.addEventListener("click",(e)=>{
 
 <div id="mobileProgramMenu" class="mobileQuickMenu" aria-hidden="true">
   <div class="mobileQuickMenuHead"><strong>Programación</strong><button id="closeMobileProgramMenu" type="button" aria-label="Cerrar">×</button></div>
-  <button type="button" data-mobile-page="worship">Alabanza</button>
-  <button type="button" data-mobile-page="youth">Alabanza Jóvenes</button>
-  <button type="button" data-mobile-page="media">Multimedia</button>
+  <div id="mobileProgramList" class="mobileProgramList"></div>
 </div>
 
 <div id="mobileMoreMenu" class="mobileQuickMenu mobileMoreMenu" aria-hidden="true">
@@ -10625,7 +11016,7 @@ document.addEventListener("click",(e)=>{
     bottomNav?.querySelectorAll("button[data-mobile-page]").forEach(button=>{
       button.classList.toggle("active",button.dataset.mobilePage===page);
     });
-    if(programBtn)programBtn.classList.toggle("active",["worship","youth","media"].includes(page));
+    if(programBtn)programBtn.classList.toggle("active",["programs","customProgram","worship","youth","media"].includes(page));
     programMenu?.classList.remove("open");
     programMenu?.setAttribute("aria-hidden","true");
     moreMenu?.classList.remove("open");
@@ -10701,7 +11092,7 @@ document.addEventListener("click",(e)=>{
     bottomNav?.querySelectorAll("button[data-mobile-page]").forEach(mobile=>{
       mobile.classList.toggle("active",mobile.dataset.mobilePage===page);
     });
-    programBtn?.classList.toggle("active",["worship","youth","media"].includes(page));
+    programBtn?.classList.toggle("active",["programs","customProgram","worship","youth","media"].includes(page));
     moreBtn?.classList.toggle("active",["avail","hist","settings"].includes(page));
   }));
 
@@ -10802,6 +11193,17 @@ const FLASH_GUIDE_DATA={
     {target:"#homeWeekViewBtn",title:"Semana o Mes",text:"Cambia entre la vista semanal y la vista mensual de la programación."},
     {target:"#prevWeek",title:"Navega por fechas",text:"Anterior y Siguiente mueven semanas cuando estás en Semana y meses completos cuando estás en Mes."},
     {target:"#homeTableWrap",title:"Vista general",text:"Aquí ves rápidamente responsables, canciones y Multimedia de cada fecha."}
+  ],
+  programs:[
+    {target:"#programCards",title:"1. Elige una programación",text:"Aquí aparecen Alabanza, Jóvenes, Multimedia y todas las programaciones personalizadas del equipo."},
+    {target:"#createCustomProgramBtn",title:"2. Crea otra programación",text:"El Administrador puede crear nuevas tablas, definir sus días y editar el nombre o función de cada columna."}
+  ],
+  customProgram:[
+    {target:"#customProgramTable",title:"1. Edita la tabla",text:"Cada columna funciona según su tipo: Voluntario, Texto libre, Lista, Canción o Número."},
+    {target:"#customProgramFill",title:"2. Automatiza lo repetible",text:"Rellenar vacíos y Reequilibrar trabajan sobre columnas configuradas para automatización."},
+    {target:"#customProgramAddService",title:"3. Añade fechas",text:"Puedes añadir servicios especiales aunque no coincidan con los días automáticos."},
+    {target:"#editCustomProgramStructure",title:"4. Cambia la estructura",text:"El Administrador puede renombrar columnas, cambiar su función, reordenarlas o añadir nuevas."},
+    {target:"#customProgramConfirm",title:"5. Confirma",text:"Confirmar guarda la programación del equipo para seguir trabajando desde otro lugar con la sesión iniciada."}
   ],
   worship:[
     {target:"#wf",title:"1. Completa la programación",text:"Rellenar vacíos completa únicamente lo que falta. Reequilibrar vuelve a repartir lo desbloqueado para mejorar la rotación."},
@@ -11007,6 +11409,844 @@ const FLASH_GUIDE_DATA={
 
   window.openFlashProgramGuide=openGuide;
   window.syncFlashProgramGuideSettings=syncGuideSettings;
+})();
+</script>
+
+
+<script id="flash-program-builder-engine">
+(()=>{
+  const BUILTIN_PROGRAMS=[
+    {id:"builtin-worship",name:"Alabanza",page:"worship",badge:"Avanzada",description:"Voluntarios, canciones, tonalidades, bloqueos, Santa Cena y render."},
+    {id:"builtin-youth",name:"Alabanza Jóvenes",page:"youth",badge:"Avanzada",description:"Programación de Jóvenes con voluntarios y repertorio independiente."},
+    {id:"builtin-media",name:"Multimedia",page:"media",badge:"Avanzada",description:"PC, Cámara y Diapositivas con rotación y render."}
+  ];
+
+  let customPrograms=[];
+  let customProgramColumns=[];
+  let activeCustomProgramId=null;
+  let customEntries=[];
+  let customValues=[];
+  let customRefVolunteers=[];
+  let customRefSongs=[];
+  let builderEditingProgramId=null;
+
+  const programCards=document.getElementById("programCards");
+  const createBtn=document.getElementById("createCustomProgramBtn");
+  const mobileProgramList=document.getElementById("mobileProgramList");
+  const customTitle=document.getElementById("customProgramTitle");
+  const customMeta=document.getElementById("customProgramMeta");
+  const customYear=document.getElementById("customProgramYear");
+  const customMonth=document.getElementById("customProgramMonth");
+  const customHead=document.getElementById("customProgramHeadRow");
+  const customBody=document.getElementById("customProgramBody");
+  const customStatus=document.getElementById("customProgramStatus");
+  const editStructureBtn=document.getElementById("editCustomProgramStructure");
+
+  const builderModal=document.getElementById("programBuilderModal");
+  const builderForm=document.getElementById("programBuilderForm");
+  const builderTitle=document.getElementById("programBuilderTitle");
+  const builderName=document.getElementById("programBuilderName");
+  const builderDescription=document.getElementById("programBuilderDescription");
+  const builderColumns=document.getElementById("programBuilderColumns");
+  const weekdayChecks=[...document.querySelectorAll("#programWeekdayChecks input[type=checkbox]")];
+  const deleteProgramBtn=document.getElementById("deleteCustomProgramBtn");
+
+  months.forEach((m,i)=>customMonth?.add(new Option(m,i)));
+  if(customMonth)customMonth.value=String(new Date().getMonth());
+  if(customYear)customYear.value=String(new Date().getFullYear());
+
+  function teamAdmin(){return window.currentTeam?.role==="admin"}
+  function teamEditor(){return ["admin","editor"].includes(window.currentTeam?.role||"")}
+
+  function activeProgram(){
+    return customPrograms.find(p=>p.id===activeCustomProgramId)||null;
+  }
+  function columnsFor(programId){
+    return customProgramColumns
+      .filter(c=>c.program_id===programId)
+      .sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+  }
+  function typeLabel(type){
+    return {volunteer:"Voluntario",text:"Texto libre",list:"Lista de opciones",song:"Canción",number:"Número"}[type]||type;
+  }
+  function dayLabel(day){
+    return ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"][Number(day)]||"";
+  }
+  function safeOptions(options){
+    if(!options)return {};
+    if(typeof options==="string"){
+      try{return JSON.parse(options)}catch(_){return {}}
+    }
+    return options;
+  }
+
+  window.activateAppPanel=function(id,titleText){
+    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+    const panel=document.getElementById(id);
+    if(panel)panel.classList.add("active");
+    document.querySelectorAll(".nav button[data-p]").forEach(btn=>{
+      btn.classList.toggle("active",btn.dataset.p===id);
+    });
+    const titleEl=document.getElementById("title");
+    if(titleEl)titleEl.textContent=titleText||(sectionDescriptions[id]?.[0]||"Programación");
+    document.getElementById("side")?.classList.remove("open");
+    document.getElementById("overlay")?.classList.remove("show");
+    document.getElementById("mobileProgramMenu")?.classList.remove("open");
+    document.getElementById("mobileProgramBackdrop")?.classList.remove("show");
+    document.body.classList.remove("mobile-program-focus");
+  };
+
+  function openBuiltin(page,name){
+    window.activateAppPanel(page,name);
+  }
+
+  function programDaysText(program){
+    const days=Array.isArray(program.weekdays)?program.weekdays:[];
+    if(!days.length)return "Fechas manuales";
+    return days.map(dayLabel).join(" · ");
+  }
+
+  function renderProgramHub(){
+    if(!programCards)return;
+    const cards=[
+      ...BUILTIN_PROGRAMS.map(item=>`
+        <article class="programCard">
+          <div class="programCardTop">
+            <div><h3>${item.name}</h3></div>
+            <span class="programTypeBadge">${item.badge}</span>
+          </div>
+          <div class="programCardMeta">${item.description}</div>
+          <div class="programCardActions">
+            <button class="btn primary" type="button" data-open-builtin="${item.page}" data-name="${item.name}">Abrir</button>
+          </div>
+        </article>
+      `),
+      ...customPrograms.map(program=>{
+        const cols=columnsFor(program.id);
+        const summary=cols.length?cols.map(c=>c.name).join(" · "):"Sin columnas";
+        return `
+          <article class="programCard">
+            <div class="programCardTop">
+              <div><h3>${escapeTeamHtml(program.name)}</h3></div>
+              <span class="programTypeBadge">Personalizada</span>
+            </div>
+            <div class="programCardMeta">
+              ${escapeTeamHtml(program.description||programDaysText(program))}<br>
+              <strong>${escapeTeamHtml(summary)}</strong>
+            </div>
+            <div class="programCardActions">
+              <button class="btn primary" type="button" data-open-custom="${program.id}">Abrir</button>
+              ${teamAdmin()?`<button class="btn secondary" type="button" data-edit-custom="${program.id}">Editar</button>`:""}
+            </div>
+          </article>
+        `;
+      })
+    ];
+    programCards.innerHTML=cards.join("");
+
+    programCards.querySelectorAll("[data-open-builtin]").forEach(btn=>{
+      btn.addEventListener("click",()=>openBuiltin(btn.dataset.openBuiltin,btn.dataset.name));
+    });
+    programCards.querySelectorAll("[data-open-custom]").forEach(btn=>{
+      btn.addEventListener("click",()=>openCustomProgram(btn.dataset.openCustom));
+    });
+    programCards.querySelectorAll("[data-edit-custom]").forEach(btn=>{
+      btn.addEventListener("click",()=>openProgramBuilder(btn.dataset.editCustom));
+    });
+
+    if(createBtn)createBtn.style.display=teamAdmin()?"inline-flex":"none";
+    renderMobileProgramList();
+  }
+
+  function renderMobileProgramList(){
+    if(!mobileProgramList)return;
+    mobileProgramList.innerHTML="";
+    BUILTIN_PROGRAMS.forEach(item=>{
+      const btn=document.createElement("button");
+      btn.type="button";
+      btn.textContent=item.name;
+      btn.addEventListener("click",()=>openBuiltin(item.page,item.name));
+      mobileProgramList.appendChild(btn);
+    });
+    customPrograms.forEach(program=>{
+      const btn=document.createElement("button");
+      btn.type="button";
+      btn.textContent=program.name;
+      btn.addEventListener("click",()=>openCustomProgram(program.id));
+      mobileProgramList.appendChild(btn);
+    });
+    if(teamAdmin()){
+      const create=document.createElement("button");
+      create.type="button";
+      create.className="mobileCreateProgram";
+      create.textContent="+ Crear programación";
+      create.addEventListener("click",()=>openProgramBuilder(null));
+      mobileProgramList.appendChild(create);
+    }
+  }
+
+  async function loadProgramDefinitions(){
+    if(!window.currentTeam||!window.supabaseClient){
+      customPrograms=[];
+      customProgramColumns=[];
+      renderProgramHub();
+      return;
+    }
+    const [{data:defs,error:defError},{data:cols,error:colError}]=await Promise.all([
+      window.supabaseClient.from("program_definitions")
+        .select("id,name,description,date_mode,weekdays,active,sort_order,created_at")
+        .eq("active",true)
+        .order("sort_order")
+        .order("created_at"),
+      window.supabaseClient.from("program_columns")
+        .select("id,program_id,name,field_type,sort_order,required,fill_enabled,rebalance_enabled,lockable,options")
+        .order("sort_order")
+    ]);
+    if(defError)throw defError;
+    if(colError)throw colError;
+    customPrograms=defs||[];
+    customProgramColumns=(cols||[]).map(c=>({...c,options:safeOptions(c.options)}));
+    renderProgramHub();
+  }
+  window.loadProgramDefinitions=loadProgramDefinitions;
+
+  async function loadProgramReferences(){
+    const [{data:vols,error:volError},{data:songRows,error:songError}]=await Promise.all([
+      window.supabaseClient.from("volunteers").select("id,name,active").eq("active",true).order("name"),
+      window.supabaseClient.from("songs").select("id,name,artist,active").eq("active",true).order("name")
+    ]);
+    if(volError)throw volError;
+    if(songError)throw songError;
+    customRefVolunteers=vols||[];
+    customRefSongs=songRows||[];
+  }
+
+  function daysInMonth(year,monthZero){
+    return new Date(year,monthZero+1,0).getDate();
+  }
+  function isoDate(year,monthZero,day){
+    return `${year}-${String(monthZero+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+  }
+  function monthRange(year,monthZero){
+    return {
+      start:`${year}-${String(monthZero+1).padStart(2,"0")}-01`,
+      end: monthZero===11
+        ? `${year+1}-01-01`
+        : `${year}-${String(monthZero+2).padStart(2,"0")}-01`
+    };
+  }
+
+  async function ensureProgramDates(program,year,monthZero){
+    if(!teamEditor())return;
+    const weekdays=Array.isArray(program.weekdays)?program.weekdays.map(Number):[];
+    if(!weekdays.length)return;
+
+    const rows=[];
+    for(let d=1;d<=daysInMonth(year,monthZero);d++){
+      const date=new Date(year,monthZero,d);
+      if(weekdays.includes(date.getDay())){
+        rows.push({
+          team_id:window.currentTeam.id,
+          program_id:program.id,
+          service_date:isoDate(year,monthZero,d),
+          is_extra:false,
+          status:"draft",
+          updated_at:new Date().toISOString()
+        });
+      }
+    }
+    if(!rows.length)return;
+    const {error}=await window.supabaseClient
+      .from("program_entries")
+      .upsert(rows,{onConflict:"program_id,service_date"});
+    if(error)throw error;
+  }
+
+  async function loadActiveCustomProgram(){
+    const program=activeProgram();
+    if(!program)return;
+    const year=Number(customYear.value);
+    const monthZero=Number(customMonth.value);
+    customStatus.textContent="Cargando programación…";
+
+    await Promise.all([
+      ensureProgramDates(program,year,monthZero),
+      loadProgramReferences()
+    ]);
+
+    const range=monthRange(year,monthZero);
+    const {data:entries,error:entryError}=await window.supabaseClient
+      .from("program_entries")
+      .select("id,program_id,service_date,label,is_extra,status")
+      .eq("program_id",program.id)
+      .gte("service_date",range.start)
+      .lt("service_date",range.end)
+      .order("service_date");
+    if(entryError)throw entryError;
+
+    customEntries=entries||[];
+    const entryIds=customEntries.map(e=>e.id);
+    if(entryIds.length){
+      const {data:values,error:valueError}=await window.supabaseClient
+        .from("program_values")
+        .select("id,entry_id,column_id,volunteer_id,song_id,text_value,number_value,option_value,locked")
+        .in("entry_id",entryIds);
+      if(valueError)throw valueError;
+      customValues=values||[];
+    }else{
+      customValues=[];
+    }
+
+    renderCustomProgramTable();
+    customStatus.textContent=customEntries.length
+      ? `${customEntries.length} fecha${customEntries.length===1?"":"s"} · ${columnsFor(program.id).length} columna${columnsFor(program.id).length===1?"":"s"}`
+      : "No hay fechas para este mes. Usa “Añadir servicio” o edita los días de la programación.";
+  }
+
+  function valueFor(entryId,columnId){
+    return customValues.find(v=>v.entry_id===entryId&&v.column_id===columnId)||null;
+  }
+
+  function makeCellControl(entry,column,current){
+    const wrap=document.createElement("div");
+    wrap.className="customProgramCell";
+    const type=column.field_type;
+    let control;
+
+    if(type==="volunteer"){
+      control=document.createElement("select");
+      control.add(new Option("— seleccionar —",""));
+      customRefVolunteers.forEach(v=>control.add(new Option(v.name,v.id)));
+      control.value=current?.volunteer_id||"";
+    }else if(type==="song"){
+      control=document.createElement("select");
+      control.add(new Option("— seleccionar —",""));
+      customRefSongs.forEach(s=>control.add(new Option(`${s.name}${s.artist?` · ${s.artist}`:""}`,s.id)));
+      control.value=current?.song_id||"";
+    }else if(type==="list"){
+      control=document.createElement("select");
+      control.add(new Option("— seleccionar —",""));
+      const choices=Array.isArray(safeOptions(column.options).choices)?safeOptions(column.options).choices:[];
+      choices.forEach(choice=>control.add(new Option(choice,choice)));
+      control.value=current?.option_value||"";
+    }else if(type==="number"){
+      control=document.createElement("input");
+      control.type="number";
+      control.value=current?.number_value??"";
+    }else{
+      control=document.createElement("input");
+      control.type="text";
+      control.value=current?.text_value||"";
+      control.placeholder=column.name;
+    }
+
+    control.disabled=!teamEditor();
+    control.addEventListener("change",async()=>{
+      try{
+        await saveCustomCell(entry,column,control.value,current?.locked===true);
+        await loadActiveCustomProgram();
+      }catch(error){
+        console.error(error);
+        window.showAppToast?.("No se pudo guardar el cambio.","error",1800);
+      }
+    });
+    wrap.appendChild(control);
+
+    if(column.lockable){
+      const lock=document.createElement("button");
+      lock.type="button";
+      lock.className="btn secondary customCellLock";
+      lock.textContent=current?.locked?"🔒":"🔓";
+      lock.title=current?.locked?"Desbloquear":"Bloquear";
+      lock.disabled=!teamEditor();
+      lock.addEventListener("click",async()=>{
+        try{
+          await saveCustomCell(entry,column,control.value,!current?.locked);
+          await loadActiveCustomProgram();
+        }catch(error){
+          console.error(error);
+          window.showAppToast?.("No se pudo cambiar el bloqueo.","error",1600);
+        }
+      });
+      wrap.appendChild(lock);
+    }
+    return wrap;
+  }
+
+  async function saveCustomCell(entry,column,value,locked){
+    const payload={
+      team_id:window.currentTeam.id,
+      entry_id:entry.id,
+      column_id:column.id,
+      volunteer_id:null,
+      song_id:null,
+      text_value:null,
+      number_value:null,
+      option_value:null,
+      locked:!!locked,
+      updated_at:new Date().toISOString()
+    };
+
+    if(column.field_type==="volunteer")payload.volunteer_id=value||null;
+    else if(column.field_type==="song")payload.song_id=value||null;
+    else if(column.field_type==="number")payload.number_value=value===""?null:Number(value);
+    else if(column.field_type==="list")payload.option_value=value||null;
+    else payload.text_value=value||null;
+
+    const {error}=await window.supabaseClient
+      .from("program_values")
+      .upsert(payload,{onConflict:"entry_id,column_id"});
+    if(error)throw error;
+  }
+
+  function renderCustomProgramTable(){
+    const program=activeProgram();
+    if(!program||!customHead||!customBody)return;
+    const cols=columnsFor(program.id);
+
+    customHead.innerHTML=`<tr><th>FECHA</th>${cols.map(c=>`<th>${escapeTeamHtml(c.name)}</th>`).join("")}</tr>`;
+    customBody.innerHTML="";
+
+    customEntries.forEach(entry=>{
+      const tr=document.createElement("tr");
+      const date=document.createElement("td");
+      date.textContent=pretty(entry.service_date);
+      tr.appendChild(date);
+
+      cols.forEach(column=>{
+        const td=document.createElement("td");
+        td.appendChild(makeCellControl(entry,column,valueFor(entry.id,column.id)));
+        tr.appendChild(td);
+      });
+      customBody.appendChild(tr);
+    });
+  }
+
+  async function openCustomProgram(programId){
+    activeCustomProgramId=programId;
+    const program=activeProgram();
+    if(!program)return;
+    customTitle.textContent=program.name;
+    customMeta.textContent=`${programDaysText(program)} · ${columnsFor(program.id).map(c=>`${c.name}: ${typeLabel(c.field_type)}`).join(" · ")}`;
+    if(editStructureBtn)editStructureBtn.style.display=teamAdmin()?"inline-flex":"none";
+    window.activateAppPanel("customProgram",program.name);
+    try{
+      await loadActiveCustomProgram();
+    }catch(error){
+      console.error(error);
+      customStatus.textContent="No se pudo cargar la programación: "+(error.message||error);
+    }
+  }
+  window.openCustomProgram=openCustomProgram;
+
+  function fieldTypeOptions(selected){
+    return [
+      ["volunteer","Voluntario"],
+      ["text","Texto libre"],
+      ["list","Lista de opciones"],
+      ["song","Canción"],
+      ["number","Número"]
+    ].map(([value,label])=>`<option value="${value}" ${value===selected?"selected":""}>${label}</option>`).join("");
+  }
+
+  function addBuilderColumn(data={}){
+    const row=document.createElement("div");
+    row.className="programColumnRow";
+    row.dataset.columnId=data.id||"";
+    row.dataset.type=data.field_type||"volunteer";
+    const options=safeOptions(data.options);
+    row.innerHTML=`
+      <div>
+        <label>Nombre</label>
+        <input class="programColumnName" value="${escapeTeamHtml(data.name||"Responsable")}" required maxlength="60">
+      </div>
+      <div>
+        <label>Función</label>
+        <select class="programColumnType">${fieldTypeOptions(data.field_type||"volunteer")}</select>
+      </div>
+      <div class="programColumnOptions">
+        <label>Opciones (separadas por |)</label>
+        <input class="programColumnChoices" value="${escapeTeamHtml((options.choices||[]).join(" | "))}" placeholder="Opción A | Opción B">
+      </div>
+      <div class="programColumnActions">
+        <button type="button" class="btn secondary moveColumnUp" title="Subir">↑</button>
+        <button type="button" class="btn secondary moveColumnDown" title="Bajar">↓</button>
+        <button type="button" class="btn danger removeProgramColumn" title="Eliminar">×</button>
+      </div>
+      <div class="programColumnFlags">
+        <label><input class="programColumnFill" type="checkbox" ${data.fill_enabled!==false?"checked":""}> Rellenar</label>
+        <label><input class="programColumnRebalance" type="checkbox" ${data.rebalance_enabled!==false?"checked":""}> Reequilibrar</label>
+        <label><input class="programColumnLock" type="checkbox" ${data.lockable!==false?"checked":""}> Permitir bloqueo</label>
+        <label><input class="programColumnRequired" type="checkbox" ${data.required?"checked":""}> Obligatoria</label>
+      </div>
+    `;
+
+    const type=row.querySelector(".programColumnType");
+    type.addEventListener("change",()=>{row.dataset.type=type.value});
+    row.querySelector(".removeProgramColumn").addEventListener("click",()=>{
+      if(builderColumns.children.length<=1){
+        window.showAppToast?.("La programación debe tener al menos una columna.","info",1400);
+        return;
+      }
+      row.remove();
+    });
+    row.querySelector(".moveColumnUp").addEventListener("click",()=>{
+      if(row.previousElementSibling)builderColumns.insertBefore(row,row.previousElementSibling);
+    });
+    row.querySelector(".moveColumnDown").addEventListener("click",()=>{
+      if(row.nextElementSibling)builderColumns.insertBefore(row.nextElementSibling,row);
+    });
+    builderColumns.appendChild(row);
+  }
+
+  function resetBuilder(){
+    builderColumns.innerHTML="";
+    addBuilderColumn({name:"Responsable",field_type:"volunteer"});
+    weekdayChecks.forEach(cb=>cb.checked=false);
+  }
+
+  function openProgramBuilder(programId=null){
+    if(!teamAdmin()){
+      window.showAppToast?.("Solo el Administrador puede cambiar la estructura de una programación.","error",1800);
+      return;
+    }
+    builderEditingProgramId=programId;
+    builderColumns.innerHTML="";
+
+    if(programId){
+      const program=customPrograms.find(p=>p.id===programId);
+      if(!program)return;
+      builderTitle.textContent="Editar programación";
+      builderName.value=program.name||"";
+      builderDescription.value=program.description||"";
+      const days=new Set((program.weekdays||[]).map(Number));
+      weekdayChecks.forEach(cb=>cb.checked=days.has(Number(cb.value)));
+      columnsFor(programId).forEach(addBuilderColumn);
+      deleteProgramBtn.style.display="inline-flex";
+    }else{
+      builderTitle.textContent="Crear programación";
+      builderName.value="";
+      builderDescription.value="";
+      resetBuilder();
+      deleteProgramBtn.style.display="none";
+    }
+
+    builderModal.classList.add("open");
+    builderModal.setAttribute("aria-hidden","false");
+    setTimeout(()=>builderName.focus(),0);
+  }
+  window.openProgramBuilder=openProgramBuilder;
+
+  function closeProgramBuilder(){
+    builderModal.classList.remove("open");
+    builderModal.setAttribute("aria-hidden","true");
+  }
+
+  function collectBuilderColumns(){
+    return [...builderColumns.querySelectorAll(".programColumnRow")].map((row,index)=>{
+      const type=row.querySelector(".programColumnType").value;
+      const choices=row.querySelector(".programColumnChoices").value
+        .split("|").map(x=>x.trim()).filter(Boolean);
+      return {
+        id:row.dataset.columnId||null,
+        name:row.querySelector(".programColumnName").value.trim(),
+        field_type:type,
+        sort_order:index,
+        required:row.querySelector(".programColumnRequired").checked,
+        fill_enabled:row.querySelector(".programColumnFill").checked,
+        rebalance_enabled:row.querySelector(".programColumnRebalance").checked,
+        lockable:row.querySelector(".programColumnLock").checked,
+        options:type==="list"?{choices}:{}
+      };
+    });
+  }
+
+  async function saveProgramBuilder(){
+    const name=builderName.value.trim();
+    if(!name)throw new Error("Escribe un nombre para la programación.");
+    const cols=collectBuilderColumns();
+    if(!cols.length)throw new Error("Añade al menos una columna.");
+    if(cols.some(c=>!c.name))throw new Error("Todas las columnas necesitan un nombre.");
+
+    const weekdays=weekdayChecks.filter(cb=>cb.checked).map(cb=>Number(cb.value));
+    const definition={
+      team_id:window.currentTeam.id,
+      name,
+      description:builderDescription.value.trim()||null,
+      date_mode:weekdays.length?"mixed":"manual",
+      weekdays,
+      active:true,
+      updated_at:new Date().toISOString()
+    };
+
+    let programId=builderEditingProgramId;
+    if(programId){
+      const {error}=await window.supabaseClient
+        .from("program_definitions").update(definition).eq("id",programId);
+      if(error)throw error;
+    }else{
+      const {data,error}=await window.supabaseClient
+        .from("program_definitions")
+        .insert(definition)
+        .select("id").single();
+      if(error)throw error;
+      programId=data.id;
+    }
+
+    const existingIds=new Set(columnsFor(programId).map(c=>c.id));
+    const keptIds=new Set();
+
+    for(const column of cols){
+      const payload={
+        team_id:window.currentTeam.id,
+        program_id:programId,
+        name:column.name,
+        field_type:column.field_type,
+        sort_order:column.sort_order,
+        required:column.required,
+        fill_enabled:column.fill_enabled,
+        rebalance_enabled:column.rebalance_enabled,
+        lockable:column.lockable,
+        options:column.options,
+        updated_at:new Date().toISOString()
+      };
+      if(column.id){
+        keptIds.add(column.id);
+        const {error}=await window.supabaseClient
+          .from("program_columns").update(payload).eq("id",column.id);
+        if(error)throw error;
+      }else{
+        const {data,error}=await window.supabaseClient
+          .from("program_columns").insert(payload).select("id").single();
+        if(error)throw error;
+        keptIds.add(data.id);
+      }
+    }
+
+    for(const oldId of existingIds){
+      if(!keptIds.has(oldId)){
+        const {error}=await window.supabaseClient.from("program_columns").delete().eq("id",oldId);
+        if(error)throw error;
+      }
+    }
+
+    await loadProgramDefinitions();
+    closeProgramBuilder();
+    window.showAppToast?.("Programación guardada.","success",1200);
+    await openCustomProgram(programId);
+  }
+
+  async function deleteCurrentProgram(){
+    if(!builderEditingProgramId)return;
+    const program=customPrograms.find(p=>p.id===builderEditingProgramId);
+    const ok=await window.appConfirm(
+      `¿Eliminar la programación “${program?.name||""}”?\\n\\nSe eliminarán sus fechas y valores.`,
+      {title:"Eliminar programación",confirmText:"Eliminar",tone:"danger",icon:"!"}
+    );
+    if(!ok)return;
+    const {error}=await window.supabaseClient
+      .from("program_definitions").delete().eq("id",builderEditingProgramId);
+    if(error)throw error;
+    activeCustomProgramId=null;
+    closeProgramBuilder();
+    await loadProgramDefinitions();
+    window.activateAppPanel("programs","Programación");
+    window.showAppToast?.("Programación eliminada.","success",1100);
+  }
+
+  function hasValue(row,column){
+    if(!row)return false;
+    if(column.field_type==="volunteer")return !!row.volunteer_id;
+    if(column.field_type==="song")return !!row.song_id;
+    if(column.field_type==="number")return row.number_value!==null&&row.number_value!==undefined;
+    if(column.field_type==="list")return !!row.option_value;
+    return !!String(row.text_value||"").trim();
+  }
+
+  async function autoFillCustomProgram(rebalance=false){
+    const program=activeProgram();
+    if(!program||!teamEditor())return;
+    const cols=columnsFor(program.id).filter(c=>rebalance?c.rebalance_enabled:c.fill_enabled);
+    if(!cols.length)return;
+
+    const payloads=[];
+    const valueMap=new Map(customValues.map(v=>[`${v.entry_id}|${v.column_id}`,v]));
+    const counts=new Map();
+
+    cols.forEach(col=>{
+      customEntries.forEach(entry=>{
+        const row=valueMap.get(`${entry.id}|${col.id}`);
+        if(row){
+          const key=col.field_type==="volunteer"?row.volunteer_id:
+                    col.field_type==="song"?row.song_id:
+                    col.field_type==="list"?row.option_value:null;
+          if(key)counts.set(`${col.id}|${key}`,(counts.get(`${col.id}|${key}`)||0)+1);
+        }
+      });
+    });
+
+    for(const col of cols){
+      const choices=
+        col.field_type==="volunteer"?customRefVolunteers.map(v=>({id:v.id,label:v.name})):
+        col.field_type==="song"?customRefSongs.map(s=>({id:s.id,label:s.name})):
+        col.field_type==="list"?(safeOptions(col.options).choices||[]).map(x=>({id:x,label:x})):
+        [];
+
+      if(!choices.length)continue;
+      let previous=null;
+
+      for(const entry of customEntries){
+        const current=valueMap.get(`${entry.id}|${col.id}`);
+        if(current?.locked)continue;
+        if(!rebalance&&hasValue(current,col)){
+          previous=col.field_type==="volunteer"?current.volunteer_id:
+                   col.field_type==="song"?current.song_id:
+                   col.field_type==="list"?current.option_value:null;
+          continue;
+        }
+
+        const ranked=[...choices].sort((a,b)=>{
+          const ac=counts.get(`${col.id}|${a.id}`)||0;
+          const bc=counts.get(`${col.id}|${b.id}`)||0;
+          if(ac!==bc)return ac-bc;
+          if(a.id===previous)return 1;
+          if(b.id===previous)return -1;
+          return String(a.label).localeCompare(String(b.label),"es");
+        });
+        const pick=ranked[0];
+        if(!pick)continue;
+
+        const payload={
+          team_id:window.currentTeam.id,
+          entry_id:entry.id,
+          column_id:col.id,
+          volunteer_id:null,
+          song_id:null,
+          text_value:null,
+          number_value:null,
+          option_value:null,
+          locked:false,
+          updated_at:new Date().toISOString()
+        };
+        if(col.field_type==="volunteer")payload.volunteer_id=pick.id;
+        else if(col.field_type==="song")payload.song_id=pick.id;
+        else if(col.field_type==="list")payload.option_value=pick.id;
+        else continue;
+
+        payloads.push(payload);
+        counts.set(`${col.id}|${pick.id}`,(counts.get(`${col.id}|${pick.id}`)||0)+1);
+        previous=pick.id;
+      }
+    }
+
+    if(payloads.length){
+      const {error}=await window.supabaseClient
+        .from("program_values")
+        .upsert(payloads,{onConflict:"entry_id,column_id"});
+      if(error)throw error;
+    }
+    await loadActiveCustomProgram();
+    window.showAppToast?.(
+      rebalance?"Programación reequilibrada.":"Se rellenaron los espacios automáticos.",
+      "success",1200
+    );
+  }
+
+  async function addCustomService(){
+    const program=activeProgram();
+    if(!program||!teamEditor())return;
+    const date=await window.appPrompt("Añadir servicio",{
+      message:"Selecciona la fecha que quieres añadir.",
+      inputType:"date",
+      confirmText:"Añadir"
+    });
+    if(!date)return;
+    const {error}=await window.supabaseClient
+      .from("program_entries")
+      .upsert({
+        team_id:window.currentTeam.id,
+        program_id:program.id,
+        service_date:date,
+        is_extra:true,
+        status:"draft",
+        updated_at:new Date().toISOString()
+      },{onConflict:"program_id,service_date"});
+    if(error)throw error;
+
+    const parts=date.split("-");
+    customYear.value=parts[0];
+    customMonth.value=String(Number(parts[1])-1);
+    await loadActiveCustomProgram();
+    window.showAppToast?.("Servicio añadido.","success",1000);
+  }
+
+  async function confirmCustomProgram(){
+    const program=activeProgram();
+    if(!program||!teamEditor()||!customEntries.length)return;
+    const ids=customEntries.map(e=>e.id);
+    const {error}=await window.supabaseClient
+      .from("program_entries")
+      .update({status:"confirmed",updated_at:new Date().toISOString()})
+      .in("id",ids);
+    if(error)throw error;
+    await loadActiveCustomProgram();
+    showConfirmToast();
+  }
+
+  // Events
+  createBtn?.addEventListener("click",()=>openProgramBuilder(null));
+  document.getElementById("backToPrograms")?.addEventListener("click",()=>window.activateAppPanel("programs","Programación"));
+  editStructureBtn?.addEventListener("click",()=>openProgramBuilder(activeCustomProgramId));
+  document.getElementById("addProgramColumn")?.addEventListener("click",()=>addBuilderColumn({name:"Nueva columna",field_type:"volunteer"}));
+  document.getElementById("programBuilderClose")?.addEventListener("click",closeProgramBuilder);
+  document.getElementById("programBuilderCancel")?.addEventListener("click",closeProgramBuilder);
+  builderModal?.addEventListener("click",e=>{if(e.target===builderModal)closeProgramBuilder()});
+  builderForm?.addEventListener("submit",async e=>{
+    e.preventDefault();
+    try{
+      await saveProgramBuilder();
+    }catch(error){
+      console.error(error);
+      window.showAppToast?.(error.message||"No se pudo guardar la programación.","error",2200);
+    }
+  });
+  deleteProgramBtn?.addEventListener("click",async()=>{
+    try{await deleteCurrentProgram()}catch(error){
+      console.error(error);
+      window.showAppToast?.("No se pudo eliminar la programación.","error",1800);
+    }
+  });
+  customYear?.addEventListener("change",()=>loadActiveCustomProgram().catch(console.error));
+  customMonth?.addEventListener("change",()=>loadActiveCustomProgram().catch(console.error));
+  document.getElementById("customProgramFill")?.addEventListener("click",()=>autoFillCustomProgram(false).catch(console.error));
+  document.getElementById("customProgramRebalance")?.addEventListener("click",()=>autoFillCustomProgram(true).catch(console.error));
+  document.getElementById("customProgramAddService")?.addEventListener("click",()=>addCustomService().catch(console.error));
+  document.getElementById("customProgramConfirm")?.addEventListener("click",()=>confirmCustomProgram().catch(console.error));
+
+  // Dynamic mobile program menu handles custom items too.
+  document.getElementById("mobileProgramBtn")?.addEventListener("click",()=>renderMobileProgramList());
+
+  // Section metadata
+  if(typeof sectionDescriptions!=="undefined"){
+    sectionDescriptions.programs=["Programación","Todas las programaciones del equipo."];
+    sectionDescriptions.customProgram=["Programación","Programación personalizada."];
+  }
+
+  window.bootstrapCustomProgramsSupabase=async function(){
+    try{
+      await loadProgramDefinitions();
+      return true;
+    }catch(error){
+      console.error("Error cargando constructor de programaciones:",error);
+      if(programCards){
+        programCards.innerHTML=`<div class="card"><strong>No se pudo cargar Programación.</strong><div class="muted">${escapeTeamHtml(error.message||String(error))}</div></div>`;
+      }
+      return false;
+    }
+  };
+
+  // Initial render before session is ready.
+  renderProgramHub();
 })();
 </script>
 
