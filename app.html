@@ -2,7 +2,7 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V26-SUPABASE-DISPONIBILIDAD">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V57-HOME-RESPONSIVE-UI">
 <title>Flash Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1425,6 +1425,377 @@ body.readonly-mode .songDbTable [data-col="actions"]{
   .gsConnectionActions .btn{width:100%}
   .gsYearRow{grid-template-columns:auto 1fr}
   .gsYearRow a{grid-column:1/-1;width:100%}
+}
+</style>
+
+
+<style id="v57-home-responsive-ui">
+/* =========================================================
+   V57 · INICIO RESPONSIVE
+   Solo cambia presentación. No toca Supabase ni programación.
+   ========================================================= */
+
+#home .card{
+  padding:1.1rem !important;
+  overflow:hidden;
+}
+
+#home .homeHeader{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:end !important;
+  gap:1rem !important;
+  margin-bottom:.25rem;
+}
+
+#home .homeHeader h2{
+  margin:0 0 .25rem !important;
+  font-size:1.18rem;
+  letter-spacing:-.015em;
+}
+
+#home #homeSubtitle{
+  max-width:42rem;
+  font-size:.88rem !important;
+  line-height:1.4;
+}
+
+#home .homeToolbar{
+  display:grid !important;
+  grid-template-columns:auto auto;
+  align-items:end !important;
+  gap:.65rem !important;
+}
+
+#home .viewSwitch{
+  min-height:2.75rem;
+  padding:.2rem !important;
+  border-radius:.65rem !important;
+  align-self:end;
+}
+
+#home .viewBtn{
+  min-height:2.3rem;
+  padding:.48rem .8rem !important;
+  border-radius:.5rem !important;
+  font-size:.86rem;
+}
+
+#home .homeMonthControls{
+  display:grid !important;
+  grid-template-columns:5.8rem minmax(8.7rem,10.2rem);
+  gap:.55rem !important;
+  min-width:0 !important;
+  margin:0 !important;
+}
+
+#home .homeMonthControls > div{
+  min-width:0 !important;
+}
+
+#home .homeMonthControls label{
+  margin-bottom:.28rem;
+  font-size:.76rem;
+}
+
+#home .homeMonthControls input,
+#home .homeMonthControls select{
+  min-height:2.75rem !important;
+  padding:.52rem .6rem !important;
+  font-size:.9rem;
+}
+
+#home .weekNav{
+  display:grid !important;
+  grid-template-columns:auto minmax(12rem,1fr) auto;
+  align-items:center !important;
+  gap:.75rem !important;
+  margin:1rem 0 .75rem !important;
+}
+
+#home .weekNav .btn{
+  min-height:2.75rem;
+  min-width:7.8rem;
+  padding:.55rem .8rem !important;
+  white-space:nowrap;
+  font-size:.86rem;
+}
+
+#home .weekCurrent{
+  min-width:0 !important;
+  padding:.15rem .65rem;
+  line-height:1.18 !important;
+  font-size:.93rem;
+  font-weight:800 !important;
+}
+
+#home .homeTableWrap{
+  width:100%;
+  max-width:100%;
+  overflow:auto !important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-inline:contain;
+  border-radius:.7rem !important;
+  scrollbar-gutter:stable;
+  background:var(--panel-2);
+}
+
+#home .homeTable{
+  width:100% !important;
+  min-width:52rem !important;
+  table-layout:fixed;
+  font-size:.92rem;
+}
+
+#home .homeTable th{
+  padding:.7rem .65rem !important;
+  font-size:.74rem !important;
+  letter-spacing:.045em !important;
+  line-height:1.15;
+  white-space:nowrap;
+  z-index:3;
+}
+
+#home .homeTable td{
+  padding:.72rem .7rem !important;
+  font-size:.9rem !important;
+  line-height:1.35 !important;
+}
+
+#home .homeTable th:nth-child(1),
+#home .homeTable td:nth-child(1){
+  width:6.6rem;
+}
+
+#home .homeTable th:nth-child(2),
+#home .homeTable td:nth-child(2){
+  width:16rem;
+}
+
+#home .homeTable th:nth-child(3),
+#home .homeTable td:nth-child(3){
+  width:17rem;
+}
+
+#home .homeTable th:nth-child(4),
+#home .homeTable td:nth-child(4){
+  width:13rem;
+}
+
+#home .homeTable .dateCol{
+  width:auto !important;
+  min-width:0;
+  padding-inline:.45rem !important;
+  font-size:.84rem !important;
+  line-height:1.28 !important;
+}
+
+#home .homeCellList{
+  gap:.28rem !important;
+  min-width:0;
+}
+
+#home .homeCellList .line{
+  display:grid !important;
+  grid-template-columns:minmax(5.7rem,.72fr) minmax(0,1fr) !important;
+  gap:.45rem !important;
+  min-width:0;
+  white-space:normal !important;
+  overflow:visible !important;
+}
+
+#home .homeCellList .key{
+  min-width:0;
+  text-align:right !important;
+  font-size:.82rem;
+  line-height:1.3;
+  white-space:nowrap;
+}
+
+#home .homeCellList .line > span:last-child{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+#home .homeSongs{
+  gap:.28rem !important;
+  min-width:0;
+}
+
+#home .homeSongs span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap !important;
+  line-height:1.32;
+}
+
+#home .homeEmpty{
+  font-size:.84rem;
+}
+
+/* Tableta */
+@media (max-width:64rem){
+  #home .homeHeader{
+    grid-template-columns:1fr !important;
+    align-items:stretch !important;
+  }
+
+  #home .homeToolbar{
+    grid-template-columns:auto minmax(0,1fr) !important;
+  }
+
+  #home .homeMonthControls{
+    grid-template-columns:5.8rem minmax(8.5rem,1fr);
+    width:100% !important;
+  }
+
+  #home .homeTable{
+    min-width:48rem !important;
+  }
+
+  #home .homeTable th:nth-child(2),
+  #home .homeTable td:nth-child(2){width:14.5rem}
+
+  #home .homeTable th:nth-child(3),
+  #home .homeTable td:nth-child(3){width:15.5rem}
+
+  #home .homeTable th:nth-child(4),
+  #home .homeTable td:nth-child(4){width:12rem}
+}
+
+/* Móvil */
+@media (max-width:47.5rem){
+  #home .card{
+    padding:.8rem !important;
+    border-radius:.75rem !important;
+  }
+
+  #home .homeHeader{
+    gap:.72rem !important;
+  }
+
+  #home .homeHeader h2{
+    font-size:1.05rem;
+  }
+
+  #home #homeSubtitle{
+    font-size:.8rem !important;
+    line-height:1.35;
+  }
+
+  #home .homeToolbar{
+    grid-template-columns:1fr !important;
+    gap:.5rem !important;
+  }
+
+  #home .viewSwitch{
+    display:grid !important;
+    grid-template-columns:1fr 1fr;
+    width:100%;
+    min-height:2.7rem;
+  }
+
+  #home .viewBtn{
+    width:100%;
+    min-height:2.3rem;
+  }
+
+  #home .homeMonthControls{
+    grid-template-columns:5.4rem minmax(0,1fr) !important;
+    gap:.48rem !important;
+  }
+
+  #home .homeMonthControls input,
+  #home .homeMonthControls select{
+    min-height:2.75rem !important;
+    font-size:.86rem;
+  }
+
+  #home .weekNav{
+    grid-template-columns:1fr 1fr !important;
+    gap:.5rem !important;
+    margin:.8rem 0 .65rem !important;
+  }
+
+  #home .weekCurrent{
+    grid-column:1 / -1 !important;
+    grid-row:1 !important;
+    padding:.1rem .25rem .25rem;
+    font-size:.88rem !important;
+  }
+
+  #home .weekNav .btn{
+    width:100%;
+    min-width:0;
+    min-height:2.75rem;
+    padding:.5rem .55rem !important;
+    font-size:.82rem;
+  }
+
+  #home .homeTableWrap{
+    border-radius:.6rem !important;
+  }
+
+  #home .homeTable{
+    min-width:42rem !important;
+  }
+
+  #home .homeTable th{
+    padding:.55rem .45rem !important;
+    font-size:.68rem !important;
+  }
+
+  #home .homeTable td{
+    padding:.55rem .5rem !important;
+    font-size:.79rem !important;
+  }
+
+  #home .homeTable th:nth-child(1),
+  #home .homeTable td:nth-child(1){width:5.5rem}
+
+  #home .homeTable th:nth-child(2),
+  #home .homeTable td:nth-child(2){width:13.4rem}
+
+  #home .homeTable th:nth-child(3),
+  #home .homeTable td:nth-child(3){width:14.5rem}
+
+  #home .homeTable th:nth-child(4),
+  #home .homeTable td:nth-child(4){width:10.5rem}
+
+  #home .homeTable .dateCol{
+    font-size:.76rem !important;
+  }
+
+  #home .homeCellList .line{
+    grid-template-columns:minmax(4.9rem,.7fr) minmax(0,1fr) !important;
+    gap:.35rem !important;
+  }
+
+  #home .homeCellList .key{
+    font-size:.73rem;
+  }
+
+  #home .homeEmpty{
+    font-size:.76rem;
+  }
+}
+
+/* Teléfonos muy estrechos */
+@media (max-width:23.5rem){
+  #home #homeSubtitle{
+    display:none;
+  }
+
+  #home .homeMonthControls{
+    grid-template-columns:5rem minmax(0,1fr) !important;
+  }
+
+  #home .homeTable{
+    min-width:40rem !important;
+  }
 }
 </style>
 
