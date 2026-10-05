@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<title>Flash Program · Demo</title>
+<style>
+:root{
+  --bg:#0f1115;--panel:#15181e;--panel2:#1a1e25;--panel3:#20252d;
+  --text:#f4f4f5;--muted:#98a1ad;--line:#2a3038;--accent:#668cff;
+  --danger:#b8515d;--ok:#45a567;--radius:.75rem
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{color:inherit}
+.demoBanner{
+  position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:center;gap:.65rem;
+  min-height:2.6rem;padding:.55rem .9rem;background:#2a2312;border-bottom:1px solid #5a4b26;
+  color:#f2dfa2;font-size:.86rem;font-weight:800;text-align:center
+}
+.demoBanner b{color:#fff0ba}
+.app{display:grid;grid-template-columns:15rem 1fr;min-height:calc(100vh - 2.6rem)}
+.sidebar{position:sticky;top:2.6rem;height:calc(100vh - 2.6rem);border-right:1px solid var(--line);background:#111419;padding:.85rem;overflow:auto}
+.brand{display:flex;align-items:center;gap:.65rem;padding:.35rem .35rem 1rem;font-weight:900}
+.brandMark{width:2rem;height:2rem;display:grid;place-items:center;border:1px solid var(--line);border-radius:.55rem;background:var(--panel2)}
+.teamBox{padding:.7rem;border:1px solid var(--line);border-radius:.6rem;background:var(--panel);margin-bottom:.8rem}
+.teamBox strong{display:block;font-size:.9rem}.teamBox span{font-size:.75rem;color:var(--muted)}
+.nav{display:grid;gap:.25rem}
+.nav button{width:100%;min-height:2.55rem;text-align:left;padding:.55rem .65rem;border:1px solid transparent;border-radius:.55rem;background:transparent;color:var(--muted);font-weight:750}
+.nav button:hover,.nav button.active{background:var(--panel2);border-color:var(--line);color:var(--text)}
+.sideLinks{display:grid;gap:.45rem;margin-top:1rem}
+.sideLinks a,.sideLinks button{min-height:2.5rem;display:flex;align-items:center;justify-content:center;text-decoration:none;border:1px solid var(--line);border-radius:.55rem;background:var(--panel2);color:var(--text);font-weight:800}
+.main{min-width:0}
+.top{position:sticky;top:2.6rem;z-index:80;min-height:4rem;display:flex;align-items:center;gap:.7rem;padding:.75rem 1rem;border-bottom:1px solid var(--line);background:rgba(15,17,21,.92);backdrop-filter:blur(.8rem)}
+.menuBtn{display:none}
+.top h1{font-size:1.05rem;margin:0}
+.topSpacer{flex:1}
+.badge{padding:.38rem .58rem;border:1px solid #394977;border-radius:999px;background:#182034;color:#cbd6ff;font-size:.75rem;font-weight:850}
+.content{padding:1rem;max-width:90rem;margin:0 auto}
+.page{display:none}.page.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:.8rem}
+.card{grid-column:span 12;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);padding:1rem}
+.s6{grid-column:span 6}.s4{grid-column:span 4}
+h2{font-size:1rem;margin:0 0 .75rem}
+h3{font-size:.92rem;margin:.8rem 0 .45rem}
+.muted{color:var(--muted);font-size:.83rem}
+.row{display:flex;flex-wrap:wrap;gap:.55rem;align-items:end}
+.field{min-width:7rem;flex:1}
+label{display:block;color:var(--muted);font-size:.76rem;font-weight:800;margin-bottom:.32rem}
+input,select{width:100%;min-height:2.65rem;border:1px solid var(--line);border-radius:.55rem;background:var(--panel2);color:var(--text);padding:.55rem .65rem}
+.btn{min-height:2.65rem;padding:.58rem .8rem;border:1px solid var(--line);border-radius:.55rem;background:var(--panel2);color:var(--text);font-weight:850}
+.btn.primary{background:var(--text);color:var(--bg);border-color:var(--text)}
+.btn.danger{background:#2b191c;border-color:#71383f;color:#ffdce0}
+.tableWrap{overflow:auto;border:1px solid var(--line);border-radius:.6rem}
+table{width:100%;border-collapse:collapse;min-width:42rem}
+th,td{padding:.62rem .7rem;border-bottom:1px solid var(--line);text-align:left;font-size:.83rem;vertical-align:middle}
+th{position:sticky;top:0;background:var(--panel3);z-index:2;font-size:.74rem;text-transform:uppercase;letter-spacing:.03em}
+td select{min-height:2.2rem;padding:.35rem .45rem}
+.songPill{display:inline-block;padding:.24rem .42rem;border:1px solid var(--line);border-radius:999px;background:var(--panel2);font-size:.75rem;margin:.12rem}
+.weekCard{border:1px solid var(--line);border-radius:.65rem;padding:.85rem;background:var(--panel2);margin-bottom:.65rem}
+.weekCard strong{display:block;margin-bottom:.45rem}
+.kpi{padding:1rem;border:1px solid var(--line);border-radius:.7rem;background:linear-gradient(180deg,var(--panel2),var(--panel))}
+.kpi b{display:block;font-size:1.55rem}.kpi span{color:var(--muted);font-size:.78rem}
+.toast{position:fixed;top:3.4rem;left:50%;transform:translate(-50%,-.4rem);z-index:200;max-width:min(90vw,24rem);padding:.65rem .85rem;border:1px solid #315a3c;border-radius:.65rem;background:#17241b;box-shadow:0 1rem 3rem rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:.16s;color:#dff4e5;font-weight:800;font-size:.84rem}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.demoNote{padding:.75rem;border:1px solid #394977;background:#182034;border-radius:.65rem;color:#cbd6ff;font-size:.82rem}
+@media(max-width:60rem){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:0;top:2.6rem;bottom:0;width:min(84vw,17rem);height:auto;z-index:90;transform:translateX(-105%);transition:.18s;box-shadow:1rem 0 3rem rgba(0,0,0,.35)}
+  .sidebar.open{transform:translateX(0)}
+  .menuBtn{display:inline-flex;align-items:center;justify-content:center;width:2.6rem;height:2.6rem;border:1px solid var(--line);border-radius:.55rem;background:var(--panel2);color:var(--text)}
+  .top{top:2.6rem}
+  .s6,.s4{grid-column:span 12}
+}
+@media(max-width:38rem){
+  .content{padding:.7rem}
+  .top{padding:.6rem .7rem}
+  .row{display:grid;grid-template-columns:1fr 1fr}
+  .row .field{min-width:0}
+  .row .btn{width:100%}
+  table{min-width:36rem}
+}
+</style>
+</head>
+<body>
+<div class="demoBanner">
+  <b>MODO DEMOSTRACIÓN</b>
+  <span>Datos ficticios · Vista de Administrador · Nada de lo que hagas aquí modifica equipos reales.</span>
+</div>
+
+<div class="app">
+  <aside id="sidebar" class="sidebar">
+    <div class="brand"><span class="brandMark">F</span><span>Flash Program</span></div>
+    <div class="teamBox">
+      <strong>Equipo de demostración</strong>
+      <span>Administrador · Datos temporales</span>
+    </div>
+    <nav id="nav" class="nav">
+      <button data-page="home" class="active">Inicio</button>
+      <button data-page="worship">Alabanza</button>
+      <button data-page="youth">Alabanza Jóvenes</button>
+      <button data-page="media">Multimedia</button>
+      <button data-page="volunteers">Voluntarios</button>
+      <button data-page="songs">Canciones</button>
+      <button data-page="availability">Disponibilidad</button>
+      <button data-page="history">Historial</button>
+      <button data-page="images">Imágenes</button>
+      <button data-page="settings">Configuración</button>
+    </nav>
+    <div class="sideLinks">
+      <button id="resetDemo" type="button">Reiniciar demo</button>
+      <a href="app.html">Ir a la App real</a>
+      <a href="index.html">Volver al inicio</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <button id="menuBtn" class="menuBtn" type="button">☰</button>
+      <h1 id="pageTitle">Inicio</h1>
+      <div class="topSpacer"></div>
+      <span class="badge">Demo · Admin</span>
+    </header>
+
+    <div class="content">
+      <section id="page-home" class="page active">
+        <div class="demoNote">Esta demo funciona únicamente en tu navegador. Al recargar o pulsar “Reiniciar demo”, vuelve a sus datos iniciales.</div>
+        <div class="grid" style="margin-top:.8rem">
+          <div class="kpi s4"><b id="kpiVol">0</b><span>Voluntarios</span></div>
+          <div class="kpi s4"><b id="kpiSongs">0</b><span>Canciones</span></div>
+          <div class="kpi s4"><b id="kpiServices">0</b><span>Servicios del mes</span></div>
+          <div class="card s6">
+            <h2>Próxima programación</h2>
+            <div id="homeSchedule"></div>
+          </div>
+          <div class="card s6">
+            <h2>Qué puedes probar</h2>
+            <div class="muted">Generar programaciones, cambiar responsables, revisar canciones, explorar voluntarios y navegar por los módulos como Administrador.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-worship" class="page">
+        <div class="card">
+          <h2>Alabanza</h2>
+          <div class="row">
+            <div class="field"><label>Año</label><input id="wYear" type="number" value="2026"></div>
+            <div class="field"><label>Mes</label><select id="wMonth"></select></div>
+            <button id="genW" class="btn primary" type="button">Generar</button>
+          </div>
+          <div id="wTable" style="margin-top:.8rem"></div>
+        </div>
+      </section>
+
+      <section id="page-youth" class="page">
+        <div class="card">
+          <h2>Alabanza Jóvenes</h2>
+          <div class="row">
+            <div class="field"><label>Año</label><input id="jYear" type="number" value="2026"></div>
+            <div class="field"><label>Mes</label><select id="jMonth"></select></div>
+            <button id="genJ" class="btn primary" type="button">Generar</button>
+          </div>
+          <div id="jTable" style="margin-top:.8rem"></div>
+        </div>
+      </section>
+
+      <section id="page-media" class="page">
+        <div class="card">
+          <h2>Multimedia</h2>
+          <div class="row">
+            <div class="field"><label>Año</label><input id="mYear" type="number" value="2026"></div>
+            <div class="field"><label>Mes</label><select id="mMonth"></select></div>
+            <button id="genM" class="btn primary" type="button">Generar</button>
+          </div>
+          <div id="mTable" style="margin-top:.8rem"></div>
+        </div>
+      </section>
+
+      <section id="page-volunteers" class="page">
+        <div class="card">
+          <h2>Voluntarios</h2>
+          <div class="tableWrap"><table><thead><tr><th>Nombre</th><th>Rol principal</th><th>Otros roles</th><th>Estado</th></tr></thead><tbody id="volRows"></tbody></table></div>
+        </div>
+      </section>
+
+      <section id="page-songs" class="page">
+        <div class="card">
+          <h2>Canciones</h2>
+          <div class="tableWrap"><table><thead><tr><th>Canción</th><th>Artista</th><th>Categoría</th><th>BPM</th><th>Tonalidad</th></tr></thead><tbody id="songRows"></tbody></table></div>
+        </div>
+      </section>
+
+      <section id="page-availability" class="page">
+        <div class="card">
+          <h2>Disponibilidad</h2>
+          <div class="muted" style="margin-bottom:.7rem">Ejemplo de indisponibilidades registradas.</div>
+          <div class="tableWrap"><table><thead><tr><th>Persona</th><th>Fecha</th><th>Módulo</th></tr></thead><tbody id="availRows"></tbody></table></div>
+        </div>
+      </section>
+
+      <section id="page-history" class="page">
+        <div class="card">
+          <h2>Historial</h2>
+          <div class="tableWrap"><table><thead><tr><th>Fecha</th><th>Actividad</th><th>Módulo</th></tr></thead><tbody id="historyRows"></tbody></table></div>
+        </div>
+      </section>
+
+      <section id="page-images" class="page">
+        <div class="grid">
+          <div class="card s6"><h2>Imagen de Alabanza</h2><div class="demoNote">En la aplicación real puedes generar una imagen de la programación lista para compartir.</div></div>
+          <div class="card s6"><h2>Imagen de Multimedia</h2><div class="demoNote">La demo muestra el flujo; no descarga ni publica archivos reales.</div></div>
+        </div>
+      </section>
+
+      <section id="page-settings" class="page">
+        <div class="grid">
+          <div class="card s6">
+            <h2>Equipo</h2>
+            <label>Nombre</label><input value="Equipo de demostración" readonly>
+            <label style="margin-top:.7rem">Código de equipo</label><input value="FP-DEMO26" readonly>
+          </div>
+          <div class="card s6">
+            <h2>Permisos</h2>
+            <div class="muted">Estás viendo la demo como Administrador. En equipos reales, el Admin decide quién puede editar y quién tiene solo lectura.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const months=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const initialState={
+  volunteers:[
+    {name:"Laura Méndez",primary:"Voz principal",secondary:["Coros"],active:true},
+    {name:"Mateo Ríos",primary:"Guitarra",secondary:["Bajo"],active:true},
+    {name:"Sara León",primary:"Piano",secondary:["Coros"],active:true},
+    {name:"Daniel Cruz",primary:"Batería",secondary:[],active:true},
+    {name:"Valentina Ruiz",primary:"Coros",secondary:["Voz principal"],active:true},
+    {name:"Andrés Mora",primary:"Bajo",secondary:["Guitarra"],active:true},
+    {name:"Sofía Torres",primary:"Coros",secondary:[],active:true}
+  ],
+  songs:[
+    {name:"Luz del mundo",artist:"Ejemplo Worship",category:"Rápida",bpm:128,key:"D"},
+    {name:"Tu fidelidad",artist:"Proyecto Demo",category:"Lenta",bpm:72,key:"G"},
+    {name:"Celebramos",artist:"Ejemplo Worship",category:"Rápida",bpm:132,key:"E"},
+    {name:"Cerca de Ti",artist:"Proyecto Demo",category:"Lenta",bpm:68,key:"A"},
+    {name:"Gracia",artist:"Flash Music",category:"Media",bpm:96,key:"C"},
+    {name:"Todo lo haces nuevo",artist:"Flash Music",category:"Media",bpm:102,key:"F"}
+  ],
+  availability:[
+    {name:"Daniel Cruz",date:"2026-10-11",module:"Alabanza"},
+    {name:"Sara León",date:"2026-10-18",module:"Alabanza"},
+    {name:"Andrés Mora",date:"2026-10-24",module:"Jóvenes"}
+  ],
+  history:[
+    {date:"2026-09-27",activity:"Programación confirmada",module:"Alabanza"},
+    {date:"2026-09-26",activity:"Programación confirmada",module:"Jóvenes"},
+    {date:"2026-09-23",activity:"Programación confirmada",module:"Multimedia"}
+  ]
+};
+let state=structuredClone(initialState);
+let schedules={w:[],j:[],m:[]};
+
+const qs=s=>document.querySelector(s);
+const qsa=s=>[...document.querySelectorAll(s)];
+const toast=msg=>{const t=qs("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.classList.remove("show"),1000)};
+const iso=(Y,M,D)=>`${Y}-${String(M+1).padStart(2,"0")}-${String(D).padStart(2,"0")}`;
+const dates=(Y,M,day)=>{const out=[];const last=new Date(Date.UTC(Y,M+1,0)).getUTCDate();for(let d=1;d<=last;d++){if(new Date(Date.UTC(Y,M,d)).getUTCDay()===day)out.push(iso(Y,M,d))}return out};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>[...a].sort(()=>Math.random()-.5);
+
+["#wMonth","#jMonth","#mMonth"].forEach(sel=>months.forEach((m,i)=>qs(sel).add(new Option(m,i))));
+qs("#wMonth").value=9;qs("#jMonth").value=9;qs("#mMonth").value=9;
+
+function renderLists(){
+ qs("#volRows").innerHTML=state.volunteers.map(v=>`<tr><td>${v.name}</td><td>${v.primary}</td><td>${v.secondary.join(", ")||"—"}</td><td>${v.active?"Activo":"Inactivo"}</td></tr>`).join("");
+ qs("#songRows").innerHTML=state.songs.map(s=>`<tr><td>${s.name}</td><td>${s.artist}</td><td>${s.category}</td><td>${s.bpm}</td><td>${s.key}</td></tr>`).join("");
+ qs("#availRows").innerHTML=state.availability.map(a=>`<tr><td>${a.name}</td><td>${a.date}</td><td>${a.module}</td></tr>`).join("");
+ qs("#historyRows").innerHTML=state.history.map(h=>`<tr><td>${h.date}</td><td>${h.activity}</td><td>${h.module}</td></tr>`).join("");
+ qs("#kpiVol").textContent=state.volunteers.length;
+ qs("#kpiSongs").textContent=state.songs.length;
+}
+
+function personSelect(current,role){
+ const pool=state.volunteers.filter(v=>v.primary===role||v.secondary.includes(role));
+ return `<select data-current="${current||""}">${pool.map(v=>`<option ${v.name===current?"selected":""}>${v.name}</option>`).join("")}</select>`;
+}
+function songSelect(current){
+ return `<select>${state.songs.map(s=>`<option ${s.name===current?"selected":""}>${s.name}</option>`).join("")}</select>`;
+}
+
+function generateW(){
+ const Y=+qs("#wYear").value,M=+qs("#wMonth").value;
+ schedules.w=dates(Y,M,0).map(date=>{
+   const lead=pick(state.volunteers.filter(v=>v.primary==="Voz principal"||v.secondary.includes("Voz principal")));
+   const piano=pick(state.volunteers.filter(v=>v.primary==="Piano"||v.secondary.includes("Piano")));
+   const guitar=pick(state.volunteers.filter(v=>v.primary==="Guitarra"||v.secondary.includes("Guitarra")));
+   const drums=pick(state.volunteers.filter(v=>v.primary==="Batería"||v.secondary.includes("Batería")));
+   return {date,lead:lead.name,piano:piano.name,guitar:guitar.name,drums:drums.name,songs:shuffle(state.songs).slice(0,4).map(s=>s.name)}
+ });
+ renderW();renderHome();toast("Programación generada");
+}
+function renderW(){
+ qs("#wTable").innerHTML=`<div class="tableWrap"><table><thead><tr><th>Fecha</th><th>Voz principal</th><th>Piano</th><th>Guitarra</th><th>Batería</th><th>Canciones</th></tr></thead><tbody>${
+ schedules.w.map((r,idx)=>`<tr><td>${r.date}</td><td>${personSelect(r.lead,"Voz principal")}</td><td>${personSelect(r.piano,"Piano")}</td><td>${personSelect(r.guitar,"Guitarra")}</td><td>${personSelect(r.drums,"Batería")}</td><td>${r.songs.map(x=>`<span class="songPill">${x}</span>`).join("")}</td></tr>`).join("")
+ }</tbody></table></div>`;
+}
+
+function generateJ(){
+ const Y=+qs("#jYear").value,M=+qs("#jMonth").value;
+ schedules.j=dates(Y,M,6).map(date=>({date,lead:pick(state.volunteers).name,songs:shuffle(state.songs).slice(0,3).map(s=>s.name)}));
+ renderJ();renderHome();toast("Programación de Jóvenes generada");
+}
+function renderJ(){
+ qs("#jTable").innerHTML=`<div class="tableWrap"><table><thead><tr><th>Fecha</th><th>Responsable</th><th>Canción 1</th><th>Canción 2</th><th>Canción 3</th></tr></thead><tbody>${
+ schedules.j.map(r=>`<tr><td>${r.date}</td><td>${personSelect(r.lead,"Coros")}</td>${r.songs.map(s=>`<td>${songSelect(s)}</td>`).join("")}</tr>`).join("")
+ }</tbody></table></div>`;
+}
+
+function generateM(){
+ const Y=+qs("#mYear").value,M=+qs("#mMonth").value;
+ const ds=[...dates(Y,M,0),...dates(Y,M,3),...dates(Y,M,6)].sort();
+ schedules.m=ds.map(date=>{
+   const people=shuffle(state.volunteers);
+   return {date,pc:people[0].name,camera:people[1].name,slides:people[2].name}
+ });
+ renderM();renderHome();toast("Multimedia generada");
+}
+function renderM(){
+ const all=state.volunteers.map(v=>v.name);
+ const sel=current=>`<select>${all.map(n=>`<option ${n===current?"selected":""}>${n}</option>`).join("")}</select>`;
+ qs("#mTable").innerHTML=`<div class="tableWrap"><table><thead><tr><th>Fecha</th><th>PC</th><th>Cámara</th><th>Diapositivas</th></tr></thead><tbody>${
+ schedules.m.map(r=>`<tr><td>${r.date}</td><td>${sel(r.pc)}</td><td>${sel(r.camera)}</td><td>${sel(r.slides)}</td></tr>`).join("")
+ }</tbody></table></div>`;
+}
+
+function renderHome(){
+ const total=schedules.w.length+schedules.j.length+schedules.m.length;
+ qs("#kpiServices").textContent=total;
+ const next=[...schedules.w.map(x=>({...x,type:"Alabanza"})),...schedules.j.map(x=>({...x,type:"Jóvenes"})),...schedules.m.map(x=>({...x,type:"Multimedia"}))].sort((a,b)=>a.date.localeCompare(b.date)).slice(0,4);
+ qs("#homeSchedule").innerHTML=next.length?next.map(x=>`<div class="weekCard"><strong>${x.date} · ${x.type}</strong><span class="muted">${x.lead||x.pc||"Programación de ejemplo"}</span></div>`).join(""):'<div class="muted">Genera una programación para verla aquí.</div>';
+}
+
+function seed(){
+ state=structuredClone(initialState);
+ schedules={w:[],j:[],m:[]};
+ renderLists();
+ generateW();generateJ();generateM();
+ toast("Demo reiniciada");
+}
+
+qsa("#nav button").forEach(btn=>btn.addEventListener("click",()=>{
+ qsa("#nav button").forEach(b=>b.classList.toggle("active",b===btn));
+ qsa(".page").forEach(p=>p.classList.remove("active"));
+ qs("#page-"+btn.dataset.page).classList.add("active");
+ qs("#pageTitle").textContent=btn.textContent;
+ qs("#sidebar").classList.remove("open");
+}));
+qs("#menuBtn").onclick=()=>qs("#sidebar").classList.toggle("open");
+qs("#genW").onclick=generateW;
+qs("#genJ").onclick=generateJ;
+qs("#genM").onclick=generateM;
+qs("#resetDemo").onclick=seed;
+
+renderLists();
+generateW();generateJ();generateM();
+</script>
+</body>
+</html>
