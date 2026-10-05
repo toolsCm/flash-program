@@ -2,7 +2,7 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V63-HOME-EMOJIS-SONGS-LIVE">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V64-HOME-MONTH-NAV-PROGRAM-BLUR">
 <title>Flash Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4338,6 +4338,98 @@ body[data-theme="light"] #home .homeTable th:first-child{
 }
 </style>
 
+
+<style id="v64-home-month-program-focus">
+/* ==========================================================
+   V64 · INICIO MES/SEMANA + MENÚ PROGRAMACIÓN ENFOCADO
+   ========================================================== */
+
+/* Multimedia en Inicio: etiqueta compacta y sin superposición */
+#home .homeMediaCell .homeCellList .line{
+  grid-template-columns:7rem minmax(0,1fr) !important;
+  gap:.45rem !important;
+}
+#home .homeMediaCell .key{
+  text-align:right !important;
+  white-space:nowrap !important;
+  font-size:.75rem;
+}
+#home .homeMediaCell .line>span:last-child{
+  min-width:0;
+  white-space:nowrap !important;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#home .homeTable th:nth-child(4),
+#home .homeTable td:nth-child(4){
+  width:13rem !important;
+}
+
+/* En Mes los mismos controles Anterior/Siguiente siguen visibles */
+#home #homeWeekControls{
+  display:grid !important;
+}
+
+/* Capa de foco para Programación en celular */
+.mobileProgramBackdrop{
+  display:none;
+}
+
+@media(max-width:47.5rem){
+  .mobileProgramBackdrop{
+    position:fixed;
+    inset:0;
+    z-index:1090;
+    display:block;
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    background:rgba(4,6,10,.22);
+    backdrop-filter:blur(.32rem);
+    -webkit-backdrop-filter:blur(.32rem);
+    transition:opacity .16s ease,visibility .16s ease;
+  }
+  .mobileProgramBackdrop.show{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+  }
+
+  /* Las opciones de Programación quedan por encima del blur */
+  #mobileProgramMenu{
+    z-index:1110 !important;
+  }
+  #mobileBottomNav{
+    z-index:1100 !important;
+  }
+
+  /* Destaca Programación mientras su menú está abierto */
+  body.mobile-program-focus #mobileProgramBtn{
+    background:var(--accentSoft) !important;
+    color:var(--text) !important;
+    box-shadow:0 0 0 .12rem color-mix(in srgb,var(--accent) 24%,transparent);
+  }
+
+  #mobileProgramMenu.open{
+    box-shadow:0 1rem 3rem rgba(0,0,0,.38);
+    border-color:color-mix(in srgb,var(--accent) 55%,var(--line)) !important;
+  }
+
+  #mobileProgramMenu>button[data-mobile-page]{
+    min-height:3.25rem !important;
+    font-size:.9rem;
+  }
+
+  /* En móvil mantiene legibles las etiquetas de Multimedia de Inicio */
+  #home .homeMediaCell .homeCellList .line{
+    grid-template-columns:6.4rem minmax(0,1fr) !important;
+  }
+  #home .homeMediaCell .key{
+    font-size:.7rem;
+  }
+}
+</style>
+
 </head>
 <body class="readonly-mode">
 
@@ -6147,7 +6239,7 @@ function renderWeek(){
 
  if(homeViewMode==="month"){
    homeSubtitle.textContent="Vista previa mensual. Cada fila corresponde a una semana.";
-   homeWeekControls.style.display="none";
+   homeWeekControls.style.display="";
    weekLabel.textContent=`${months[M]} ${Y}`;
    renderHomeRows(sundays);
  }else{
@@ -6171,6 +6263,28 @@ function moveHomeWeek(direction){
  if(!hyEl||!hmEl)return;
 
  let Y=Number(hyEl.value),M=Number(hmEl.value);
+
+ // En vista MES, Anterior/Siguiente navega exactamente un mes
+ // y mantiene sincronizadas las casillas Año/Mes.
+ if(homeViewMode==="month"){
+   M+=direction;
+   if(M<0){M=11;Y-=1}
+   if(M>11){M=0;Y+=1}
+
+   hyEl.value=Y;
+   hmEl.value=M;
+   homeSelectedWeek=firstSundayOfMonth(Y,M);
+   renderWeek();
+
+   if(window.currentProfile){
+     if(typeof loadHomeConfirmedMonth==="function")Promise.resolve(loadHomeConfirmedMonth()).catch(console.error);
+   }else{
+     if(typeof window.loadHomeConfirmedMonthPublic==="function")Promise.resolve(window.loadHomeConfirmedMonthPublic()).catch(console.error);
+   }
+   return;
+ }
+
+ // En vista SEMANA, Anterior/Siguiente navega domingo a domingo.
  let sundays=getDates(Y,M,[0]);
  ensureHomeWeek();
 
@@ -6184,7 +6298,7 @@ function moveHomeWeek(direction){
    return;
  }
 
- // Si llega al borde, cambia de mes automáticamente.
+ // Si la semana cruza el borde, cambia de mes automáticamente.
  if(direction<0){
    M-=1;
    if(M<0){M=11;Y-=1}
@@ -9954,27 +10068,13 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 <script id="v44-critical-bindings">
 document.addEventListener("DOMContentLoaded",()=>{
-  const weekBtn=document.getElementById("homeWeekViewBtn");
-  const monthBtn=document.getElementById("homeMonthViewBtn");
-  const prevBtn=document.getElementById("prevWeek");
-  const nextBtn=document.getElementById("nextWeek");
-  const hyEl=document.getElementById("hy");
-  const hmEl=document.getElementById("hm");
   const mediaImgBtn=document.getElementById("im");
-
-  weekBtn?.addEventListener("click",(e)=>{e.preventDefault();setHomeView("week")});
-  monthBtn?.addEventListener("click",(e)=>{e.preventDefault();setHomeView("month")});
-  prevBtn?.addEventListener("click",(e)=>{e.preventDefault();moveHomeWeek(-1)});
-  nextBtn?.addEventListener("click",(e)=>{e.preventDefault();moveHomeWeek(1)});
-
-  const refreshHome=()=>{
-    homeSelectedWeek=null;
-    renderWeek();
-  };
-  hyEl?.addEventListener("input",refreshHome);
-  hmEl?.addEventListener("change",refreshHome);
-
-  if(mediaImgBtn){ mediaImgBtn.addEventListener("click",(e)=>{ e.preventDefault(); if(typeof window.imageM==="function") window.imageM(); }); }
+  if(mediaImgBtn){
+    mediaImgBtn.addEventListener("click",(e)=>{
+      e.preventDefault();
+      if(typeof window.imageM==="function")window.imageM();
+    });
+  }
 });
 </script>
 
@@ -10155,6 +10255,7 @@ document.addEventListener("click",(e)=>{
 </script>
 
 
+<div id="mobileProgramBackdrop" class="mobileProgramBackdrop" aria-hidden="true"></div>
 <nav id="mobileBottomNav" class="mobileBottomNav" aria-label="Navegación móvil">
   <button type="button" data-mobile-page="home" class="active"><span class="mbnIcon">⌂</span><span>Inicio</span></button>
   <button type="button" id="mobileProgramBtn"><span class="mbnIcon">▦</span><span>Programación</span></button>
@@ -10198,6 +10299,7 @@ document.addEventListener("click",(e)=>{
 // =========================================================
 (()=>{
   const bottomNav=document.getElementById("mobileBottomNav");
+  const programBackdrop=document.getElementById("mobileProgramBackdrop");
   const programMenu=document.getElementById("mobileProgramMenu");
   const programBtn=document.getElementById("mobileProgramBtn");
   const moreBtn=document.getElementById("mobileMoreBtn");
@@ -10215,6 +10317,12 @@ document.addEventListener("click",(e)=>{
       :"Cambiar a tema oscuro";
   }
 
+  function setProgramFocus(open){
+    programBackdrop?.classList.toggle("show",open);
+    programBackdrop?.setAttribute("aria-hidden",String(!open));
+    document.body.classList.toggle("mobile-program-focus",open);
+  }
+
   function openPage(page){
     const target=sideNavButtons.find(button=>button.dataset.p===page);
     if(target)target.click();
@@ -10224,6 +10332,7 @@ document.addEventListener("click",(e)=>{
     if(programBtn)programBtn.classList.toggle("active",["worship","youth","media"].includes(page));
     programMenu?.classList.remove("open");
     programMenu?.setAttribute("aria-hidden","true");
+    setProgramFocus(false);
     moreMenu?.classList.remove("open");
     moreMenu?.setAttribute("aria-hidden","true");
   }
@@ -10249,17 +10358,26 @@ document.addEventListener("click",(e)=>{
     moreMenu?.setAttribute("aria-hidden","true");
     programMenu.classList.toggle("open",open);
     programMenu.setAttribute("aria-hidden",String(!open));
+    setProgramFocus(open);
   });
 
   closeProgram?.addEventListener("click",()=>{
     programMenu.classList.remove("open");
     programMenu.setAttribute("aria-hidden","true");
+    setProgramFocus(false);
+  });
+
+  programBackdrop?.addEventListener("click",()=>{
+    programMenu?.classList.remove("open");
+    programMenu?.setAttribute("aria-hidden","true");
+    setProgramFocus(false);
   });
 
   moreBtn?.addEventListener("click",()=>{
     const open=!moreMenu.classList.contains("open");
     programMenu?.classList.remove("open");
     programMenu?.setAttribute("aria-hidden","true");
+    setProgramFocus(false);
     moreMenu.classList.toggle("open",open);
     moreMenu.setAttribute("aria-hidden",String(!open));
   });
