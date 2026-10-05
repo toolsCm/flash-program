@@ -2,7 +2,7 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V60-UI-ERGONOMIA-CARDS">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V61-MOBILE-TABLE-NAV6">
 <title>Flash Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3709,6 +3709,217 @@ select:disabled{
   }
   .generateSecondLine{
     margin-left:.25rem;
+  }
+}
+</style>
+
+
+<style id="v61-mobile-table-nav6">
+/* Flash Program V61 */
+html,body{
+  min-height:100vh !important;
+  background:var(--bg) !important;
+}
+.main{
+  min-height:100vh !important;
+  background:var(--bg) !important;
+}
+body[data-theme="light"],
+body[data-theme="light"] .main,
+body[data-theme="light"] .panel{
+  background:var(--bg) !important;
+  color:var(--text) !important;
+}
+#v8Toast,
+#sectionToast{
+  display:none !important;
+}
+#confirmToast{
+  display:block !important;
+}
+#confirmToast:not(.show){opacity:0 !important;pointer-events:none !important}
+
+/* keep image/canvas generators unchanged: only app tables are restyled */
+@media(max-width:51.25rem){
+  /* restore scheduling tables instead of mobile cards */
+  #worship .sheet,
+  #youth .sheet,
+  #media .sheet{
+    display:block !important;
+    width:100% !important;
+    overflow-x:auto !important;
+    -webkit-overflow-scrolling:touch;
+    border:1px solid var(--line) !important;
+    border-radius:.8rem !important;
+    background:var(--panel2) !important;
+  }
+  .mobileScheduleCards{
+    display:none !important;
+  }
+  .wtable{
+    min-width:48rem !important;
+  }
+  .mtable{
+    min-width:39rem !important;
+  }
+  .wtable tbody tr:nth-child(odd) td,
+  .mtable tbody tr:nth-child(odd) td{
+    background:color-mix(in srgb,var(--accentSoft) 72%,var(--panel2)) !important;
+  }
+  .wtable tbody tr:nth-child(even) td,
+  .mtable tbody tr:nth-child(even) td{
+    background:color-mix(in srgb,var(--panel3) 62%,var(--panel2)) !important;
+  }
+  body[data-theme="light"] .wtable tbody tr:nth-child(odd) td,
+  body[data-theme="light"] .mtable tbody tr:nth-child(odd) td{
+    background:#eef2ff !important;
+  }
+  body[data-theme="light"] .wtable tbody tr:nth-child(even) td,
+  body[data-theme="light"] .mtable tbody tr:nth-child(even) td{
+    background:#f7f8fb !important;
+  }
+  .wtable tbody tr:hover td,
+  .mtable tbody tr:hover td{
+    filter:brightness(1.025);
+  }
+  .wtable tbody td:first-child,
+  .mtable tbody td:first-child{
+    position:sticky;
+    left:0;
+    z-index:1;
+    font-weight:800;
+    box-shadow:.22rem 0 .55rem rgba(0,0,0,.08);
+  }
+  .wtable select,
+  .mtable select{
+    background:color-mix(in srgb,var(--panel2) 88%,transparent) !important;
+    border-color:color-mix(in srgb,var(--line) 82%,transparent) !important;
+  }
+
+  /* Home returns to the same striped table concept */
+  #home .homeTableWrap{
+    display:block !important;
+    width:100% !important;
+    overflow-x:auto !important;
+    -webkit-overflow-scrolling:touch;
+    border:1px solid var(--line) !important;
+    border-radius:.8rem !important;
+    background:var(--panel2) !important;
+  }
+  #home .homeTable{
+    display:table !important;
+    min-width:42rem !important;
+    width:100% !important;
+    table-layout:fixed !important;
+    background:var(--panel2) !important;
+  }
+  #home .homeTable thead{
+    display:table-header-group !important;
+  }
+  #home .homeTable tbody{
+    display:table-row-group !important;
+    background:transparent !important;
+  }
+  #home .homeTable tr{
+    display:table-row !important;
+    border:0 !important;
+    border-radius:0 !important;
+  }
+  #home .homeTable td{
+    display:table-cell !important;
+    width:auto !important;
+    border-bottom:1px solid var(--line) !important;
+    padding:.58rem .5rem !important;
+    background:transparent !important;
+    vertical-align:top;
+  }
+  #home .homeTable td::before{
+    display:none !important;
+    content:none !important;
+  }
+  #home .homeTable tbody tr:nth-child(odd) td{
+    background:color-mix(in srgb,var(--accentSoft) 72%,var(--panel2)) !important;
+  }
+  #home .homeTable tbody tr:nth-child(even) td{
+    background:color-mix(in srgb,var(--panel3) 62%,var(--panel2)) !important;
+  }
+  body[data-theme="light"] #home .homeTable tbody tr:nth-child(odd) td{
+    background:#eef2ff !important;
+  }
+  body[data-theme="light"] #home .homeTable tbody tr:nth-child(even) td{
+    background:#f7f8fb !important;
+  }
+  #home .homeTable th:nth-child(1),#home .homeTable td:nth-child(1){width:5.4rem !important}
+  #home .homeTable th:nth-child(2),#home .homeTable td:nth-child(2){width:13rem !important}
+  #home .homeTable th:nth-child(3),#home .homeTable td:nth-child(3){width:14rem !important}
+  #home .homeTable th:nth-child(4),#home .homeTable td:nth-child(4){width:9.6rem !important}
+  #home .homeTable td:first-child{
+    position:sticky;
+    left:0;
+    z-index:1;
+    font-weight:800;
+    box-shadow:.22rem 0 .55rem rgba(0,0,0,.08);
+  }
+}
+
+@media(max-width:47.5rem){
+  /* six thumb-zone groups, no sidebar/hamburger on phones */
+  .sidebar,
+  .sidebar.open,
+  .sidebar.collapsed,
+  #overlay,
+  #menu{
+    display:none !important;
+  }
+  .main,
+  body.side-collapsed .main,
+  .sidebar-collapsed .main{
+    margin-left:0 !important;
+    padding-bottom:5.9rem !important;
+  }
+  .mobileBottomNav{
+    grid-template-columns:repeat(6,minmax(0,1fr)) !important;
+    left:.35rem !important;
+    right:.35rem !important;
+    height:4.15rem !important;
+    padding:.24rem !important;
+    gap:.08rem !important;
+  }
+  .mobileBottomNav button{
+    min-width:0 !important;
+    padding:.2rem .02rem !important;
+    font-size:.56rem !important;
+    letter-spacing:-.015em;
+  }
+  .mobileBottomNav .mbnIcon{
+    font-size:1rem !important;
+  }
+  .mobileQuickMenu{
+    bottom:4.9rem !important;
+  }
+  .mobileMoreMenu{
+    z-index:1096;
+  }
+
+  /* Keep scheduling action bar clear above 6-item nav */
+  #worship .actionRow,
+  #youth .actionRow,
+  #media .actionRow{
+    bottom:4.75rem !important;
+  }
+
+  /* slightly tighter schedule table typography, same structure */
+  .wtable th,.mtable th{
+    font-size:.66rem !important;
+    padding:.52rem .42rem !important;
+  }
+  .wtable td,.mtable td{
+    font-size:.74rem !important;
+    padding:.4rem .42rem !important;
+  }
+  .wtable select,.mtable select{
+    min-height:3rem !important;
+    font-size:.78rem !important;
   }
 }
 </style>
@@ -7657,9 +7868,9 @@ function imageM(){
   ctx.fillRect(0,0,width,height);
 
   // title
-  ctx.fillStyle="#d3dde1";
+  ctx.fillStyle="#7ea7b2";
   ctx.fillRect(0,0,width,titleH);
-  ctx.fillStyle="#000";
+  ctx.fillStyle="#fff";
   ctx.textAlign="center";
   ctx.textBaseline="middle";
   ctx.font="700 24px Roboto Mono";
@@ -7667,7 +7878,7 @@ function imageM(){
 
   // header
   const top=titleH;
-  ctx.fillStyle="#d3dde1";
+  ctx.fillStyle="#7ea7b2";
   ctx.fillRect(0,top,width,headerH);
 
   const headerLabels=[
@@ -7678,7 +7889,7 @@ function imageM(){
   ];
   headerLabels.forEach((lines,i)=>{
     const cx=(cols[i]+cols[i+1])/2;
-    ctx.fillStyle="#000";
+    ctx.fillStyle="#fff";
     ctx.font="700 15px Roboto Mono";
     if(lines.length===1){
       ctx.fillText(lines[0], cx, top+headerH/2);
@@ -7691,7 +7902,7 @@ function imageM(){
   // rows
   let y=top+headerH;
   data.forEach((row,i)=>{
-    ctx.fillStyle=i%2===0 ? "#9dc284" : "#d9ead3";
+    ctx.fillStyle=i%2===0 ? "#9fc1df" : "#c5d9ea";
     ctx.fillRect(0,y,width,rowH);
 
     ctx.fillStyle="#000";
@@ -8284,12 +8495,12 @@ refreshRoles();renderVols();refreshPeople();refreshMediaRoleControl();renderMedi
  navButtons.forEach(b=>{const id=b.dataset.p,info=desc[id]||[id,''];b.dataset.tip=info[0];b.innerHTML=`<span class="ni">${icons[id]||'•'}</span><span class="nl">${info[0]}</span>`;});
  const tools=document.createElement('div');tools.id='v8SideTools';tools.innerHTML='<button id="v8Theme" class="v8SideBtn" title="Cambiar tema"><span>◐</span><span>Tema</span></button><button id="v8Collapse" class="v8SideBtn" title="Plegar menú"><span id="v8Chevron">‹</span><span>Plegar</span></button>';document.getElementById('side').appendChild(tools);
  const toast=document.createElement('div');toast.id='v8Toast';toast.innerHTML='<strong></strong><span></span>';document.body.appendChild(toast);
- function showToast(id){const i=desc[id]||[id,''];toast.querySelector('strong').textContent=i[0];toast.querySelector('span').textContent=i[1];toast.classList.add('show');clearTimeout(window.__v8toast);window.__v8toast=setTimeout(()=>toast.classList.remove('show'),1800)}
+ function showToast(id){return;}
  function setCollapsed(v){side.classList.toggle('collapsed',v);document.body.classList.toggle('side-collapsed',v);document.getElementById('v8Chevron').textContent=v?'›':'‹';localStorage.setItem('alabanza-sidebar',v?'1':'0')}
  setCollapsed(localStorage.getItem('alabanza-sidebar')==='1');
  document.getElementById('v8Collapse').onclick=()=>setCollapsed(!side.classList.contains('collapsed'));
  document.getElementById('v8Theme').onclick=()=>{document.body.dataset.theme=document.body.dataset.theme==='dark'?'light':'dark';localStorage.setItem('alabanza-theme',document.body.dataset.theme)};
- navButtons.forEach(b=>b.onclick=()=>{document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById(b.dataset.p).classList.add('active');navButtons.forEach(x=>x.classList.toggle('active',x===b));title.textContent=(desc[b.dataset.p]||[''])[0];showToast(b.dataset.p);side.classList.remove('open');overlay.classList.remove('show')});
+ navButtons.forEach(b=>b.onclick=()=>{document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById(b.dataset.p).classList.add('active');navButtons.forEach(x=>x.classList.toggle('active',x===b));title.textContent=(desc[b.dataset.p]||[''])[0];side.classList.remove('open');overlay.classList.remove('show')});
  // Improve exported Alabanza and Jóvenes images.
  function spanishKeyLabel(key){
   let raw=String(key||'').trim();
@@ -9522,6 +9733,7 @@ document.addEventListener("click",(e)=>{
   <button type="button" id="mobileProgramBtn"><span class="mbnIcon">▦</span><span>Programación</span></button>
   <button type="button" data-mobile-page="songs"><span class="mbnIcon">♫</span><span>Canciones</span></button>
   <button type="button" data-mobile-page="vols"><span class="mbnIcon">◉</span><span>Voluntarios</span></button>
+  <button type="button" data-mobile-page="imgs"><span class="mbnIcon">▧</span><span>Imágenes</span></button>
   <button type="button" id="mobileMoreBtn"><span class="mbnIcon">•••</span><span>Más</span></button>
 </nav>
 
@@ -9530,6 +9742,13 @@ document.addEventListener("click",(e)=>{
   <button type="button" data-mobile-page="worship">Alabanza</button>
   <button type="button" data-mobile-page="youth">Alabanza Jóvenes</button>
   <button type="button" data-mobile-page="media">Multimedia</button>
+</div>
+
+<div id="mobileMoreMenu" class="mobileQuickMenu mobileMoreMenu" aria-hidden="true">
+  <div class="mobileQuickMenuHead"><strong>Más</strong><button id="closeMobileMoreMenu" type="button" aria-label="Cerrar">×</button></div>
+  <button type="button" data-mobile-page="avail">Disponibilidad</button>
+  <button type="button" data-mobile-page="hist">Historial</button>
+  <button type="button" data-mobile-page="settings">Configuración</button>
 </div>
 
 <div id="songFilterDrawer" class="songFilterDrawer" aria-hidden="true">
@@ -9554,7 +9773,9 @@ document.addEventListener("click",(e)=>{
   const programMenu=document.getElementById("mobileProgramMenu");
   const programBtn=document.getElementById("mobileProgramBtn");
   const moreBtn=document.getElementById("mobileMoreBtn");
+  const moreMenu=document.getElementById("mobileMoreMenu");
   const closeProgram=document.getElementById("closeMobileProgramMenu");
+  const closeMore=document.getElementById("closeMobileMoreMenu");
   const sideNavButtons=[...document.querySelectorAll(".nav button[data-p]")];
 
   function openPage(page){
@@ -9566,6 +9787,8 @@ document.addEventListener("click",(e)=>{
     if(programBtn)programBtn.classList.toggle("active",["worship","youth","media"].includes(page));
     programMenu?.classList.remove("open");
     programMenu?.setAttribute("aria-hidden","true");
+    moreMenu?.classList.remove("open");
+    moreMenu?.setAttribute("aria-hidden","true");
   }
 
   bottomNav?.addEventListener("click",event=>{
@@ -9578,8 +9801,15 @@ document.addEventListener("click",(e)=>{
     if(button)openPage(button.dataset.mobilePage);
   });
 
+  moreMenu?.addEventListener("click",event=>{
+    const button=event.target.closest("button[data-mobile-page]");
+    if(button)openPage(button.dataset.mobilePage);
+  });
+
   programBtn?.addEventListener("click",()=>{
     const open=!programMenu.classList.contains("open");
+    moreMenu?.classList.remove("open");
+    moreMenu?.setAttribute("aria-hidden","true");
     programMenu.classList.toggle("open",open);
     programMenu.setAttribute("aria-hidden",String(!open));
   });
@@ -9590,8 +9820,16 @@ document.addEventListener("click",(e)=>{
   });
 
   moreBtn?.addEventListener("click",()=>{
-    side.classList.add("open");
-    overlay.classList.add("show");
+    const open=!moreMenu.classList.contains("open");
+    programMenu?.classList.remove("open");
+    programMenu?.setAttribute("aria-hidden","true");
+    moreMenu.classList.toggle("open",open);
+    moreMenu.setAttribute("aria-hidden",String(!open));
+  });
+
+  closeMore?.addEventListener("click",()=>{
+    moreMenu.classList.remove("open");
+    moreMenu.setAttribute("aria-hidden","true");
   });
 
   sideNavButtons.forEach(button=>button.addEventListener("click",()=>{
@@ -9600,6 +9838,7 @@ document.addEventListener("click",(e)=>{
       mobile.classList.toggle("active",mobile.dataset.mobilePage===page);
     });
     programBtn?.classList.toggle("active",["worship","youth","media"].includes(page));
+    moreBtn?.classList.toggle("active",["avail","hist","settings"].includes(page));
   }));
 
   // ---------------- Song filters bottom sheet ----------------
