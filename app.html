@@ -2,7 +2,7 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V57-HOME-RESPONSIVE-UI">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V59-DEFINITIVE-RESPONSIVE-UI">
 <title>Flash Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1795,6 +1795,1206 @@ body.readonly-mode .songDbTable [data-col="actions"]{
 
   #home .homeTable{
     min-width:40rem !important;
+  }
+}
+</style>
+
+
+<style id="v59-definitive-ui">
+/* ==========================================================
+   FLASH PROGRAM · UI BASE DEFINITIVA
+   Diseño responsive para móvil, tableta y escritorio.
+   Este bloque NO modifica lógica, Supabase ni programación.
+   ========================================================== */
+
+:root{
+  --fp-space-1:.35rem;
+  --fp-space-2:.55rem;
+  --fp-space-3:.8rem;
+  --fp-space-4:1rem;
+  --fp-space-5:1.25rem;
+  --fp-space-6:1.6rem;
+  --fp-radius-sm:.55rem;
+  --fp-radius:.78rem;
+  --fp-radius-lg:1rem;
+  --fp-touch:2.75rem;
+  --fp-sidebar:15.5rem;
+  --fp-sidebar-collapsed:4.5rem;
+  --fp-content-max:96rem;
+  --fp-shadow:0 .9rem 2.5rem rgba(0,0,0,.16);
+}
+
+/* ---------- Global ---------- */
+html{
+  font-size:16px;
+  scroll-behavior:smooth;
+}
+body{
+  min-width:0;
+  overflow-x:hidden;
+}
+body,
+button,
+input,
+select,
+textarea{
+  font-size:1rem;
+}
+a,button,input,select,textarea{
+  -webkit-tap-highlight-color:transparent;
+}
+button,
+.btn,
+input,
+select,
+textarea{
+  min-height:var(--fp-touch);
+}
+button:focus-visible,
+.btn:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible{
+  outline:.16rem solid var(--accent);
+  outline-offset:.12rem;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.35rem;
+  border-radius:var(--fp-radius-sm) !important;
+  min-height:var(--fp-touch);
+  padding:.62rem .9rem !important;
+  line-height:1.15;
+  transition:background .16s ease,border-color .16s ease,transform .12s ease,opacity .16s ease;
+}
+.btn:active{
+  transform:translateY(1px);
+}
+.btn:disabled,
+button:disabled{
+  opacity:.52;
+  cursor:not-allowed;
+}
+input,
+select,
+textarea{
+  border-radius:var(--fp-radius-sm) !important;
+  padding:.62rem .72rem !important;
+}
+label{
+  font-size:.82rem !important;
+  line-height:1.2;
+  margin-bottom:.35rem !important;
+}
+h2{
+  font-size:1.12rem !important;
+  line-height:1.22;
+}
+h3{
+  font-size:1rem !important;
+  line-height:1.25;
+}
+.muted,
+.note{
+  font-size:.87rem !important;
+  line-height:1.42;
+}
+.note{
+  border-radius:var(--fp-radius-sm) !important;
+  padding:.75rem .85rem !important;
+}
+
+/* ---------- Sidebar ---------- */
+.brand::before{
+  display:none !important;
+  content:none !important;
+}
+.sidebar{
+  width:var(--fp-sidebar) !important;
+  padding:.8rem .62rem !important;
+  overflow:hidden !important;
+}
+.sidebar.collapsed{
+  width:var(--fp-sidebar-collapsed) !important;
+}
+.brand{
+  min-height:3rem !important;
+  height:auto !important;
+  padding:.25rem .6rem !important;
+  margin-bottom:.45rem !important;
+  gap:.65rem !important;
+}
+.brandMark{
+  width:2rem !important;
+  height:2rem !important;
+  border-radius:.58rem !important;
+  font-size:.9rem;
+}
+.brandText{
+  font-size:.95rem;
+  letter-spacing:-.01em;
+}
+.nav{
+  gap:.18rem !important;
+}
+.nav button{
+  min-height:2.75rem !important;
+  height:auto !important;
+  padding:.62rem .7rem !important;
+  border-radius:.6rem !important;
+  gap:.7rem !important;
+  font-size:.88rem;
+}
+.nav .ico{
+  width:1.3rem !important;
+  min-width:1.3rem;
+  font-size:1rem;
+}
+.sidebarFooter{
+  left:.62rem !important;
+  right:.62rem !important;
+  bottom:.72rem !important;
+  gap:.2rem !important;
+}
+.sideAction{
+  min-height:2.65rem !important;
+  height:auto !important;
+  border-radius:.6rem !important;
+}
+
+/* ---------- Main / topbar ---------- */
+.main{
+  width:auto;
+  min-width:0;
+  margin-left:var(--fp-sidebar) !important;
+  padding:1rem 1.25rem 2.25rem !important;
+}
+body.side-collapsed .main,
+.sidebar-collapsed .main{
+  margin-left:var(--fp-sidebar-collapsed) !important;
+}
+.top{
+  position:sticky !important;
+  top:0 !important;
+  z-index:45 !important;
+  min-height:3.65rem !important;
+  margin:-1rem -1.25rem 1rem !important;
+  padding:.7rem 1.25rem !important;
+  border-bottom:1px solid color-mix(in srgb,var(--line) 82%,transparent);
+  background:color-mix(in srgb,var(--bg) 92%,transparent) !important;
+  backdrop-filter:blur(.9rem);
+}
+.topLeft{
+  min-width:0;
+}
+.top h1{
+  font-size:clamp(1.1rem,2vw,1.4rem) !important;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#menu{
+  width:var(--fp-touch);
+  height:var(--fp-touch);
+  min-width:var(--fp-touch);
+  padding:0 !important;
+  display:none;
+  place-items:center;
+}
+.topAuth{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:.5rem;
+  min-width:0;
+  margin-left:auto;
+}
+#topTeamBadge{
+  display:inline-flex;
+  align-items:center;
+  min-height:2.2rem;
+  max-width:16rem;
+  padding:.34rem .62rem;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--panel2);
+  color:var(--muted);
+  font-size:.76rem;
+  font-weight:750;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#topAuthBtn{
+  white-space:nowrap;
+  min-height:2.55rem;
+  padding:.52rem .72rem !important;
+  font-size:.82rem;
+}
+
+/* ---------- Panels / cards / grid ---------- */
+.panel{
+  width:100%;
+  max-width:var(--fp-content-max);
+  margin:0 auto;
+}
+.card{
+  padding:1rem !important;
+  border-radius:var(--fp-radius) !important;
+  box-shadow:0 .15rem .5rem rgba(0,0,0,.035);
+}
+.grid{
+  gap:.85rem !important;
+}
+.two{
+  gap:.85rem !important;
+}
+.row{
+  gap:.55rem !important;
+}
+.row>*{
+  min-width:8rem;
+}
+
+/* ---------- HOME ---------- */
+#home .card{
+  padding:1rem !important;
+  overflow:hidden;
+}
+#home .homeHeader{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:1rem !important;
+  align-items:end !important;
+}
+#home .homeHeader h2{
+  margin:0 0 .25rem !important;
+}
+#home #homeSubtitle{
+  max-width:44rem;
+}
+#home .homeToolbar{
+  display:flex !important;
+  align-items:end;
+  gap:.65rem !important;
+}
+#home .viewSwitch{
+  min-height:var(--fp-touch);
+  padding:.18rem !important;
+  border-radius:.65rem !important;
+}
+#home .viewBtn{
+  min-height:2.35rem;
+  padding:.46rem .78rem !important;
+  font-size:.82rem;
+  border-radius:.5rem !important;
+}
+#home .homeMonthControls{
+  display:grid !important;
+  grid-template-columns:5.7rem 9.5rem;
+  gap:.5rem !important;
+  margin:0 !important;
+}
+#home .homeMonthControls>div{
+  min-width:0 !important;
+}
+#home .weekNav{
+  display:grid !important;
+  grid-template-columns:auto minmax(12rem,1fr) auto;
+  align-items:center !important;
+  gap:.65rem !important;
+  margin:.9rem 0 .7rem !important;
+}
+#home .weekNav .btn{
+  min-width:7rem;
+  min-height:var(--fp-touch);
+  white-space:nowrap;
+  font-size:.82rem;
+}
+#home .weekCurrent{
+  min-width:0 !important;
+  font-size:.9rem;
+  font-weight:800;
+  line-height:1.18;
+}
+#home .homeTableWrap{
+  width:100%;
+  max-width:100%;
+  overflow:auto !important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-inline:contain;
+  border-radius:.7rem !important;
+  background:var(--panel2);
+}
+#home .homeTable{
+  width:100% !important;
+  min-width:51rem !important;
+  table-layout:fixed;
+}
+#home .homeTable th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  padding:.65rem .58rem !important;
+  font-size:.7rem !important;
+  white-space:nowrap;
+}
+#home .homeTable td{
+  padding:.68rem .62rem !important;
+  font-size:.84rem !important;
+  line-height:1.35 !important;
+}
+#home .homeTable th:nth-child(1),
+#home .homeTable td:nth-child(1){width:6.5rem}
+#home .homeTable th:nth-child(2),
+#home .homeTable td:nth-child(2){width:15.5rem}
+#home .homeTable th:nth-child(3),
+#home .homeTable td:nth-child(3){width:16.5rem}
+#home .homeTable th:nth-child(4),
+#home .homeTable td:nth-child(4){width:12.5rem}
+#home .homeCellList{
+  gap:.24rem !important;
+}
+#home .homeCellList .line{
+  display:grid !important;
+  grid-template-columns:minmax(5.4rem,.72fr) minmax(0,1fr) !important;
+  gap:.38rem !important;
+  white-space:normal !important;
+}
+#home .homeCellList .key{
+  min-width:0;
+  text-align:right !important;
+  white-space:nowrap;
+  font-size:.76rem;
+}
+#home .homeCellList .line>span:last-child,
+#home .homeSongs span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap !important;
+}
+
+/* ---------- Scheduling modules ---------- */
+#worship .card,
+#youth .card,
+#media .card{
+  overflow:hidden;
+}
+.compactControls{
+  display:grid !important;
+  grid-template-columns:7.3rem minmax(9rem,12rem) auto;
+  align-items:end !important;
+  gap:.55rem !important;
+}
+.compactControls>div{
+  min-width:0 !important;
+}
+.compactControls .auto{
+  min-width:auto !important;
+}
+.compactControls .btn{
+  min-height:var(--fp-touch);
+  white-space:nowrap;
+}
+.actionRow{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:.45rem !important;
+  align-items:center !important;
+}
+.actionRow .btn{
+  flex:0 1 auto !important;
+  min-width:7.2rem !important;
+  min-height:var(--fp-touch);
+}
+#wc,#jc,#mc{
+  margin-left:auto;
+}
+.sheet{
+  width:100%;
+  max-width:100%;
+  overflow:auto !important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-inline:contain;
+  border-radius:.72rem !important;
+  box-shadow:none !important;
+}
+.wtable{
+  min-width:53rem !important;
+}
+.mtable{
+  min-width:42rem !important;
+}
+.wtable th,
+.mtable th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  padding:.7rem .6rem !important;
+  font-size:.78rem !important;
+  line-height:1.15;
+}
+.wtable td,
+.mtable td{
+  padding:.45rem .5rem !important;
+  font-size:.82rem !important;
+}
+.wtable select,
+.wtable input,
+.mtable select,
+.mtable input{
+  min-height:2.35rem !important;
+  padding:.42rem .5rem !important;
+  font-size:.8rem !important;
+}
+.wtable .date{
+  width:7.3rem !important;
+}
+.wtable .role{
+  width:10.5rem !important;
+}
+.wtable .person{
+  width:11rem !important;
+}
+.wtable .songs{
+  min-width:19rem !important;
+}
+
+/* ---------- Volunteers ---------- */
+#vols>.two{
+  align-items:start;
+}
+#vols .card{
+  min-width:0;
+}
+.volSectionHead{
+  margin-bottom:.4rem;
+}
+.bigAddBtn{
+  min-height:var(--fp-touch) !important;
+  margin-top:.75rem !important;
+  font-size:.9rem !important;
+}
+#vols .list{
+  gap:.55rem !important;
+}
+#vols .item{
+  padding:.8rem .85rem !important;
+  border-radius:.65rem !important;
+}
+#vols .itemActions{
+  gap:.4rem !important;
+}
+#vols .miniBtn{
+  min-height:2.35rem;
+  padding:.45rem .62rem !important;
+  font-size:.78rem !important;
+}
+
+/* ---------- Songs ---------- */
+.songsReferenceCard{
+  overflow:hidden;
+}
+.songsPageHead{
+  gap:.8rem !important;
+  padding-bottom:.85rem !important;
+}
+.songsPageHead h2{
+  margin-bottom:.25rem !important;
+}
+.songsHeadActions{
+  gap:.45rem !important;
+}
+.songsHeadActions .btn{
+  min-height:var(--fp-touch);
+}
+.songFilterBar{
+  display:grid !important;
+  grid-template-columns:minmax(14rem,1fr) auto;
+  gap:.55rem !important;
+  align-items:end !important;
+  margin-top:.85rem !important;
+}
+.songSearchMain{
+  min-width:0 !important;
+}
+.songFilterAddWrap{
+  min-width:auto !important;
+}
+.activeSongFilters{
+  gap:.45rem !important;
+  margin-top:.55rem !important;
+}
+.songOptionalFilter{
+  padding:.55rem !important;
+  border-radius:.65rem !important;
+}
+.removeSongFilter{
+  min-width:2.35rem;
+  min-height:2.35rem !important;
+}
+.songsListMeta{
+  margin:.7rem 0 .55rem !important;
+}
+.songDbWrap{
+  width:100%;
+  max-width:100%;
+  overflow:auto !important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-inline:contain;
+  border-radius:.7rem !important;
+}
+.songDbTable{
+  min-width:61rem !important;
+}
+.songDbTable th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  padding:.62rem .68rem !important;
+  font-size:.69rem !important;
+}
+.songDbTable td{
+  padding:.65rem .68rem !important;
+  font-size:.82rem !important;
+  line-height:1.35;
+}
+.songDbTable .songNameCell{min-width:11rem !important}
+.songDbTable td[data-col="artist"]{min-width:9.5rem !important}
+.songDbTable td[data-col="category"]{min-width:6.5rem !important}
+.songDbTable td[data-col="bpm"]{min-width:4.5rem !important}
+.songDbTable td[data-col="mood"]{min-width:9rem !important}
+.songDbTable td[data-col="tones"]{min-width:11rem !important}
+.songDbTable td[data-col="actions"]{min-width:9.5rem !important}
+
+/* ---------- Availability ---------- */
+#avail .two{
+  align-items:start;
+}
+#avail .card>.row{
+  display:grid !important;
+  grid-template-columns:minmax(9rem,1fr) minmax(9rem,.75fr) auto;
+  gap:.5rem !important;
+}
+#avail .card>.row>div{
+  min-width:0 !important;
+}
+#avail .card>.row .auto{
+  min-width:auto !important;
+}
+#avail .list{
+  gap:.5rem !important;
+}
+
+/* ---------- History ---------- */
+#hist .card>.row{
+  display:grid !important;
+  grid-template-columns:minmax(9rem,.4fr) minmax(14rem,1fr) auto;
+  gap:.5rem !important;
+}
+#hist .card>.row>div{
+  min-width:0 !important;
+}
+#hist #hout{
+  width:100%;
+  overflow:auto;
+}
+#hist #hout table{
+  min-width:42rem;
+}
+
+/* ---------- Images ---------- */
+#imgs .grid{
+  align-items:start;
+}
+#imgs .card.s4{
+  position:sticky;
+  top:4.6rem;
+}
+#imgs canvas{
+  display:block;
+  width:100%;
+  max-width:100%;
+  border-radius:.75rem !important;
+}
+
+/* ---------- Settings / team ---------- */
+#settings .grid{
+  align-items:start;
+}
+#teamSettingsCard{
+  overflow:hidden;
+}
+.teamInfoStrip{
+  display:flex;
+  gap:.45rem;
+  flex-wrap:wrap;
+  margin-bottom:.8rem;
+}
+.teamInfoPill{
+  padding:.36rem .58rem !important;
+  border-radius:999px !important;
+  font-size:.76rem !important;
+}
+.teamCodeRow{
+  display:grid !important;
+  grid-template-columns:minmax(12rem,1fr) auto auto;
+  gap:.5rem !important;
+  align-items:end;
+}
+.teamCodeRow>div{
+  min-width:0 !important;
+}
+.teamAdminNote{
+  margin-top:.55rem;
+  font-size:.8rem !important;
+  line-height:1.4;
+}
+.teamMembersList{
+  gap:.45rem !important;
+}
+.teamMemberRow{
+  padding:.62rem .7rem !important;
+  border-radius:.62rem !important;
+}
+.gsConnectionGrid{
+  gap:.55rem !important;
+}
+.gsConnectionActions{
+  gap:.45rem !important;
+}
+.gsYearRow{
+  gap:.5rem !important;
+}
+
+/* ---------- Modals ---------- */
+.modalBackdrop{
+  padding:1rem !important;
+  background:rgba(4,6,10,.56) !important;
+  backdrop-filter:blur(.25rem);
+}
+.modalCard,
+.volunteerModalCard,
+.importModalCard{
+  width:min(44rem,100%) !important;
+  max-height:min(88vh,52rem) !important;
+  overflow:auto !important;
+  padding:0 !important;
+  border-radius:1rem !important;
+  box-shadow:var(--fp-shadow) !important;
+  background:var(--panel) !important;
+}
+.modalHeader{
+  position:sticky;
+  top:0;
+  z-index:4;
+  margin:0 !important;
+  padding:1rem 1rem .85rem !important;
+  background:var(--panel) !important;
+}
+.modalGrid{
+  padding:1rem !important;
+  gap:.75rem !important;
+}
+.modalSubhead{
+  padding:0 1rem !important;
+}
+.modalActions{
+  position:sticky;
+  bottom:0;
+  z-index:4;
+  margin:0 !important;
+  padding:.8rem 1rem 1rem !important;
+  background:var(--panel) !important;
+}
+.modalActions .btn{
+  min-width:7rem;
+}
+
+/* Integrated confirm modal */
+.fpDialog{
+  border-radius:1rem !important;
+}
+.fpDialogActions button{
+  min-height:var(--fp-touch) !important;
+}
+
+/* ---------- Login ---------- */
+#loginScreen{
+  padding:1rem !important;
+}
+#loginScreen form{
+  width:min(100%,25rem) !important;
+  max-width:25rem !important;
+  border-radius:1rem !important;
+  padding:1.35rem !important;
+  box-shadow:var(--fp-shadow);
+}
+#loginScreen input{
+  min-height:var(--fp-touch) !important;
+  font-size:1rem !important;
+  border-radius:.62rem !important;
+}
+#loginScreen button,
+#loginDemoLink{
+  min-height:var(--fp-touch) !important;
+  border-radius:.62rem !important;
+}
+
+/* ---------- Team gate ---------- */
+.teamGate{
+  padding:1rem !important;
+}
+.teamGateCard{
+  width:min(100%,47rem) !important;
+  border-radius:1rem !important;
+  padding:1.15rem !important;
+  box-shadow:var(--fp-shadow);
+}
+.teamGateGrid{
+  gap:.75rem !important;
+}
+.teamGateBox{
+  padding:1rem !important;
+  border-radius:.75rem !important;
+}
+.teamGateBox .btn{
+  min-height:var(--fp-touch);
+}
+
+/* ---------- Toasts ---------- */
+.sectionToast,
+.fpUiToast,
+#v8Toast{
+  max-width:min(92vw,24rem) !important;
+  border-radius:.75rem !important;
+}
+
+/* ==========================================================
+   TABLET
+   ========================================================== */
+@media (max-width:64rem){
+  .main,
+  body.side-collapsed .main,
+  .sidebar-collapsed .main{
+    margin-left:0 !important;
+    padding:1rem 1rem 2rem !important;
+  }
+  .sidebar{
+    width:min(82vw,18rem) !important;
+    transform:translateX(-105%) !important;
+    box-shadow:1rem 0 3rem rgba(0,0,0,.25);
+  }
+  .sidebar.open{
+    transform:translateX(0) !important;
+  }
+  .sidebar.collapsed{
+    width:min(82vw,18rem) !important;
+  }
+  .sidebar.collapsed .brandText,
+  .sidebar.collapsed .nav .label{
+    opacity:1 !important;
+    width:auto !important;
+    display:block !important;
+  }
+  .sidebar.collapsed .nav button{
+    justify-content:flex-start !important;
+  }
+  #menu{
+    display:grid !important;
+  }
+  .top{
+    margin:-1rem -1rem .85rem !important;
+    padding:.65rem 1rem !important;
+  }
+  .s4,.s6,.s8,.s12{
+    grid-column:span 12 !important;
+  }
+  .two{
+    grid-template-columns:1fr !important;
+  }
+  #home .homeHeader{
+    grid-template-columns:1fr !important;
+    align-items:stretch !important;
+    gap:.7rem !important;
+  }
+  #home .homeToolbar{
+    justify-content:space-between;
+    flex-wrap:wrap;
+  }
+  #home .homeMonthControls{
+    grid-template-columns:5.6rem minmax(8rem,1fr);
+  }
+  #home .homeTable{
+    min-width:47rem !important;
+  }
+  #imgs .card.s4{
+    position:static;
+  }
+}
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+@media (max-width:47.5rem){
+  html{
+    font-size:16px;
+  }
+  .main,
+  body.side-collapsed .main,
+  .sidebar-collapsed .main{
+    padding:.72rem .72rem 1.5rem !important;
+  }
+  .top{
+    min-height:3.45rem !important;
+    margin:-.72rem -.72rem .72rem !important;
+    padding:.52rem .72rem !important;
+    gap:.45rem !important;
+  }
+  .topLeft{
+    gap:.45rem !important;
+  }
+  .top h1{
+    font-size:1.02rem !important;
+    max-width:9.5rem;
+  }
+  #menu{
+    min-width:2.65rem !important;
+    width:2.65rem !important;
+    height:2.65rem !important;
+  }
+  #topTeamBadge{
+    display:none !important;
+  }
+  #topAuthBtn{
+    min-height:2.55rem !important;
+    padding:.45rem .58rem !important;
+    font-size:.75rem;
+    max-width:8.5rem;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .card{
+    padding:.78rem !important;
+    border-radius:.72rem !important;
+  }
+  h2{
+    font-size:1rem !important;
+  }
+  h3{
+    font-size:.94rem !important;
+  }
+  .muted,.note{
+    font-size:.8rem !important;
+  }
+  input,select,textarea{
+    font-size:1rem !important; /* evita zoom automático en iOS */
+  }
+
+  /* Home */
+  #home .card{
+    padding:.78rem !important;
+  }
+  #home #homeSubtitle{
+    font-size:.78rem !important;
+  }
+  #home .homeToolbar{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:.48rem !important;
+  }
+  #home .viewSwitch{
+    display:grid !important;
+    grid-template-columns:1fr 1fr;
+    width:100%;
+  }
+  #home .viewBtn{
+    width:100%;
+  }
+  #home .homeMonthControls{
+    grid-template-columns:5.2rem minmax(0,1fr) !important;
+    width:100%;
+  }
+  #home .weekNav{
+    grid-template-columns:1fr 1fr !important;
+    gap:.45rem !important;
+    margin:.72rem 0 .58rem !important;
+  }
+  #home .weekCurrent{
+    grid-column:1/-1;
+    grid-row:1;
+    padding:.05rem .2rem .18rem;
+    font-size:.82rem;
+  }
+  #home .weekNav .btn{
+    min-width:0;
+    width:100%;
+    font-size:.76rem;
+  }
+  #home .homeTable{
+    min-width:41rem !important;
+  }
+  #home .homeTable th{
+    padding:.5rem .42rem !important;
+    font-size:.64rem !important;
+  }
+  #home .homeTable td{
+    padding:.52rem .45rem !important;
+    font-size:.76rem !important;
+  }
+  #home .homeTable th:nth-child(1),
+  #home .homeTable td:nth-child(1){width:5.2rem}
+  #home .homeTable th:nth-child(2),
+  #home .homeTable td:nth-child(2){width:12.5rem}
+  #home .homeTable th:nth-child(3),
+  #home .homeTable td:nth-child(3){width:13.7rem}
+  #home .homeTable th:nth-child(4),
+  #home .homeTable td:nth-child(4){width:9.7rem}
+  #home .homeCellList .line{
+    grid-template-columns:minmax(4.5rem,.72fr) minmax(0,1fr) !important;
+  }
+  #home .homeCellList .key{
+    font-size:.68rem;
+  }
+
+  /* Scheduling modules */
+  .compactControls{
+    grid-template-columns:5.3rem minmax(0,1fr) auto !important;
+    gap:.42rem !important;
+  }
+  .compactControls label{
+    font-size:.72rem !important;
+  }
+  .compactControls input,
+  .compactControls select,
+  .compactControls .btn{
+    min-height:2.65rem !important;
+    padding:.48rem .5rem !important;
+    font-size:.82rem !important;
+  }
+  .actionRow{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:.42rem !important;
+  }
+  .actionRow .btn{
+    width:100%;
+    min-width:0 !important;
+    min-height:2.65rem;
+    padding:.5rem .45rem !important;
+    font-size:.76rem;
+  }
+  #wc,#jc,#mc{
+    margin-left:0;
+  }
+  .wtable{
+    min-width:47rem !important;
+  }
+  .mtable{
+    min-width:38rem !important;
+  }
+  .wtable th,.mtable th{
+    padding:.55rem .42rem !important;
+    font-size:.68rem !important;
+  }
+  .wtable td,.mtable td{
+    padding:.38rem .42rem !important;
+    font-size:.74rem !important;
+  }
+  .wtable select,.wtable input,.mtable select,.mtable input{
+    min-height:2.3rem !important;
+    font-size:.78rem !important;
+  }
+
+  /* Volunteers */
+  #vols .two{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+  }
+  .bigAddBtn{
+    width:100% !important;
+    font-size:.82rem !important;
+  }
+  #vols .item{
+    padding:.7rem !important;
+  }
+
+  /* Songs */
+  .songsPageHead{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+  }
+  .songsHeadActions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr;
+    width:100%;
+  }
+  .songsHeadActions .btn{
+    width:100%;
+    font-size:.8rem;
+  }
+  .songFilterBar{
+    grid-template-columns:1fr !important;
+  }
+  #addSongFilter{
+    width:100%;
+  }
+  .songOptionalFilter.active{
+    width:100%;
+  }
+  .songOptionalFilter .filterBody{
+    flex:1;
+    min-width:0 !important;
+  }
+  .songOptionalFilter.bpmFilter .filterBody{
+    grid-template-columns:1fr 1fr !important;
+  }
+  .songDbTable{
+    min-width:57rem !important;
+  }
+  .songDbTable th{
+    font-size:.64rem !important;
+    padding:.5rem .55rem !important;
+  }
+  .songDbTable td{
+    font-size:.76rem !important;
+    padding:.58rem .55rem !important;
+  }
+
+  /* Availability */
+  #avail .card>.row{
+    grid-template-columns:minmax(0,1fr) minmax(8.7rem,.9fr) !important;
+  }
+  #avail .card>.row .auto{
+    grid-column:1/-1;
+  }
+  #avail .card>.row .btn{
+    width:100%;
+  }
+
+  /* History */
+  #hist .card>.row{
+    grid-template-columns:1fr 1fr !important;
+  }
+  #hist .card>.row .auto{
+    grid-column:1/-1;
+  }
+  #hist #hr{
+    width:100%;
+  }
+
+  /* Images */
+  #imgs .grid{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+  }
+  #imgs .card{
+    grid-column:1 !important;
+  }
+
+  /* Settings */
+  .teamCodeRow{
+    grid-template-columns:1fr 1fr !important;
+  }
+  .teamCodeRow>div{
+    grid-column:1/-1;
+  }
+  .teamCodeRow .btn{
+    width:100%;
+  }
+  .teamMemberRow{
+    grid-template-columns:minmax(0,1fr) auto !important;
+    gap:.45rem !important;
+  }
+  .teamMemberRow .teamTransferBtn{
+    grid-column:1/-1 !important;
+    width:100%;
+  }
+  .gsConnectionGrid{
+    grid-template-columns:1fr !important;
+  }
+  .gsConnectionActions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr;
+  }
+  .gsConnectionActions .btn{
+    width:100%;
+  }
+  .gsYearRow{
+    grid-template-columns:auto minmax(0,1fr) !important;
+  }
+  .gsYearRow a{
+    grid-column:1/-1;
+    width:100%;
+  }
+
+  /* Modal -> bottom sheet */
+  .modalBackdrop{
+    align-items:flex-end !important;
+    padding:.55rem !important;
+  }
+  .modalCard,
+  .volunteerModalCard,
+  .importModalCard{
+    width:100% !important;
+    max-height:91vh !important;
+    border-radius:1rem 1rem .8rem .8rem !important;
+  }
+  .modalHeader{
+    padding:.85rem .85rem .7rem !important;
+  }
+  .modalGrid{
+    padding:.8rem .85rem !important;
+    grid-template-columns:1fr !important;
+  }
+  .modalSubhead{
+    padding:0 .85rem !important;
+  }
+  .modalActions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr;
+    gap:.45rem !important;
+    padding:.7rem .85rem .85rem !important;
+  }
+  .modalActions .btn{
+    min-width:0;
+    width:100%;
+  }
+
+  /* Team gate */
+  .teamGate{
+    padding:.55rem !important;
+    align-items:flex-end !important;
+  }
+  .teamGateCard{
+    width:100% !important;
+    max-height:92vh;
+    overflow:auto;
+    border-radius:1rem 1rem .8rem .8rem !important;
+    padding:.85rem !important;
+  }
+  .teamGateGrid{
+    grid-template-columns:1fr !important;
+  }
+}
+
+/* Very narrow phones */
+@media (max-width:23rem){
+  #home #homeSubtitle{
+    display:none;
+  }
+  .compactControls{
+    grid-template-columns:4.7rem minmax(0,1fr) auto !important;
+  }
+  .compactControls .btn{
+    padding-inline:.4rem !important;
+  }
+  .actionRow .btn{
+    font-size:.72rem;
   }
 }
 </style>
