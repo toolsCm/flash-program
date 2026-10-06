@@ -2,7 +2,7 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V70-PROGRAM-VOLUNTEER-TEAMS">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V71-UNIFIED-PROGRAM-TOOLS">
 <title>Flash Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5090,6 +5090,299 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 }
 </style>
 
+
+<style id="v71-unified-program-tools">
+/* Modal de voluntarios: mismo espaciado visual que las demás ventanas */
+.programVolunteerModalCard{
+  padding:0 !important;
+  overflow:hidden !important;
+}
+.programVolunteerModalCard .modalHeader{
+  padding:1.15rem 1.2rem .9rem !important;
+  margin:0 !important;
+}
+.programVolunteerModalBody{
+  padding:1rem 1.2rem !important;
+  gap:.85rem !important;
+}
+.programVolunteerModalCard .modalActions{
+  margin:0 !important;
+  padding:.9rem 1.2rem 1.05rem !important;
+}
+.programVolunteerModalBody>div,
+.programVolunteerRules>div{
+  min-width:0;
+}
+.programVolunteerModalBody label{
+  display:block;
+  margin-bottom:.35rem;
+}
+.programVolunteerModalBody input,
+.programVolunteerModalBody select{
+  width:100% !important;
+  min-height:2.85rem !important;
+}
+.programVolunteerCheck{
+  padding:.55rem .1rem 0;
+}
+
+/* Equipos desplegables */
+.volunteerTeamStack,
+.availabilityTeamStack{
+  display:grid;
+  gap:.7rem;
+}
+.volunteerTeamAccordion{
+  border:1px solid var(--line);
+  border-radius:.8rem;
+  background:var(--panel);
+  overflow:hidden;
+}
+.volunteerTeamAccordion>summary{
+  min-height:3.4rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.8rem;
+  padding:.75rem 1rem;
+  cursor:pointer;
+  font-weight:900;
+  list-style:none;
+  background:var(--panel2);
+}
+.volunteerTeamAccordion>summary::-webkit-details-marker{display:none}
+.volunteerTeamAccordion>summary::after{
+  content:"⌄";
+  font-size:1.1rem;
+  transition:.15s ease;
+}
+.volunteerTeamAccordion[open]>summary::after{transform:rotate(180deg)}
+.accordionHint{
+  margin-left:auto;
+  color:var(--muted);
+  font-size:.72rem;
+  font-weight:700;
+}
+.volunteerTeamBody{
+  padding:.9rem;
+  border-top:1px solid var(--line);
+}
+.customProgramVolunteerAccordion .volunteerTeamBody{
+  display:grid;
+  gap:.7rem;
+}
+.customProgramVolunteerToolbar{
+  display:flex;
+  justify-content:flex-end;
+}
+.customVolunteerMember.inactive{
+  opacity:.68;
+}
+.customVolunteerStatusBadge{
+  display:inline-flex;
+  align-items:center;
+  min-height:1.65rem;
+  padding:.15rem .45rem;
+  border-radius:999px;
+  border:1px solid var(--line);
+  font-size:.7rem;
+  font-weight:850;
+  margin-left:.35rem;
+}
+.customVolunteerStatusBadge.active{
+  background:color-mix(in srgb,#22c55e 18%,var(--panel2));
+}
+.customVolunteerStatusBadge.inactive{
+  background:color-mix(in srgb,#ef4444 14%,var(--panel2));
+}
+
+/* Bloqueo por columna */
+.customProgramColumnLocks{
+  display:flex;
+  gap:.4rem;
+  flex-wrap:wrap;
+}
+.customColumnLockBtn{
+  min-height:2.75rem !important;
+}
+.customColumnLockBtn.is-locked{
+  background:color-mix(in srgb,var(--accent) 22%,var(--panel2)) !important;
+  border-color:color-mix(in srgb,var(--accent) 65%,var(--line)) !important;
+}
+
+/* Disponibilidad personalizada */
+.customAvailabilityRow{
+  display:grid;
+  grid-template-columns:minmax(11rem,1fr) minmax(10rem,.8fr) auto;
+  gap:.55rem;
+  align-items:end;
+}
+.customAvailabilityList{
+  display:grid;
+  gap:.4rem;
+  margin-top:.7rem;
+}
+.customAvailabilityItem{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.7rem;
+  padding:.6rem .7rem;
+  border:1px solid var(--line);
+  border-radius:.65rem;
+  background:var(--panel2);
+}
+
+/* Historial personalizado */
+.historyProgramControls{
+  display:grid;
+  grid-template-columns:minmax(12rem,1.2fr) minmax(8rem,.8fr) 7rem minmax(8rem,.8fr) auto;
+  gap:.55rem;
+  align-items:end;
+}
+.customHistoryStats{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:.55rem;
+  margin-bottom:.7rem;
+}
+.customHistoryStat{
+  padding:.75rem;
+  border:1px solid var(--line);
+  border-radius:.65rem;
+  background:var(--panel2);
+}
+.customHistoryStat strong{
+  display:block;
+  font-size:1.25rem;
+}
+.customHistoryTable{
+  width:100%;
+  border-collapse:collapse;
+}
+.customHistoryTable th,
+.customHistoryTable td{
+  padding:.55rem .6rem;
+  border:1px solid var(--line);
+  text-align:left;
+}
+
+/* Render personalizado */
+.customRenderBox{
+  margin-top:.7rem;
+  padding-top:.7rem;
+  border-top:1px solid var(--line);
+}
+
+/* Configuración y reglas */
+.programSettingsHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:.7rem;
+}
+.programRulesList{
+  display:grid;
+  gap:.5rem;
+}
+.programRuleItem{
+  display:grid;
+  grid-template-columns:minmax(10rem,1fr) minmax(9rem,.8fr) auto;
+  gap:.55rem;
+  align-items:center;
+  padding:.65rem;
+  border:1px solid var(--line);
+  border-radius:.65rem;
+  background:var(--panel2);
+}
+.programRuleItem.inactive{opacity:.6}
+.programRuleMeta{
+  color:var(--muted);
+  font-size:.78rem;
+}
+.programRuleActions{
+  display:flex;
+  gap:.35rem;
+}
+.programRuleModalCard{
+  width:min(34rem,96vw) !important;
+}
+.programRuleBody{
+  display:grid;
+  gap:.8rem;
+  padding-top:.9rem;
+}
+.programRuleBody label{
+  display:block;
+  margin-bottom:.3rem;
+}
+.programRuleEnabled{
+  display:flex !important;
+  align-items:center;
+  gap:.45rem;
+  min-height:2.6rem;
+}
+.programRuleEnabled input{
+  width:1.1rem !important;
+  height:1.1rem !important;
+  min-height:0 !important;
+}
+
+/* Ya no hay candados individuales en celdas personalizadas */
+.customCellLock{display:none !important}
+
+@media(max-width:47.5rem){
+  .accordionHint{display:none}
+  .volunteerTeamAccordion>summary{
+    min-height:3.25rem;
+    padding:.7rem .8rem;
+  }
+  .volunteerTeamBody{
+    padding:.7rem;
+  }
+  .programVolunteerModalCard .modalHeader{
+    padding:.9rem .9rem .75rem !important;
+  }
+  .programVolunteerModalBody{
+    padding:.8rem .9rem !important;
+  }
+  .programVolunteerModalCard .modalActions{
+    padding:.75rem .9rem .9rem !important;
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+  }
+  .programVolunteerModalCard .modalActions .btn{
+    width:100% !important;
+  }
+  .customProgramColumnLocks{
+    flex-wrap:nowrap;
+  }
+  .customColumnLockBtn{
+    flex:0 0 auto !important;
+    white-space:nowrap;
+  }
+  .customAvailabilityRow,
+  .historyProgramControls{
+    grid-template-columns:1fr;
+  }
+  .customHistoryStats{
+    grid-template-columns:1fr;
+  }
+  .programSettingsHead{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+  .programSettingsHead .btn{width:100%}
+  .programRuleItem{
+    grid-template-columns:1fr;
+  }
+  .programRuleActions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+}
+</style>
+
 </head>
 <body class="readonly-mode">
 
@@ -5467,6 +5760,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
     <div class="row actionRow customProgramActions" style="margin-top:12px">
       <button id="customProgramFill" class="btn primary fillEmptyBtn" type="button">Rellenar vacíos</button>
       <button id="customProgramRebalance" class="btn secondary rebalanceBtn" type="button">Reequilibrar</button>
+      <div id="customProgramColumnLocks" class="customProgramColumnLocks"></div>
       <button id="customProgramAddService" class="btn secondary" type="button">Añadir servicio</button>
       <button id="customProgramConfirm" class="btn success" type="button">Confirmar</button>
     </div>
@@ -5513,50 +5807,49 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 <section id="vols" class="panel">
 <div id="volunteerSyncStatus" class="note" style="margin-bottom:12px">Voluntarios: esperando conexión con la base de datos…</div>
 
-<div id="customProgramVolunteerTeamsCard" class="card customProgramVolunteerTeamsCard">
-  <div class="customVolunteerTeamHead">
-    <div>
-      <h2>Equipos por programación</h2>
-      <div class="muted">Cada programación personalizada tiene su propia lista de voluntarios. Una misma persona puede pertenecer a varias programaciones.</div>
+<div class="volunteerTeamStack">
+  <details class="volunteerTeamAccordion" open>
+    <summary>
+      <span>Voluntarios de Alabanza</span>
+      <span class="accordionHint">Abrir / cerrar</span>
+    </summary>
+    <div class="volunteerTeamBody">
+      <button id="openAddWorshipVolunteer" class="btn primary bigAddBtn" type="button">+ Añadir voluntario</button>
+      <div id="vlist" class="list" style="margin-top:12px"></div>
     </div>
-    <button id="addCustomProgramVolunteer" class="btn primary" type="button">+ Añadir voluntario</button>
-  </div>
+  </details>
 
-  <div class="row customVolunteerProgramPicker">
-    <div>
-      <label>Programación</label>
-      <select id="customVolunteerProgramSelect"></select>
+  <details class="volunteerTeamAccordion">
+    <summary>
+      <span>Voluntarios de Alabanza Jóvenes</span>
+      <span class="accordionHint">Abrir / cerrar</span>
+    </summary>
+    <div class="volunteerTeamBody">
+      <button id="openAddYouthVolunteer" class="btn primary bigAddBtn" type="button">+ Añadir voluntario</button>
+      <div id="yvlist" class="list" style="margin-top:12px"></div>
     </div>
-  </div>
+  </details>
 
-  <div id="customVolunteerProgramEmpty" class="muted" style="display:none;margin-top:.8rem">
-    Primero crea una programación personalizada desde Programación.
-  </div>
-  <div id="customVolunteerProgramList" class="customVolunteerProgramList" style="margin-top:.8rem"></div>
+  <details class="volunteerTeamAccordion">
+    <summary>
+      <span>Voluntarios de Multimedia</span>
+      <span class="accordionHint">Abrir / cerrar</span>
+    </summary>
+    <div class="volunteerTeamBody">
+      <button id="openAddMediaVolunteer" class="btn primary bigAddBtn" type="button">+ Añadir voluntario</button>
+      <div id="mvlist" class="list" style="margin-top:12px"></div>
+    </div>
+  </details>
+
+  <div id="customVolunteerAccordions"></div>
 </div>
 
-<div class="two">
-  <div class="card">
-    <div class="volSectionHead">
-      <div>
-        <h2>Voluntarios Alabanza</h2>
-        <div class="muted">Administra roles, frecuencia y estado desde una sola ventana.</div>
-      </div>
-    </div>
-    <button id="openAddWorshipVolunteer" class="btn primary bigAddBtn" type="button">+ Añadir voluntario de Alabanza</button>
-    <div id="vlist" class="list" style="margin-top:12px"></div>
-  </div>
-
-  <div class="card">
-    <div class="volSectionHead">
-      <div>
-        <h2>Voluntarios Multimedia</h2>
-        <div class="muted">Una persona puede pertenecer a varias funciones.</div>
-      </div>
-    </div>
-    <button id="openAddMediaVolunteer" class="btn primary bigAddBtn" type="button">+ Añadir voluntario de Multimedia</button>
-    <div id="mvlist" class="list" style="margin-top:12px"></div>
-  </div>
+<!-- Compatibilidad interna V70: se conserva oculto el selector único -->
+<div id="customProgramVolunteerTeamsCard" style="display:none">
+  <select id="customVolunteerProgramSelect"></select>
+  <button id="addCustomProgramVolunteer" type="button">Añadir</button>
+  <div id="customVolunteerProgramEmpty"></div>
+  <div id="customVolunteerProgramList"></div>
 </div>
 </section>
 
@@ -5622,11 +5915,116 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
   </div>
 </section>
 
-<section id="avail" class="panel"><div id="availabilitySyncStatus" class="muted" style="margin:0 0 10px">Disponibilidad: esperando conexión con la base de datos…</div><div class="two"><div class="card"><h2>Disponibilidad Alabanza</h2><div class="row"><div><select id="awp"></select></div><div><input id="awd" type="date"></div><div class="auto"><button id="awa" class="btn secondary">No disponible</button></div></div><div id="awl" class="list" style="margin-top:10px"></div></div><div class="card"><h2>Disponibilidad Multimedia</h2><div class="row"><div><select id="amp"></select></div><div><input id="amd" type="date"></div><div class="auto"><button id="ama" class="btn secondary">No disponible</button></div></div><div id="aml" class="list" style="margin-top:10px"></div></div></div></section>
+<section id="avail" class="panel">
+  <div id="availabilitySyncStatus" class="muted" style="margin:0 0 10px">Disponibilidad: esperando conexión con la base de datos…</div>
 
-<section id="hist" class="panel"><div class="card"><h2>Historial</h2><div class="row"><div><select id="ht"><option value="person">Personas</option><option value="song">Canciones</option></select></div><div><input id="hq" placeholder="Buscar..."></div><div class="auto"><button id="hr" class="btn primary">Consultar</button></div></div><div id="hout" style="margin-top:10px"></div></div></section>
+  <div class="availabilityTeamStack">
+    <details class="volunteerTeamAccordion" open>
+      <summary><span>Disponibilidad de Alabanza</span><span class="accordionHint">Abrir / cerrar</span></summary>
+      <div class="volunteerTeamBody">
+        <div class="row">
+          <div><select id="awp"></select></div>
+          <div><input id="awd" type="date"></div>
+          <div class="auto"><button id="awa" class="btn secondary">No disponible</button></div>
+        </div>
+        <div id="awl" class="list" style="margin-top:10px"></div>
+      </div>
+    </details>
 
-<section id="imgs" class="panel"><div class="grid"><div class="card s4"><h2>Imágenes mensuales</h2><button id="iw" class="btn primary" style="width:100%;margin-bottom:8px">Generar Alabanza</button><button id="ij" class="btn secondary" style="width:100%;margin-bottom:8px">Generar Jóvenes</button><button id="im" class="btn secondary" style="width:100%;margin-bottom:8px" onclick="window.imageM&&window.imageM()">Generar Multimedia</button><button id="idown" class="btn success" style="width:100%">Descargar PNG</button></div><div class="card s8"><canvas id="poster" width="1400" height="1000"></canvas></div></div></section>
+    <details class="volunteerTeamAccordion">
+      <summary><span>Disponibilidad de Multimedia</span><span class="accordionHint">Abrir / cerrar</span></summary>
+      <div class="volunteerTeamBody">
+        <div class="row">
+          <div><select id="amp"></select></div>
+          <div><input id="amd" type="date"></div>
+          <div class="auto"><button id="ama" class="btn secondary">No disponible</button></div>
+        </div>
+        <div id="aml" class="list" style="margin-top:10px"></div>
+      </div>
+    </details>
+
+    <div id="customAvailabilityAccordions"></div>
+  </div>
+</section>
+
+<section id="hist" class="panel">
+  <div class="card">
+    <h2>Historial de Alabanza y Multimedia</h2>
+    <div class="row">
+      <div><select id="ht"><option value="person">Personas</option><option value="song">Canciones</option></select></div>
+      <div><input id="hq" placeholder="Buscar..."></div>
+      <div class="auto"><button id="hr" class="btn primary">Consultar</button></div>
+    </div>
+    <div id="hout" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card customHistoryCard" style="margin-top:.9rem">
+    <h2>Historial por programación</h2>
+    <div class="historyProgramControls">
+      <div>
+        <label>Programación</label>
+        <select id="customHistoryProgram"></select>
+      </div>
+      <div>
+        <label>Periodo</label>
+        <select id="customHistoryPeriod">
+          <option value="month">Mes</option>
+          <option value="semester">Semestre</option>
+          <option value="year">Año</option>
+        </select>
+      </div>
+      <div>
+        <label>Año</label>
+        <input id="customHistoryYear" type="number" min="2024" max="2100">
+      </div>
+      <div id="customHistoryMonthWrap">
+        <label>Mes</label>
+        <select id="customHistoryMonth"></select>
+      </div>
+      <div id="customHistorySemesterWrap" style="display:none">
+        <label>Semestre</label>
+        <select id="customHistorySemester">
+          <option value="1">Primer semestre</option>
+          <option value="2">Segundo semestre</option>
+        </select>
+      </div>
+      <div class="auto">
+        <button id="customHistoryRun" class="btn primary" type="button">Consultar</button>
+      </div>
+    </div>
+    <div id="customHistoryOut" style="margin-top:.8rem"></div>
+  </div>
+</section>
+
+<section id="imgs" class="panel">
+  <div class="grid">
+    <div class="card s4">
+      <h2>Imágenes mensuales</h2>
+      <button id="iw" class="btn primary" style="width:100%;margin-bottom:8px">Generar Alabanza</button>
+      <button id="ij" class="btn secondary" style="width:100%;margin-bottom:8px">Generar Jóvenes</button>
+      <button id="im" class="btn secondary" style="width:100%;margin-bottom:8px" onclick="window.imageM&&window.imageM()">Generar Multimedia</button>
+
+      <div class="customRenderBox">
+        <label>Programación personalizada</label>
+        <select id="customRenderProgram"></select>
+        <div class="twoFields" style="margin-top:.45rem">
+          <div>
+            <label>Año</label>
+            <input id="customRenderYear" type="number" min="2024" max="2100">
+          </div>
+          <div>
+            <label>Mes</label>
+            <select id="customRenderMonth"></select>
+          </div>
+        </div>
+        <button id="customRenderBtn" class="btn secondary" style="width:100%;margin-top:.55rem" type="button">Generar programación</button>
+      </div>
+
+      <button id="idown" class="btn success" style="width:100%;margin-top:8px">Descargar PNG</button>
+    </div>
+    <div class="card s8"><canvas id="poster" width="1400" height="1000"></canvas></div>
+  </div>
+</section>
 
 <section id="settings" class="panel"><div class="grid">
 <div id="teamSettingsCard" class="card s12">
@@ -5649,30 +6047,46 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
   <h3 style="margin:1.2rem 0 .4rem">Miembros</h3>
   <div id="teamMembersList" class="teamMembersList"></div>
 </div>
-<div class="card s6"><h2>Configuración</h2>
-<label>Semanas sin repetir canción</label><input type="number" value="3">
-<label>Coros por servicio</label><input type="number" value="2">
-<label>Guitarras por servicio</label><input type="number" value="2">
+<div class="card s6">
+  <h2>Configuración por programación</h2>
 
-<div id="appGuideSettingsBox" style="margin-top:1rem;padding-top:.9rem;border-top:1px solid var(--line)">
-  <label>Guía de uso</label>
-  <div class="row" style="align-items:end">
-    <div style="min-width:11rem">
-      <select id="appGuidePreference">
-        <option value="show">Mostrar guía</option>
-        <option value="hide">No mostrar guía</option>
-      </select>
+  <label>Programación</label>
+  <select id="programSettingsSelect"></select>
+
+  <div id="programSettingsCustom" style="margin-top:.85rem">
+    <div class="programSettingsHead">
+      <div>
+        <h3 style="margin:0">Reglas</h3>
+        <div class="muted">Las reglas permiten hacer una programación más precisa sin cambiar la estructura de la tabla.</div>
+      </div>
+      <button id="addProgramRule" class="btn secondary" type="button">+ Añadir regla</button>
     </div>
-    <div class="auto">
-      <button id="appGuideStartNow" class="btn secondary" type="button">Ver guía ahora</button>
-    </div>
+
+    <div id="programRulesList" class="programRulesList" style="margin-top:.7rem"></div>
   </div>
-  <div class="muted" style="margin-top:.45rem">
-    A los usuarios nuevos se les muestra una sola vez al iniciar sesión. Puedes volver a abrirla desde aquí.
+
+  <div id="programSettingsBuiltin" class="muted" style="display:none;margin-top:.8rem">
+    Esta programación usa su configuración especializada actual. Las programaciones personalizadas usan el nuevo sistema de reglas.
+  </div>
+
+  <div id="appGuideSettingsBox" style="margin-top:1rem;padding-top:.9rem;border-top:1px solid var(--line)">
+    <label>Guía de uso</label>
+    <div class="row" style="align-items:end">
+      <div style="min-width:11rem">
+        <select id="appGuidePreference">
+          <option value="show">Mostrar guía</option>
+          <option value="hide">No mostrar guía</option>
+        </select>
+      </div>
+      <div class="auto">
+        <button id="appGuideStartNow" class="btn secondary" type="button">Ver guía ahora</button>
+      </div>
+    </div>
+    <div class="muted" style="margin-top:.45rem">
+      A los usuarios nuevos se les muestra una sola vez al iniciar sesión. Puedes volver a abrirla desde aquí.
+    </div>
   </div>
 </div>
-
-<button class="btn primary" style="margin-top:10px">Guardar</button></div>
 
 <div id="googleSheetsCard" class="card s6 gsConnectionCard">
   <h2>Google Sheets</h2>
@@ -6005,6 +6419,59 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 
       <div class="modalActions">
         <button id="programVolunteerCancel" class="btn secondary" type="button">Cancelar</button>
+        <button class="btn primary" type="submit">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div id="programRuleModal" class="modalBackdrop" aria-hidden="true">
+  <div class="modalCard programRuleModalCard">
+    <form id="programRuleForm">
+      <div class="modalHeader">
+        <div>
+          <h2 id="programRuleTitle">Añadir regla</h2>
+          <div id="programRuleProgramName" class="muted"></div>
+        </div>
+      </div>
+
+      <div class="programRuleBody">
+        <div>
+          <label>Nombre de la regla</label>
+          <input id="programRuleName" maxlength="80" placeholder="Ej. No repetir maestro en fechas seguidas">
+        </div>
+
+        <div>
+          <label>Tipo de regla</label>
+          <select id="programRuleType">
+            <option value="balance_assignments">Balancear participaciones</option>
+            <option value="unique_same_date">No repetir la misma persona en una fecha</option>
+            <option value="avoid_consecutive">Evitar fechas consecutivas</option>
+            <option value="minimum_rest_days">Días mínimos de descanso</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Aplicar a columna</label>
+          <select id="programRuleColumn">
+            <option value="">Todas las columnas de voluntarios</option>
+          </select>
+        </div>
+
+        <div id="programRuleDaysWrap" style="display:none">
+          <label>Días mínimos de descanso</label>
+          <input id="programRuleDays" type="number" min="1" max="90" value="7">
+        </div>
+
+        <label class="programRuleEnabled">
+          <input id="programRuleEnabled" type="checkbox" checked>
+          Regla activa
+        </label>
+      </div>
+
+      <div class="modalActions">
+        <button id="programRuleCancel" class="btn secondary" type="button">Cancelar</button>
         <button class="btn primary" type="submit">Guardar</button>
       </div>
     </form>
@@ -7559,6 +8026,38 @@ function renderVols(){
    };
    vlist.appendChild(d)
  })
+ renderYouthVolunteersOverview();
+}
+
+function renderYouthVolunteersOverview(){
+ const box=document.getElementById("yvlist");
+ if(!box)return;
+ box.innerHTML="";
+ volunteers.forEach((v,i)=>{
+   if(!v.youth)return;
+   const d=document.createElement("div");
+   d.className="item";
+   d.innerHTML=`<b>${v.name}</b> ${v.active?"":"<span class='muted'>(inactivo)</span>"}
+     <div class="chips">
+       <span class="chip">Principal: ${v.primary}</span>
+       ${v.secondary.map(x=>`<span class="chip">${x}</span>`).join("")}
+       <span class="chip">${v.min}-${v.max}/mes</span>
+     </div>
+     <div class="itemActions">
+       <button class="miniBtn edit">Editar</button>
+       <button class="miniBtn toggle">${v.active?"Inactivar":"Activar"}</button>
+     </div>`;
+   d.querySelector(".edit").onclick=()=>editVolunteer(i);
+   d.querySelector(".toggle").onclick=async e=>{
+     const btn=e.currentTarget;btn.disabled=true;
+     try{await setVolunteerActiveInSupabase(v.id,!v.active)}
+     catch(error){console.error(error);window.showAppToast?.("No se pudo cambiar el estado.","error",1700);btn.disabled=false}
+   };
+   box.appendChild(d);
+ });
+ if(!box.children.length){
+   box.innerHTML=`<div class="muted">No hay voluntarios habilitados para Alabanza Jóvenes.</div>`;
+ }
 }
 function refreshMediaRoleControl(){ /* multimedia roles are rendered inside the volunteer modal */ }
 function renderMediaVolunteers(){
@@ -9836,6 +10335,11 @@ downloadCsvTemplate.onclick=()=>{
 
 
 openAddWorshipVolunteer.onclick=()=>openVolunteerEditor("worship",null,"add");
+document.getElementById("openAddYouthVolunteer")?.addEventListener("click",()=>{
+  openVolunteerEditor("worship",null,"add");
+  veYouth.checked=true;
+  volunteerEditTitle.textContent="Añadir voluntario de Alabanza Jóvenes";
+});
 openAddMediaVolunteer.onclick=()=>openVolunteerEditor("media",null,"add");
 volunteerModalCancel.onclick=closeVolunteerEditor;
 
@@ -11629,10 +12133,13 @@ const FLASH_GUIDE_DATA={
   let customProgramVolunteerRows=[];
   let customAllTeamVolunteers=[];
   let customAllProgramMemberships=[];
+  let customColumnLocks=[];
+  let customProgramRules=[];
   let volunteerTeamProgramId=null;
   let editingProgramVolunteerMembershipId=null;
   let pendingVolunteerCell=null;
   let builderEditingProgramId=null;
+  let editingProgramRuleId=null;
 
   const programCards=document.getElementById("programCards");
   const createBtn=document.getElementById("createCustomProgramBtn");
@@ -11670,10 +12177,50 @@ const FLASH_GUIDE_DATA={
   const programVolunteerMin=document.getElementById("programVolunteerMin");
   const programVolunteerMax=document.getElementById("programVolunteerMax");
   const programVolunteerAvoid=document.getElementById("programVolunteerAvoid");
+  const customVolunteerAccordions=document.getElementById("customVolunteerAccordions");
+  const customAvailabilityAccordions=document.getElementById("customAvailabilityAccordions");
+  const customProgramColumnLocks=document.getElementById("customProgramColumnLocks");
+
+  const customHistoryProgram=document.getElementById("customHistoryProgram");
+  const customHistoryPeriod=document.getElementById("customHistoryPeriod");
+  const customHistoryYear=document.getElementById("customHistoryYear");
+  const customHistoryMonth=document.getElementById("customHistoryMonth");
+  const customHistorySemester=document.getElementById("customHistorySemester");
+  const customHistoryMonthWrap=document.getElementById("customHistoryMonthWrap");
+  const customHistorySemesterWrap=document.getElementById("customHistorySemesterWrap");
+  const customHistoryOut=document.getElementById("customHistoryOut");
+
+  const customRenderProgram=document.getElementById("customRenderProgram");
+  const customRenderYear=document.getElementById("customRenderYear");
+  const customRenderMonth=document.getElementById("customRenderMonth");
+
+  const programSettingsSelect=document.getElementById("programSettingsSelect");
+  const programSettingsCustom=document.getElementById("programSettingsCustom");
+  const programSettingsBuiltin=document.getElementById("programSettingsBuiltin");
+  const programRulesList=document.getElementById("programRulesList");
+
+  const programRuleModal=document.getElementById("programRuleModal");
+  const programRuleForm=document.getElementById("programRuleForm");
+  const programRuleTitle=document.getElementById("programRuleTitle");
+  const programRuleProgramName=document.getElementById("programRuleProgramName");
+  const programRuleName=document.getElementById("programRuleName");
+  const programRuleType=document.getElementById("programRuleType");
+  const programRuleColumn=document.getElementById("programRuleColumn");
+  const programRuleDaysWrap=document.getElementById("programRuleDaysWrap");
+  const programRuleDays=document.getElementById("programRuleDays");
+  const programRuleEnabled=document.getElementById("programRuleEnabled");
 
   months.forEach((m,i)=>customMonth?.add(new Option(m,i)));
+  months.forEach((m,i)=>{
+    customHistoryMonth?.add(new Option(m,i));
+    customRenderMonth?.add(new Option(m,i));
+  });
   if(customMonth)customMonth.value=String(new Date().getMonth());
   if(customYear)customYear.value=String(new Date().getFullYear());
+  if(customHistoryMonth)customHistoryMonth.value=String(new Date().getMonth());
+  if(customHistoryYear)customHistoryYear.value=String(new Date().getFullYear());
+  if(customRenderMonth)customRenderMonth.value=String(new Date().getMonth());
+  if(customRenderYear)customRenderYear.value=String(new Date().getFullYear());
 
   function teamAdmin(){return window.currentTeam?.role==="admin"}
   function teamEditor(){return ["admin","editor"].includes(window.currentTeam?.role||"")}
@@ -11777,6 +12324,9 @@ const FLASH_GUIDE_DATA={
     if(createBtn)createBtn.style.display=teamAdmin()?"inline-flex":"none";
     renderMobileProgramList();
     renderVolunteerProgramSelector();
+    renderCustomVolunteerAccordions();
+    renderCustomAvailabilityAccordions();
+    syncCustomProgramSelectors();
   }
 
   function renderMobileProgramList(){
@@ -11931,6 +12481,23 @@ const FLASH_GUIDE_DATA={
       loadProgramReferences()
     ]);
 
+    const [{data:lockRows,error:lockError},{data:ruleRows,error:ruleError}]=await Promise.all([
+      window.supabaseClient.from("program_column_locks")
+        .select("id,column_id,locked,year,month")
+        .eq("program_id",program.id)
+        .eq("year",year)
+        .eq("month",monthZero+1),
+      window.supabaseClient.from("program_rules")
+        .select("id,program_id,column_id,name,rule_type,enabled,config,sort_order")
+        .eq("program_id",program.id)
+        .eq("enabled",true)
+        .order("sort_order")
+    ]);
+    if(lockError)throw lockError;
+    if(ruleError)throw ruleError;
+    customColumnLocks=lockRows||[];
+    customProgramRules=ruleRows||[];
+
     const range=monthRange(year,monthZero);
     const {data:entries,error:entryError}=await window.supabaseClient
       .from("program_entries")
@@ -11955,6 +12522,7 @@ const FLASH_GUIDE_DATA={
     }
 
     renderCustomProgramTable();
+    renderCustomColumnLocks();
     customStatus.textContent=customEntries.length
       ? `${customEntries.length} fecha${customEntries.length===1?"":"s"} · ${columnsFor(program.id).length} columna${columnsFor(program.id).length===1?"":"s"}`
       : "No hay fechas para este mes. Usa “Añadir servicio” o edita los días de la programación.";
@@ -12006,12 +12574,12 @@ const FLASH_GUIDE_DATA={
       if(column.field_type==="volunteer"&&control.value==="__add_program_volunteer__"){
         control.value=current?.volunteer_id||"";
         await openProgramVolunteerModal(activeCustomProgramId,{
-          pendingCell:{entry,column,locked:current?.locked===true}
+          pendingCell:{entry,column,locked:false}
         });
         return;
       }
       try{
-        await saveCustomCell(entry,column,control.value,current?.locked===true);
+        await saveCustomCell(entry,column,control.value,false);
         await loadActiveCustomProgram();
       }catch(error){
         console.error(error);
@@ -12020,24 +12588,6 @@ const FLASH_GUIDE_DATA={
     });
     wrap.appendChild(control);
 
-    if(column.lockable){
-      const lock=document.createElement("button");
-      lock.type="button";
-      lock.className="btn secondary customCellLock";
-      lock.textContent=current?.locked?"🔒":"🔓";
-      lock.title=current?.locked?"Desbloquear":"Bloquear";
-      lock.disabled=!teamEditor();
-      lock.addEventListener("click",async()=>{
-        try{
-          await saveCustomCell(entry,column,control.value,!current?.locked);
-          await loadActiveCustomProgram();
-        }catch(error){
-          console.error(error);
-          window.showAppToast?.("No se pudo cambiar el bloqueo.","error",1600);
-        }
-      });
-      wrap.appendChild(lock);
-    }
     return wrap;
   }
 
@@ -12264,6 +12814,20 @@ const FLASH_GUIDE_DATA={
         .select("id").single();
       if(error)throw error;
       programId=data.id;
+
+      const defaultRules=[
+        {name:"Balancear participaciones",rule_type:"balance_assignments",enabled:true,config:{},sort_order:0},
+        {name:"No repetir persona en una misma fecha",rule_type:"unique_same_date",enabled:true,config:{},sort_order:1},
+        {name:"Evitar fechas consecutivas",rule_type:"avoid_consecutive",enabled:true,config:{},sort_order:2}
+      ].map(rule=>({
+        ...rule,
+        team_id:window.currentTeam.id,
+        program_id:programId,
+        column_id:null,
+        updated_at:new Date().toISOString()
+      }));
+      const {error:defaultRuleError}=await window.supabaseClient.from("program_rules").insert(defaultRules);
+      if(defaultRuleError)throw defaultRuleError;
     }
 
     const existingIds=new Set(columnsFor(programId).map(c=>c.id));
@@ -12329,6 +12893,565 @@ const FLASH_GUIDE_DATA={
     window.showAppToast?.("Programación eliminada.","success",1100);
   }
 
+
+
+  function customProgramById(id){
+    return customPrograms.find(p=>p.id===id)||null;
+  }
+
+  function syncSelect(select,includeBuiltins=false){
+    if(!select)return;
+    const prev=select.value;
+    select.innerHTML="";
+    if(includeBuiltins){
+      BUILTIN_PROGRAMS.forEach(p=>select.add(new Option(p.name,p.id)));
+    }
+    customPrograms.forEach(p=>select.add(new Option(p.name,p.id)));
+    if([...select.options].some(o=>o.value===prev))select.value=prev;
+  }
+
+  function syncCustomProgramSelectors(){
+    syncSelect(customHistoryProgram,false);
+    syncSelect(customRenderProgram,false);
+    syncSelect(programSettingsSelect,true);
+    if(customHistoryProgram&&!customHistoryProgram.value&&customPrograms[0])customHistoryProgram.value=customPrograms[0].id;
+    if(customRenderProgram&&!customRenderProgram.value&&customPrograms[0])customRenderProgram.value=customPrograms[0].id;
+    if(programSettingsSelect&&!programSettingsSelect.value){
+      programSettingsSelect.value=customPrograms[0]?.id||BUILTIN_PROGRAMS[0].id;
+    }
+    renderProgramSettings().catch(console.error);
+  }
+
+  function isColumnLocked(columnId){
+    return customColumnLocks.some(row=>row.column_id===columnId&&row.locked===true);
+  }
+
+  async function toggleCustomColumnLock(column){
+    const program=activeProgram();
+    if(!program||!teamEditor())return;
+    const year=Number(customYear.value);
+    const month=Number(customMonth.value)+1;
+    const next=!isColumnLocked(column.id);
+
+    const payload={
+      team_id:window.currentTeam.id,
+      program_id:program.id,
+      column_id:column.id,
+      year,
+      month,
+      locked:next,
+      updated_at:new Date().toISOString()
+    };
+
+    const {error}=await window.supabaseClient
+      .from("program_column_locks")
+      .upsert(payload,{onConflict:"program_id,column_id,year,month"});
+    if(error)throw error;
+
+    const existing=customColumnLocks.find(r=>r.column_id===column.id);
+    if(existing)existing.locked=next;
+    else customColumnLocks.push({...payload});
+    renderCustomColumnLocks();
+  }
+
+  function renderCustomColumnLocks(){
+    if(!customProgramColumnLocks)return;
+    const program=activeProgram();
+    if(!program){
+      customProgramColumnLocks.innerHTML="";
+      return;
+    }
+    const cols=columnsFor(program.id).filter(c=>c.lockable);
+    customProgramColumnLocks.innerHTML="";
+    cols.forEach(column=>{
+      const btn=document.createElement("button");
+      btn.type="button";
+      btn.className="btn secondary customColumnLockBtn"+(isColumnLocked(column.id)?" is-locked":"");
+      btn.textContent=`${isColumnLocked(column.id)?"🔒":"🔓"} ${column.name}`;
+      btn.title=isColumnLocked(column.id)
+        ? `Desbloquear columna ${column.name}`
+        : `Bloquear columna ${column.name}`;
+      btn.disabled=!teamEditor();
+      btn.addEventListener("click",()=>toggleCustomColumnLock(column).catch(error=>{
+        console.error(error);
+        window.showAppToast?.("No se pudo cambiar el bloqueo de la columna.","error",1800);
+      }));
+      customProgramColumnLocks.appendChild(btn);
+    });
+  }
+
+  function renderCustomVolunteerAccordions(){
+    if(!customVolunteerAccordions)return;
+    customVolunteerAccordions.innerHTML="";
+    customPrograms.forEach(program=>{
+      const details=document.createElement("details");
+      details.className="volunteerTeamAccordion customProgramVolunteerAccordion";
+      details.dataset.programId=program.id;
+      details.innerHTML=`
+        <summary>
+          <span>Voluntarios de ${escapeTeamHtml(program.name)}</span>
+          <span class="accordionHint">Abrir / cerrar</span>
+        </summary>
+        <div class="volunteerTeamBody">
+          <div class="customProgramVolunteerToolbar">
+            <button class="btn primary" type="button" data-add-custom-volunteer="${program.id}">+ Añadir voluntario</button>
+          </div>
+          <div class="customVolunteerProgramList" data-custom-volunteer-list="${program.id}">
+            <div class="muted">Abre este equipo para cargar sus voluntarios.</div>
+          </div>
+        </div>
+      `;
+      details.addEventListener("toggle",()=>{
+        if(details.open){
+          const target=details.querySelector(`[data-custom-volunteer-list="${program.id}"]`);
+          refreshCustomVolunteerTeam(program.id,target).catch(console.error);
+        }
+      });
+      details.querySelector("[data-add-custom-volunteer]")?.addEventListener("click",()=>{
+        volunteerTeamProgramId=program.id;
+        openProgramVolunteerModal(program.id).catch(error=>{
+          console.error(error);
+          window.showAppToast?.("No se pudo abrir el formulario.","error",1800);
+        });
+      });
+      customVolunteerAccordions.appendChild(details);
+    });
+  }
+
+  function renderCustomAvailabilityAccordions(){
+    if(!customAvailabilityAccordions)return;
+    customAvailabilityAccordions.innerHTML="";
+    customPrograms.forEach(program=>{
+      const details=document.createElement("details");
+      details.className="volunteerTeamAccordion customAvailabilityAccordion";
+      details.dataset.programId=program.id;
+      details.innerHTML=`
+        <summary>
+          <span>Disponibilidad de ${escapeTeamHtml(program.name)}</span>
+          <span class="accordionHint">Abrir / cerrar</span>
+        </summary>
+        <div class="volunteerTeamBody">
+          <div class="customAvailabilityRow">
+            <div>
+              <label>Voluntario</label>
+              <select data-custom-availability-volunteer="${program.id}"></select>
+            </div>
+            <div>
+              <label>Fecha</label>
+              <input type="date" data-custom-availability-date="${program.id}">
+            </div>
+            <div class="auto">
+              <button class="btn secondary" type="button" data-custom-availability-add="${program.id}">No disponible</button>
+            </div>
+          </div>
+          <div class="customAvailabilityList" data-custom-availability-list="${program.id}"></div>
+        </div>
+      `;
+      details.addEventListener("toggle",()=>{
+        if(details.open)refreshCustomAvailability(program.id,details).catch(console.error);
+      });
+      details.querySelector("[data-custom-availability-add]")?.addEventListener("click",()=>{
+        saveCustomAvailability(program.id,details).catch(error=>{
+          console.error(error);
+          window.showAppToast?.(error.message||"No se pudo guardar la disponibilidad.","error",1800);
+        });
+      });
+      customAvailabilityAccordions.appendChild(details);
+    });
+  }
+
+  async function refreshCustomAvailability(programId,root){
+    const volunteerSelect=root.querySelector(`[data-custom-availability-volunteer="${programId}"]`);
+    const list=root.querySelector(`[data-custom-availability-list="${programId}"]`);
+    if(!volunteerSelect||!list)return;
+
+    const [{data:memberships,error:memberError},{data:vols,error:volError},{data:rows,error:rowError}]=await Promise.all([
+      window.supabaseClient.from("program_volunteers")
+        .select("id,volunteer_id,active")
+        .eq("program_id",programId)
+        .eq("active",true),
+      window.supabaseClient.from("volunteers")
+        .select("id,name,active")
+        .eq("active",true)
+        .order("name"),
+      window.supabaseClient.from("program_availability")
+        .select("id,volunteer_id,unavailable_date")
+        .eq("program_id",programId)
+        .order("unavailable_date")
+    ]);
+    if(memberError)throw memberError;
+    if(volError)throw volError;
+    if(rowError)throw rowError;
+
+    const allowed=new Set((memberships||[]).map(m=>m.volunteer_id));
+    const volunteerMap=new Map((vols||[]).map(v=>[v.id,v]));
+
+    volunteerSelect.innerHTML="";
+    const available=(vols||[]).filter(v=>allowed.has(v.id));
+    available.forEach(v=>volunteerSelect.add(new Option(v.name,v.id)));
+    if(!available.length)volunteerSelect.add(new Option("No hay voluntarios activos",""));
+
+    list.innerHTML=(rows||[]).map(row=>`
+      <div class="customAvailabilityItem">
+        <span><strong>${escapeTeamHtml(volunteerMap.get(row.volunteer_id)?.name||"Voluntario")}</strong> · ${pretty(row.unavailable_date)}</span>
+        ${teamEditor()?`<button class="miniBtn danger" type="button" data-remove-custom-availability="${row.id}">Quitar</button>`:""}
+      </div>
+    `).join("")||`<div class="muted">No hay indisponibilidades registradas.</div>`;
+
+    list.querySelectorAll("[data-remove-custom-availability]").forEach(btn=>{
+      btn.addEventListener("click",async()=>{
+        const {error}=await window.supabaseClient.from("program_availability").delete().eq("id",btn.dataset.removeCustomAvailability);
+        if(error){
+          window.showAppToast?.("No se pudo quitar la disponibilidad.","error",1700);
+          return;
+        }
+        await refreshCustomAvailability(programId,root);
+      });
+    });
+  }
+
+  async function saveCustomAvailability(programId,root){
+    if(!teamEditor())throw new Error("Tu usuario no puede modificar disponibilidad.");
+    const volunteerId=root.querySelector(`[data-custom-availability-volunteer="${programId}"]`)?.value||"";
+    const date=root.querySelector(`[data-custom-availability-date="${programId}"]`)?.value||"";
+    if(!volunteerId)throw new Error("Selecciona un voluntario.");
+    if(!date)throw new Error("Selecciona una fecha.");
+
+    const {error}=await window.supabaseClient.from("program_availability").upsert({
+      team_id:window.currentTeam.id,
+      program_id:programId,
+      volunteer_id:volunteerId,
+      unavailable_date:date,
+      created_at:new Date().toISOString()
+    },{onConflict:"program_id,volunteer_id,unavailable_date"});
+    if(error)throw error;
+    await refreshCustomAvailability(programId,root);
+    window.showAppToast?.("Disponibilidad guardada.","success",1000);
+  }
+
+  async function runCustomHistory(){
+    const programId=customHistoryProgram?.value;
+    if(!programId||!customHistoryOut)return;
+    const year=Number(customHistoryYear.value);
+    const period=customHistoryPeriod.value;
+    let start,end,label;
+
+    if(period==="month"){
+      const month=Number(customHistoryMonth.value);
+      ({start,end}=monthRange(year,month));
+      label=`${months[month]} ${year}`;
+    }else if(period==="semester"){
+      const sem=Number(customHistorySemester.value);
+      const startMonth=sem===1?0:6;
+      start=`${year}-${String(startMonth+1).padStart(2,"0")}-01`;
+      end=sem===1?`${year}-07-01`:`${year+1}-01-01`;
+      label=`${sem===1?"Primer":"Segundo"} semestre ${year}`;
+    }else{
+      start=`${year}-01-01`;
+      end=`${year+1}-01-01`;
+      label=`Año ${year}`;
+    }
+
+    customHistoryOut.innerHTML=`<div class="muted">Consultando ${escapeTeamHtml(label)}…</div>`;
+
+    const [{data:entries,error:entryError},{data:memberships,error:memberError},{data:vols,error:volError}]=await Promise.all([
+      window.supabaseClient.from("program_entries")
+        .select("id,service_date,status")
+        .eq("program_id",programId)
+        .gte("service_date",start)
+        .lt("service_date",end)
+        .order("service_date"),
+      window.supabaseClient.from("program_volunteers")
+        .select("volunteer_id,active")
+        .eq("program_id",programId),
+      window.supabaseClient.from("volunteers").select("id,name")
+    ]);
+    if(entryError)throw entryError;
+    if(memberError)throw memberError;
+    if(volError)throw volError;
+
+    const entryIds=(entries||[]).map(e=>e.id);
+    let values=[];
+    if(entryIds.length){
+      const {data,error}=await window.supabaseClient.from("program_values")
+        .select("entry_id,column_id,volunteer_id")
+        .in("entry_id",entryIds);
+      if(error)throw error;
+      values=data||[];
+    }
+
+    const names=new Map((vols||[]).map(v=>[v.id,v.name]));
+    const counts=new Map();
+    values.forEach(v=>{
+      if(v.volunteer_id)counts.set(v.volunteer_id,(counts.get(v.volunteer_id)||0)+1);
+    });
+
+    const rows=[...counts.entries()]
+      .map(([id,count])=>({name:names.get(id)||"Voluntario",count}))
+      .sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name,"es"));
+
+    customHistoryOut.innerHTML=`
+      <div class="customHistoryStats">
+        <div class="customHistoryStat"><span class="muted">Fechas</span><strong>${(entries||[]).length}</strong></div>
+        <div class="customHistoryStat"><span class="muted">Confirmadas</span><strong>${(entries||[]).filter(e=>e.status==="confirmed").length}</strong></div>
+        <div class="customHistoryStat"><span class="muted">Voluntarios usados</span><strong>${rows.length}</strong></div>
+      </div>
+      ${rows.length?`
+        <div class="sheet">
+          <table class="customHistoryTable">
+            <thead><tr><th>Voluntario</th><th>Veces programado</th></tr></thead>
+            <tbody>${rows.map(r=>`<tr><td>${escapeTeamHtml(r.name)}</td><td>${r.count}</td></tr>`).join("")}</tbody>
+          </table>
+        </div>
+      `:`<div class="muted">No hay participaciones registradas en este periodo.</div>`}
+    `;
+  }
+
+  function drawCustomProgramPoster(program,columns,entries,values,volunteersMap,songsMap){
+    const canvas=document.getElementById("poster");
+    if(!canvas)return;
+    const ctx=canvas.getContext("2d");
+    const W=1500;
+    const margin=70;
+    const titleH=130;
+    const rowH=76;
+    const cols=[{id:"date",name:"FECHA"},...columns];
+    const widths=[];
+    const fixedDate=180;
+    const other=(W-margin*2-fixedDate)/Math.max(1,columns.length);
+    widths.push(fixedDate);
+    columns.forEach(()=>widths.push(other));
+    const H=Math.max(720,titleH+margin*2+rowH*(entries.length+1));
+    canvas.width=W;canvas.height=H;
+
+    ctx.fillStyle="#0f1424";ctx.fillRect(0,0,W,H);
+    ctx.fillStyle="#ffffff";ctx.font="700 44px Arial";
+    ctx.fillText(program.name,margin,margin+48);
+    ctx.fillStyle="#aab4cf";ctx.font="24px Arial";
+    ctx.fillText(`${months[Number(customRenderMonth.value)]} ${customRenderYear.value}`,margin,margin+88);
+
+    let y=margin+titleH;
+    let x=margin;
+    ctx.textAlign="center";ctx.textBaseline="middle";
+    cols.forEach((col,i)=>{
+      ctx.fillStyle="#34489a";ctx.fillRect(x,y,widths[i],rowH);
+      ctx.strokeStyle="#6171bb";ctx.strokeRect(x,y,widths[i],rowH);
+      ctx.fillStyle="#ffffff";ctx.font="700 21px Arial";
+      ctx.fillText(String(col.name).toUpperCase(),x+widths[i]/2,y+rowH/2,widths[i]-20);
+      x+=widths[i];
+    });
+    y+=rowH;
+
+    const valueMap=new Map(values.map(v=>[`${v.entry_id}|${v.column_id}`,v]));
+    entries.forEach((entry,rowIndex)=>{
+      x=margin;
+      cols.forEach((col,i)=>{
+        ctx.fillStyle=rowIndex%2===0?"#171d33":"#1d2540";
+        ctx.fillRect(x,y,widths[i],rowH);
+        ctx.strokeStyle="#39466f";ctx.strokeRect(x,y,widths[i],rowH);
+        let text="";
+        if(i===0){
+          text=short(entry.service_date);
+        }else{
+          const val=valueMap.get(`${entry.id}|${col.id}`);
+          if(val){
+            if(col.field_type==="volunteer")text=volunteersMap.get(val.volunteer_id)||"";
+            else if(col.field_type==="song")text=songsMap.get(val.song_id)||"";
+            else if(col.field_type==="number")text=val.number_value??"";
+            else if(col.field_type==="list")text=val.option_value||"";
+            else text=val.text_value||"";
+          }
+        }
+        ctx.fillStyle="#ffffff";ctx.font="20px Arial";
+        const max=widths[i]-24;
+        let fitted=String(text);
+        while(fitted.length>1&&ctx.measureText(fitted).width>max)fitted=fitted.slice(0,-2)+"…";
+        ctx.fillText(fitted,x+widths[i]/2,y+rowH/2,max);
+        x+=widths[i];
+      });
+      y+=rowH;
+    });
+    ctx.textAlign="start";ctx.textBaseline="alphabetic";
+  }
+
+  async function renderSelectedCustomProgram(){
+    const programId=customRenderProgram?.value;
+    const program=customProgramById(programId);
+    if(!program)throw new Error("Selecciona una programación.");
+    const year=Number(customRenderYear.value);
+    const month=Number(customRenderMonth.value);
+    const range=monthRange(year,month);
+
+    const [{data:entries,error:e1},{data:vols,error:e2},{data:songsRows,error:e3}]=await Promise.all([
+      window.supabaseClient.from("program_entries")
+        .select("id,service_date,status")
+        .eq("program_id",programId)
+        .gte("service_date",range.start)
+        .lt("service_date",range.end)
+        .order("service_date"),
+      window.supabaseClient.from("volunteers").select("id,name"),
+      window.supabaseClient.from("songs").select("id,name")
+    ]);
+    if(e1)throw e1;if(e2)throw e2;if(e3)throw e3;
+    const ids=(entries||[]).map(e=>e.id);
+    let values=[];
+    if(ids.length){
+      const {data,error}=await window.supabaseClient.from("program_values")
+        .select("entry_id,column_id,volunteer_id,song_id,text_value,number_value,option_value")
+        .in("entry_id",ids);
+      if(error)throw error;
+      values=data||[];
+    }
+
+    drawCustomProgramPoster(
+      program,
+      columnsFor(programId),
+      entries||[],
+      values,
+      new Map((vols||[]).map(v=>[v.id,v.name])),
+      new Map((songsRows||[]).map(s=>[s.id,s.name]))
+    );
+    imgType="custom";
+  }
+
+  async function loadProgramRules(programId){
+    const {data,error}=await window.supabaseClient.from("program_rules")
+      .select("id,program_id,column_id,name,rule_type,enabled,config,sort_order")
+      .eq("program_id",programId)
+      .order("sort_order");
+    if(error)throw error;
+    return data||[];
+  }
+
+  function ruleTypeLabel(type){
+    return {
+      balance_assignments:"Balancear participaciones",
+      unique_same_date:"No repetir en la misma fecha",
+      avoid_consecutive:"Evitar fechas consecutivas",
+      minimum_rest_days:"Días mínimos de descanso"
+    }[type]||type;
+  }
+
+  async function renderProgramSettings(){
+    if(!programSettingsSelect||!programRulesList)return;
+    const id=programSettingsSelect.value;
+    const builtin=BUILTIN_PROGRAMS.find(p=>p.id===id);
+    programSettingsBuiltin.style.display=builtin?"block":"none";
+    programSettingsCustom.style.display=builtin?"none":"block";
+    if(builtin)return;
+
+    const program=customProgramById(id);
+    if(!program){
+      programRulesList.innerHTML=`<div class="muted">Crea una programación personalizada para configurar reglas.</div>`;
+      return;
+    }
+
+    const rules=await loadProgramRules(id);
+    programRulesList.innerHTML=rules.map(rule=>{
+      const config=safeOptions(rule.config);
+      const column=columnsFor(id).find(c=>c.id===rule.column_id);
+      return `
+        <div class="programRuleItem ${rule.enabled?"":"inactive"}">
+          <div>
+            <strong>${escapeTeamHtml(rule.name)}</strong>
+            <div class="programRuleMeta">
+              ${escapeTeamHtml(ruleTypeLabel(rule.rule_type))}
+              ${column?` · ${escapeTeamHtml(column.name)}`:" · todas las columnas de voluntarios"}
+              ${rule.rule_type==="minimum_rest_days"?` · ${Number(config.days)||7} días`:""}
+            </div>
+          </div>
+          <div>${rule.enabled?"Activa":"Inactiva"}</div>
+          <div class="programRuleActions">
+            <button class="btn secondary" type="button" data-edit-rule="${rule.id}">Editar</button>
+            <button class="btn danger" type="button" data-delete-rule="${rule.id}">Eliminar</button>
+          </div>
+        </div>
+      `;
+    }).join("")||`<div class="muted">No hay reglas. Puedes añadirlas cuando quieras.</div>`;
+
+    programRulesList.querySelectorAll("[data-edit-rule]").forEach(btn=>{
+      btn.addEventListener("click",()=>openProgramRuleModal(id,btn.dataset.editRule));
+    });
+    programRulesList.querySelectorAll("[data-delete-rule]").forEach(btn=>{
+      btn.addEventListener("click",()=>deleteProgramRule(id,btn.dataset.deleteRule));
+    });
+  }
+
+  async function openProgramRuleModal(programId,ruleId=null){
+    const program=customProgramById(programId);
+    if(!program)return;
+    editingProgramRuleId=ruleId;
+    const rules=ruleId?await loadProgramRules(programId):[];
+    const rule=rules.find(r=>r.id===ruleId)||null;
+    const config=safeOptions(rule?.config);
+
+    programRuleTitle.textContent=rule?"Editar regla":"Añadir regla";
+    programRuleProgramName.textContent=`Programación: ${program.name}`;
+    programRuleName.value=rule?.name||"";
+    programRuleType.value=rule?.rule_type||"balance_assignments";
+    programRuleColumn.innerHTML=`<option value="">Todas las columnas de voluntarios</option>`;
+    columnsFor(programId).filter(c=>c.field_type==="volunteer").forEach(c=>{
+      programRuleColumn.add(new Option(c.name,c.id));
+    });
+    programRuleColumn.value=rule?.column_id||"";
+    programRuleDays.value=String(Number(config.days)||7);
+    programRuleEnabled.checked=rule?.enabled!==false;
+
+    const sync=()=>programRuleDaysWrap.style.display=programRuleType.value==="minimum_rest_days"?"block":"none";
+    programRuleType.onchange=sync;sync();
+
+    programRuleModal.dataset.programId=programId;
+    programRuleModal.classList.add("open");
+    programRuleModal.setAttribute("aria-hidden","false");
+    setTimeout(()=>programRuleName.focus(),0);
+  }
+
+  function closeProgramRuleModal(){
+    programRuleModal.classList.remove("open");
+    programRuleModal.setAttribute("aria-hidden","true");
+    editingProgramRuleId=null;
+  }
+
+  async function saveProgramRule(){
+    const programId=programRuleModal.dataset.programId;
+    const name=programRuleName.value.trim()||ruleTypeLabel(programRuleType.value);
+    const payload={
+      team_id:window.currentTeam.id,
+      program_id:programId,
+      column_id:programRuleColumn.value||null,
+      name,
+      rule_type:programRuleType.value,
+      enabled:programRuleEnabled.checked,
+      config:programRuleType.value==="minimum_rest_days"?{days:Math.max(1,Number(programRuleDays.value)||7)}:{},
+      updated_at:new Date().toISOString()
+    };
+
+    let error;
+    if(editingProgramRuleId){
+      ({error}=await window.supabaseClient.from("program_rules").update(payload).eq("id",editingProgramRuleId));
+    }else{
+      ({error}=await window.supabaseClient.from("program_rules").insert(payload));
+    }
+    if(error)throw error;
+    closeProgramRuleModal();
+    await renderProgramSettings();
+    if(activeCustomProgramId===programId)await loadActiveCustomProgram();
+  }
+
+  async function deleteProgramRule(programId,ruleId){
+    const ok=await window.appConfirm(
+      "¿Eliminar esta regla?",
+      {title:"Eliminar regla",confirmText:"Eliminar",tone:"danger",icon:"!"}
+    );
+    if(!ok)return;
+    const {error}=await window.supabaseClient.from("program_rules").delete().eq("id",ruleId);
+    if(error){
+      window.showAppToast?.("No se pudo eliminar la regla.","error",1800);
+      return;
+    }
+    await renderProgramSettings();
+    if(activeCustomProgramId===programId)await loadActiveCustomProgram();
+  }
 
   function selectedVolunteerProgram(){
     return customPrograms.find(p=>p.id===volunteerTeamProgramId)||null;
@@ -12401,15 +13524,16 @@ const FLASH_GUIDE_DATA={
       .filter(Boolean);
   }
 
-  async function refreshCustomVolunteerTeam(programId){
-    if(!programId||!customVolunteerProgramList)return;
+  async function refreshCustomVolunteerTeam(programId,targetContainer=null){
+    const listContainer=targetContainer||customVolunteerProgramList;
+    if(!programId||!listContainer)return;
     const program=customPrograms.find(p=>p.id===programId);
     if(!program)return;
 
     volunteerTeamProgramId=programId;
     if(customVolunteerProgramSelect)customVolunteerProgramSelect.value=programId;
 
-    customVolunteerProgramList.innerHTML=`<div class="muted">Cargando equipo de ${escapeTeamHtml(program.name)}…</div>`;
+    listContainer.innerHTML=`<div class="muted">Cargando equipo de ${escapeTeamHtml(program.name)}…</div>`;
 
     const directory=await loadVolunteerDirectoryData(programId);
     const volunteerById=new Map(directory.volunteers.map(v=>[v.id,v]));
@@ -12419,18 +13543,21 @@ const FLASH_GUIDE_DATA={
       .sort((a,b)=>a.volunteer.name.localeCompare(b.volunteer.name,"es"));
 
     if(!current.length){
-      customVolunteerProgramList.innerHTML=`
+      listContainer.innerHTML=`
         <div class="muted">
           Esta programación todavía no tiene voluntarios. Puedes añadir una persona nueva o reutilizar una que ya esté en otra programación.
         </div>`;
       return;
     }
 
-    customVolunteerProgramList.innerHTML=current.map(({member,volunteer})=>{
+    listContainer.innerHTML=current.map(({member,volunteer})=>{
       const max=member.max_per_month==null?"sin límite":member.max_per_month;
       return `
-        <div class="customVolunteerMember">
-          <div class="customVolunteerMemberName">${escapeTeamHtml(volunteer.name)}</div>
+        <div class="customVolunteerMember ${member.active===false?"inactive":""}">
+          <div class="customVolunteerMemberName">
+            ${escapeTeamHtml(volunteer.name)}
+            <span class="customVolunteerStatusBadge ${member.active===false?"inactive":"active"}">${member.active===false?"Inactivo":"Activo"}</span>
+          </div>
           <div class="customVolunteerMemberRules">
             Mín. ${Number(member.min_per_month)||0} · Máx. ${escapeTeamHtml(max)}
             ${member.avoid_consecutive!==false?" · Evitar consecutivos":""}
@@ -12438,21 +13565,32 @@ const FLASH_GUIDE_DATA={
           <div class="customVolunteerMemberActions">
             ${teamEditor()?`
               <button class="btn secondary" type="button" data-edit-program-volunteer="${member.id}">Editar</button>
-              <button class="btn danger" type="button" data-remove-program-volunteer="${member.id}">Quitar</button>
+              <button class="btn secondary" type="button" data-toggle-program-volunteer="${member.id}" data-next-active="${member.active===false?"true":"false"}">${member.active===false?"Activar":"Inactivar"}</button>
             `:""}
           </div>
         </div>
       `;
     }).join("");
 
-    customVolunteerProgramList.querySelectorAll("[data-edit-program-volunteer]").forEach(btn=>{
+    listContainer.querySelectorAll("[data-edit-program-volunteer]").forEach(btn=>{
       btn.addEventListener("click",()=>openProgramVolunteerModal(programId,{
         membershipId:btn.dataset.editProgramVolunteer
       }));
     });
 
-    customVolunteerProgramList.querySelectorAll("[data-remove-program-volunteer]").forEach(btn=>{
-      btn.addEventListener("click",()=>removeProgramVolunteer(programId,btn.dataset.removeProgramVolunteer));
+    listContainer.querySelectorAll("[data-toggle-program-volunteer]").forEach(btn=>{
+      btn.addEventListener("click",async()=>{
+        const next=btn.dataset.nextActive==="true";
+        const {error}=await window.supabaseClient.from("program_volunteers")
+          .update({active:next,updated_at:new Date().toISOString()})
+          .eq("id",btn.dataset.toggleProgramVolunteer);
+        if(error){
+          window.showAppToast?.("No se pudo cambiar el estado.","error",1800);
+          return;
+        }
+        await refreshCustomVolunteerTeam(programId,listContainer);
+        if(activeCustomProgramId===programId)await loadActiveCustomProgram();
+      });
     });
   }
 
@@ -12476,7 +13614,7 @@ const FLASH_GUIDE_DATA={
       : null;
 
     programVolunteerModalTitle.textContent=editingMembership?"Editar voluntario":"Añadir voluntario";
-    programVolunteerModalProgram.textContent=`Equipo: ${program.name}`;
+    programVolunteerModalProgram.textContent=`Voluntarios de ${program.name}`;
     programVolunteerExisting.innerHTML="";
 
     if(editingMembership){
@@ -12650,8 +13788,29 @@ const FLASH_GUIDE_DATA={
   async function autoFillCustomProgram(rebalance=false){
     const program=activeProgram();
     if(!program||!teamEditor())return;
-    const cols=columnsFor(program.id).filter(c=>rebalance?c.rebalance_enabled:c.fill_enabled);
-    if(!cols.length)return;
+    const cols=columnsFor(program.id)
+      .filter(c=>rebalance?c.rebalance_enabled:c.fill_enabled)
+      .filter(c=>!isColumnLocked(c.id));
+    if(!cols.length){
+      window.showAppToast?.("Todas las columnas automáticas están bloqueadas.","info",1500);
+      return;
+    }
+
+    const [{data:availabilityRows,error:availabilityError}]=await Promise.all([
+      window.supabaseClient.from("program_availability")
+        .select("volunteer_id,unavailable_date")
+        .eq("program_id",program.id)
+    ]);
+    if(availabilityError)throw availabilityError;
+
+    const unavailableSet=new Set((availabilityRows||[]).map(r=>`${r.volunteer_id}|${r.unavailable_date}`));
+    const activeRules=customProgramRules.filter(r=>r.enabled!==false);
+    const hasRule=(type,columnId)=>activeRules.some(r=>
+      r.rule_type===type&&(!r.column_id||r.column_id===columnId)
+    );
+    const restRuleFor=columnId=>activeRules.find(r=>
+      r.rule_type==="minimum_rest_days"&&(!r.column_id||r.column_id===columnId)
+    )||null;
 
     const payloads=[];
     const valueMap=new Map(customValues.map(v=>[`${v.entry_id}|${v.column_id}`,v]));
@@ -12718,25 +13877,61 @@ const FLASH_GUIDE_DATA={
 
         let availableChoices=choices;
         if(col.field_type==="volunteer"){
-          const notDuplicated=choices.filter(choice=>!alreadyUsedInEntry.has(choice.id));
-          if(notDuplicated.length)availableChoices=notDuplicated;
+          availableChoices=availableChoices.filter(choice=>
+            !unavailableSet.has(`${choice.id}|${entry.service_date}`)
+          );
+
+          if(hasRule("unique_same_date",col.id)){
+            const notDuplicated=availableChoices.filter(choice=>!alreadyUsedInEntry.has(choice.id));
+            if(notDuplicated.length)availableChoices=notDuplicated;
+          }
+
           const underMax=availableChoices.filter(choice=>
             choice.max==null||(volunteerCounts.get(choice.id)||0)<choice.max
           );
           if(underMax.length)availableChoices=underMax;
+
+          const restRule=restRuleFor(col.id);
+          if(restRule){
+            const days=Math.max(1,Number(safeOptions(restRule.config).days)||7);
+            const candidateWithRest=availableChoices.filter(choice=>{
+              const usedDates=[];
+              customValues.forEach(v=>{
+                if(v.volunteer_id===choice.id){
+                  const e=customEntries.find(x=>x.id===v.entry_id);
+                  if(e?.service_date&&e.service_date<entry.service_date)usedDates.push(e.service_date);
+                }
+              });
+              payloads.forEach(v=>{
+                if(v.volunteer_id===choice.id){
+                  const e=customEntries.find(x=>x.id===v.entry_id);
+                  if(e?.service_date&&e.service_date<entry.service_date)usedDates.push(e.service_date);
+                }
+              });
+              if(!usedDates.length)return true;
+              usedDates.sort();
+              const last=usedDates[usedDates.length-1];
+              return Math.round((dObj(entry.service_date)-dObj(last))/86400000)>=days;
+            });
+            if(candidateWithRest.length)availableChoices=candidateWithRest;
+          }
         }
 
         const ranked=[...availableChoices].sort((a,b)=>{
           if(col.field_type==="volunteer"){
             const ac=volunteerCounts.get(a.id)||0;
             const bc=volunteerCounts.get(b.id)||0;
-            const aNeeds=ac<a.min?0:1;
-            const bNeeds=bc<b.min?0:1;
-            if(aNeeds!==bNeeds)return aNeeds-bNeeds;
-            if(ac!==bc)return ac-bc;
-            const aConsecutive=a.avoid&&a.id===previous?1:0;
-            const bConsecutive=b.avoid&&b.id===previous?1:0;
-            if(aConsecutive!==bConsecutive)return aConsecutive-bConsecutive;
+            if(hasRule("balance_assignments",col.id)){
+              const aNeeds=ac<a.min?0:1;
+              const bNeeds=bc<b.min?0:1;
+              if(aNeeds!==bNeeds)return aNeeds-bNeeds;
+              if(ac!==bc)return ac-bc;
+            }
+            if(hasRule("avoid_consecutive",col.id)){
+              const aConsecutive=a.avoid&&a.id===previous?1:0;
+              const bConsecutive=b.avoid&&b.id===previous?1:0;
+              if(aConsecutive!==bConsecutive)return aConsecutive-bConsecutive;
+            }
           }else{
             const ac=counts.get(`${col.id}|${a.id}`)||0;
             const bc=counts.get(`${col.id}|${b.id}`)||0;
@@ -12831,6 +14026,46 @@ const FLASH_GUIDE_DATA={
   }
 
   // Events
+  customHistoryPeriod?.addEventListener("change",()=>{
+    const period=customHistoryPeriod.value;
+    customHistoryMonthWrap.style.display=period==="month"?"block":"none";
+    customHistorySemesterWrap.style.display=period==="semester"?"block":"none";
+  });
+  document.getElementById("customHistoryRun")?.addEventListener("click",()=>{
+    runCustomHistory().catch(error=>{
+      console.error(error);
+      customHistoryOut.innerHTML=`<div class="muted">No se pudo consultar el historial.</div>`;
+    });
+  });
+
+  document.getElementById("customRenderBtn")?.addEventListener("click",()=>{
+    renderSelectedCustomProgram().catch(error=>{
+      console.error(error);
+      window.showAppToast?.(error.message||"No se pudo generar la imagen.","error",1800);
+    });
+  });
+
+  programSettingsSelect?.addEventListener("change",()=>renderProgramSettings().catch(console.error));
+  document.getElementById("addProgramRule")?.addEventListener("click",()=>{
+    const id=programSettingsSelect?.value;
+    if(!id||BUILTIN_PROGRAMS.some(p=>p.id===id)){
+      window.showAppToast?.("Selecciona una programación personalizada.","info",1500);
+      return;
+    }
+    openProgramRuleModal(id).catch(console.error);
+  });
+  document.getElementById("programRuleCancel")?.addEventListener("click",closeProgramRuleModal);
+  programRuleForm?.addEventListener("submit",async event=>{
+    event.preventDefault();
+    try{
+      await saveProgramRule();
+      window.showAppToast?.("Regla guardada.","success",1000);
+    }catch(error){
+      console.error(error);
+      window.showAppToast?.(error.message||"No se pudo guardar la regla.","error",1800);
+    }
+  });
+
   customVolunteerProgramSelect?.addEventListener("change",()=>{
     volunteerTeamProgramId=customVolunteerProgramSelect.value||null;
     if(volunteerTeamProgramId){
@@ -12900,6 +14135,9 @@ const FLASH_GUIDE_DATA={
   window.bootstrapCustomProgramsSupabase=async function(){
     try{
       await loadProgramDefinitions();
+      renderCustomVolunteerAccordions();
+      renderCustomAvailabilityAccordions();
+      syncCustomProgramSelectors();
       return true;
     }catch(error){
       console.error("Error cargando constructor de programaciones:",error);
