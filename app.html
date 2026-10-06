@@ -5616,6 +5616,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 }
 </style>
 </head>
+<!-- Flash Program V75 - Fix real Crear programación -->
 <body class="readonly-mode">
 
 <div id="appLoadingScreen">
@@ -15005,6 +15006,44 @@ const FLASH_GUIDE_DATA={
     showConfirmToast();
   }
 
+
+  function renderProgramRenderButtons(){
+    if(!programRenderButtons)return;
+
+    const selected=customRenderProgram?.value||"";
+    programRenderButtons.innerHTML="";
+
+    customPrograms.forEach(program=>{
+      const button=document.createElement("button");
+      button.type="button";
+      button.className="btn secondary";
+      button.textContent=`Generar ${program.name}`;
+      button.dataset.renderProgramId=program.id;
+
+      if(selected===program.id)button.classList.add("active");
+
+      button.addEventListener("click",()=>{
+        if(customRenderProgram)customRenderProgram.value=program.id;
+        renderProgramRenderButtons();
+        renderSelectedCustomProgram().catch(error=>{
+          console.error(error);
+          window.showAppToast?.(
+            error?.message||"No se pudo generar la imagen.",
+            "error",
+            1800
+          );
+        });
+      });
+
+      programRenderButtons.appendChild(button);
+    });
+
+    if(!customPrograms.length){
+      programRenderButtons.innerHTML=
+        '<div class="muted">Crea una programación para habilitar sus renders.</div>';
+    }
+  }
+
   // Events
   homeGoTemplates?.addEventListener("click",()=>{
     window.activateAppPanel("programs","Programación");
@@ -15162,6 +15201,21 @@ const FLASH_GUIDE_DATA={
 
   // Initial render before session is ready.
   renderProgramHub();
+})();
+</script>
+
+
+<script id="v75-create-program-emergency-handler">
+(()=>{
+  document.addEventListener("click",event=>{
+    const button=event.target.closest("#createCustomProgramBtn,.mobileCreateProgram");
+    if(!button)return;
+
+    if(typeof window.openProgramBuilder==="function"){
+      event.preventDefault();
+      window.openProgramBuilder(null);
+    }
+  },true);
 })();
 </script>
 
