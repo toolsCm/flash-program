@@ -2,7 +2,7 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V69-FIX-CREAR-PROGRAMACION">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V70-PROGRAM-VOLUNTEER-TEAMS">
 <title>Flash Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4972,6 +4972,124 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 }
 </style>
 
+
+<style id="v70-program-volunteer-teams">
+.customProgramVolunteerTeamsCard{
+  margin-bottom:.9rem;
+}
+.customVolunteerTeamHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:1rem;
+}
+.customVolunteerProgramPicker{
+  margin-top:.8rem;
+  max-width:24rem;
+}
+.customVolunteerProgramList{
+  display:grid;
+  gap:.55rem;
+}
+.customVolunteerMember{
+  display:grid;
+  grid-template-columns:minmax(10rem,1fr) minmax(9rem,.7fr) auto;
+  gap:.7rem;
+  align-items:center;
+  padding:.7rem .75rem;
+  border:1px solid var(--line);
+  border-radius:.7rem;
+  background:var(--panel2);
+}
+.customVolunteerMemberName{
+  font-weight:850;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.customVolunteerMemberRules{
+  color:var(--muted);
+  font-size:.78rem;
+  line-height:1.35;
+}
+.customVolunteerMemberActions{
+  display:flex;
+  gap:.35rem;
+}
+.customVolunteerMemberActions .btn{
+  min-height:2.75rem;
+}
+.programVolunteerModalCard{
+  width:min(36rem,100%) !important;
+}
+.programVolunteerModalBody{
+  display:grid;
+  gap:.9rem;
+  padding:.4rem 0;
+}
+.programVolunteerRules{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.65rem;
+  align-items:end;
+}
+.programVolunteerCheck{
+  grid-column:1/-1;
+  min-height:2.75rem;
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+}
+.programVolunteerCheck input{
+  width:1.15rem !important;
+  height:1.15rem !important;
+  min-height:0 !important;
+}
+.customProgramCell select{
+  min-width:9.5rem;
+}
+
+/* El constructor no se cierra haciendo clic afuera.
+   En celular Guardar y Cancelar caben sin desbordarse. */
+@media(max-width:47.5rem){
+  .programBuilderActions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:.5rem !important;
+    flex-direction:initial !important;
+  }
+  .programBuilderActions>span{
+    display:none !important;
+  }
+  .programBuilderActions .btn{
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+  }
+  #deleteCustomProgramBtn{
+    grid-column:1/-1;
+  }
+
+  .customVolunteerTeamHead{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+  .customVolunteerTeamHead .btn{
+    width:100%;
+  }
+  .customVolunteerMember{
+    grid-template-columns:1fr;
+  }
+  .customVolunteerMemberActions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+  .programVolunteerRules{
+    grid-template-columns:1fr 1fr;
+  }
+}
+</style>
+
 </head>
 <body class="readonly-mode">
 
@@ -5266,9 +5384,6 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 <aside id="side" class="sidebar"><div class="brand"><div class="brandMark">F</div><div class="brandText">Flash Program</div></div><div class="nav">
 <button data-p="home" data-tip="Inicio" class="active"><span class="ico">⌂</span><span class="label">Inicio</span></button>
 <button data-p="programs" data-tip="Programación"><span class="ico">▦</span><span class="label">Programación</span></button>
-<button data-p="worship" data-tip="Alabanza" class="legacyProgramNav"><span class="ico">♪</span><span class="label">Alabanza</span></button>
-<button data-p="youth" data-tip="Alabanza Jóvenes" class="legacyProgramNav"><span class="ico">♬</span><span class="label">Alabanza Jóvenes</span></button>
-<button data-p="media" data-tip="Multimedia" class="legacyProgramNav"><span class="ico">▣</span><span class="label">Multimedia</span></button>
 <button data-p="vols" data-tip="Voluntarios"><span class="ico">◌</span><span class="label">Voluntarios</span></button>
 <button data-p="songs" data-tip="Canciones"><span class="ico">♫</span><span class="label">Canciones</span></button>
 <button data-p="avail" data-tip="Disponibilidad"><span class="ico">□</span><span class="label">Disponibilidad</span></button>
@@ -5397,6 +5512,29 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 
 <section id="vols" class="panel">
 <div id="volunteerSyncStatus" class="note" style="margin-bottom:12px">Voluntarios: esperando conexión con la base de datos…</div>
+
+<div id="customProgramVolunteerTeamsCard" class="card customProgramVolunteerTeamsCard">
+  <div class="customVolunteerTeamHead">
+    <div>
+      <h2>Equipos por programación</h2>
+      <div class="muted">Cada programación personalizada tiene su propia lista de voluntarios. Una misma persona puede pertenecer a varias programaciones.</div>
+    </div>
+    <button id="addCustomProgramVolunteer" class="btn primary" type="button">+ Añadir voluntario</button>
+  </div>
+
+  <div class="row customVolunteerProgramPicker">
+    <div>
+      <label>Programación</label>
+      <select id="customVolunteerProgramSelect"></select>
+    </div>
+  </div>
+
+  <div id="customVolunteerProgramEmpty" class="muted" style="display:none;margin-top:.8rem">
+    Primero crea una programación personalizada desde Programación.
+  </div>
+  <div id="customVolunteerProgramList" class="customVolunteerProgramList" style="margin-top:.8rem"></div>
+</div>
+
 <div class="two">
   <div class="card">
     <div class="volSectionHead">
@@ -5771,7 +5909,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
           <h2 id="programBuilderTitle">Crear programación</h2>
           <div class="muted">Fecha siempre está incluida. Añade, edita, reordena o elimina las demás columnas.</div>
         </div>
-        <button id="programBuilderClose" class="modalClose" type="button" aria-label="Cerrar">×</button>
+        
       </div>
 
       <div class="programBuilderBody">
@@ -5816,7 +5954,58 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
         <button id="deleteCustomProgramBtn" class="btn danger" type="button" style="display:none">Eliminar programación</button>
         <span style="flex:1"></span>
         <button id="programBuilderCancel" class="btn secondary" type="button">Cancelar</button>
-        <button class="btn primary" type="submit">Guardar programación</button>
+        <button class="btn primary" type="submit">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div id="programVolunteerModal" class="modalBackdrop" aria-hidden="true">
+  <div class="modalCard programVolunteerModalCard">
+    <form id="programVolunteerForm">
+      <div class="modalHeader">
+        <div>
+          <h2 id="programVolunteerModalTitle">Añadir voluntario</h2>
+          <div id="programVolunteerModalProgram" class="muted"></div>
+        </div>
+      </div>
+
+      <div class="programVolunteerModalBody">
+        <div id="programVolunteerReuseWrap">
+          <label>Usar una persona que ya existe</label>
+          <select id="programVolunteerExisting">
+            <option value="">Crear una persona nueva</option>
+          </select>
+          <div class="muted" style="margin-top:.35rem">
+            Puedes reutilizar exactamente el mismo voluntario de otra programación.
+          </div>
+        </div>
+
+        <div id="programVolunteerNewNameWrap">
+          <label>Nombre del voluntario</label>
+          <input id="programVolunteerNewName" maxlength="90" placeholder="Nombre completo">
+        </div>
+
+        <div class="programVolunteerRules">
+          <div>
+            <label>Mínimo al mes</label>
+            <input id="programVolunteerMin" type="number" min="0" max="31" value="0">
+          </div>
+          <div>
+            <label>Máximo al mes</label>
+            <input id="programVolunteerMax" type="number" min="1" max="31" placeholder="Sin límite">
+          </div>
+          <label class="programVolunteerCheck">
+            <input id="programVolunteerAvoid" type="checkbox" checked>
+            Evitar fechas consecutivas
+          </label>
+        </div>
+      </div>
+
+      <div class="modalActions">
+        <button id="programVolunteerCancel" class="btn secondary" type="button">Cancelar</button>
+        <button class="btn primary" type="submit">Guardar</button>
       </div>
     </form>
   </div>
@@ -11437,6 +11626,12 @@ const FLASH_GUIDE_DATA={
   let customValues=[];
   let customRefVolunteers=[];
   let customRefSongs=[];
+  let customProgramVolunteerRows=[];
+  let customAllTeamVolunteers=[];
+  let customAllProgramMemberships=[];
+  let volunteerTeamProgramId=null;
+  let editingProgramVolunteerMembershipId=null;
+  let pendingVolunteerCell=null;
   let builderEditingProgramId=null;
 
   const programCards=document.getElementById("programCards");
@@ -11459,6 +11654,22 @@ const FLASH_GUIDE_DATA={
   const builderColumns=document.getElementById("programBuilderColumns");
   const weekdayChecks=[...document.querySelectorAll("#programWeekdayChecks input[type=checkbox]")];
   const deleteProgramBtn=document.getElementById("deleteCustomProgramBtn");
+
+  const customVolunteerProgramSelect=document.getElementById("customVolunteerProgramSelect");
+  const customVolunteerProgramList=document.getElementById("customVolunteerProgramList");
+  const customVolunteerProgramEmpty=document.getElementById("customVolunteerProgramEmpty");
+  const addCustomProgramVolunteer=document.getElementById("addCustomProgramVolunteer");
+
+  const programVolunteerModal=document.getElementById("programVolunteerModal");
+  const programVolunteerForm=document.getElementById("programVolunteerForm");
+  const programVolunteerModalTitle=document.getElementById("programVolunteerModalTitle");
+  const programVolunteerModalProgram=document.getElementById("programVolunteerModalProgram");
+  const programVolunteerExisting=document.getElementById("programVolunteerExisting");
+  const programVolunteerNewName=document.getElementById("programVolunteerNewName");
+  const programVolunteerNewNameWrap=document.getElementById("programVolunteerNewNameWrap");
+  const programVolunteerMin=document.getElementById("programVolunteerMin");
+  const programVolunteerMax=document.getElementById("programVolunteerMax");
+  const programVolunteerAvoid=document.getElementById("programVolunteerAvoid");
 
   months.forEach((m,i)=>customMonth?.add(new Option(m,i)));
   if(customMonth)customMonth.value=String(new Date().getMonth());
@@ -11565,6 +11776,7 @@ const FLASH_GUIDE_DATA={
 
     if(createBtn)createBtn.style.display=teamAdmin()?"inline-flex":"none";
     renderMobileProgramList();
+    renderVolunteerProgramSelector();
   }
 
   function renderMobileProgramList(){
@@ -11620,13 +11832,49 @@ const FLASH_GUIDE_DATA={
   window.loadProgramDefinitions=loadProgramDefinitions;
 
   async function loadProgramReferences(){
-    const [{data:vols,error:volError},{data:songRows,error:songError}]=await Promise.all([
+    const program=activeProgram();
+    if(!program){
+      customRefVolunteers=[];
+      customRefSongs=[];
+      customProgramVolunteerRows=[];
+      return;
+    }
+
+    const [
+      {data:vols,error:volError},
+      {data:songRows,error:songError},
+      {data:memberships,error:membershipError}
+    ]=await Promise.all([
       window.supabaseClient.from("volunteers").select("id,name,active").eq("active",true).order("name"),
-      window.supabaseClient.from("songs").select("id,name,artist,active").eq("active",true).order("name")
+      window.supabaseClient.from("songs").select("id,name,artist,active").eq("active",true).order("name"),
+      window.supabaseClient.from("program_volunteers")
+        .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,active")
+        .eq("program_id",program.id)
+        .eq("active",true)
     ]);
+
     if(volError)throw volError;
     if(songError)throw songError;
-    customRefVolunteers=vols||[];
+    if(membershipError)throw membershipError;
+
+    customAllTeamVolunteers=vols||[];
+    customProgramVolunteerRows=memberships||[];
+    const volunteerById=new Map(customAllTeamVolunteers.map(v=>[v.id,v]));
+
+    customRefVolunteers=customProgramVolunteerRows
+      .map(member=>{
+        const volunteer=volunteerById.get(member.volunteer_id);
+        if(!volunteer)return null;
+        return {
+          ...volunteer,
+          membership_id:member.id,
+          min_per_month:Number(member.min_per_month)||0,
+          max_per_month:member.max_per_month==null?null:Number(member.max_per_month),
+          avoid_consecutive:member.avoid_consecutive!==false
+        };
+      })
+      .filter(Boolean);
+
     customRefSongs=songRows||[];
   }
 
@@ -11726,6 +11974,10 @@ const FLASH_GUIDE_DATA={
       control=document.createElement("select");
       control.add(new Option("— seleccionar —",""));
       customRefVolunteers.forEach(v=>control.add(new Option(v.name,v.id)));
+      control.add(new Option(
+        customRefVolunteers.length?"＋ Añadir otro voluntario…":"＋ Añadir voluntario…",
+        "__add_program_volunteer__"
+      ));
       control.value=current?.volunteer_id||"";
     }else if(type==="song"){
       control=document.createElement("select");
@@ -11751,6 +12003,13 @@ const FLASH_GUIDE_DATA={
 
     control.disabled=!teamEditor();
     control.addEventListener("change",async()=>{
+      if(column.field_type==="volunteer"&&control.value==="__add_program_volunteer__"){
+        control.value=current?.volunteer_id||"";
+        await openProgramVolunteerModal(activeCustomProgramId,{
+          pendingCell:{entry,column,locked:current?.locked===true}
+        });
+        return;
+      }
       try{
         await saveCustomCell(entry,column,control.value,current?.locked===true);
         await loadActiveCustomProgram();
@@ -12046,6 +12305,8 @@ const FLASH_GUIDE_DATA={
 
     await loadProgramDefinitions();
     closeProgramBuilder();
+    volunteerTeamProgramId=programId;
+    renderVolunteerProgramSelector();
     window.showAppToast?.("Programación guardada.","success",1200);
     await openCustomProgram(programId);
   }
@@ -12068,6 +12329,315 @@ const FLASH_GUIDE_DATA={
     window.showAppToast?.("Programación eliminada.","success",1100);
   }
 
+
+  function selectedVolunteerProgram(){
+    return customPrograms.find(p=>p.id===volunteerTeamProgramId)||null;
+  }
+
+  function renderVolunteerProgramSelector(){
+    if(!customVolunteerProgramSelect)return;
+
+    const previous=customVolunteerProgramSelect.value||volunteerTeamProgramId||"";
+    customVolunteerProgramSelect.innerHTML="";
+
+    customPrograms.forEach(program=>{
+      customVolunteerProgramSelect.add(new Option(program.name,program.id));
+    });
+
+    const hasPrograms=customPrograms.length>0;
+    customVolunteerProgramEmpty.style.display=hasPrograms?"none":"block";
+    customVolunteerProgramList.style.display=hasPrograms?"grid":"none";
+    addCustomProgramVolunteer.style.display=hasPrograms&&teamEditor()?"inline-flex":"none";
+    customVolunteerProgramSelect.disabled=!hasPrograms;
+
+    if(!hasPrograms){
+      volunteerTeamProgramId=null;
+      customVolunteerProgramList.innerHTML="";
+      return;
+    }
+
+    const nextId=customPrograms.some(p=>p.id===previous)?previous:customPrograms[0].id;
+    volunteerTeamProgramId=nextId;
+    customVolunteerProgramSelect.value=nextId;
+    refreshCustomVolunteerTeam(nextId).catch(error=>{
+      console.error(error);
+      customVolunteerProgramList.innerHTML=`<div class="muted">No se pudo cargar este equipo de voluntarios.</div>`;
+    });
+  }
+
+  async function loadVolunteerDirectoryData(programId){
+    const [
+      {data:vols,error:volError},
+      {data:allMemberships,error:membershipError}
+    ]=await Promise.all([
+      window.supabaseClient.from("volunteers")
+        .select("id,name,active")
+        .eq("active",true)
+        .order("name"),
+      window.supabaseClient.from("program_volunteers")
+        .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,active")
+        .eq("active",true)
+    ]);
+
+    if(volError)throw volError;
+    if(membershipError)throw membershipError;
+
+    customAllTeamVolunteers=vols||[];
+    customAllProgramMemberships=allMemberships||[];
+
+    return {
+      volunteers:customAllTeamVolunteers,
+      memberships:customAllProgramMemberships,
+      current:customAllProgramMemberships.filter(m=>m.program_id===programId)
+    };
+  }
+
+  function volunteerSources(volunteerId,currentProgramId){
+    const sourceIds=customAllProgramMemberships
+      .filter(m=>m.volunteer_id===volunteerId&&m.program_id!==currentProgramId&&m.active!==false)
+      .map(m=>m.program_id);
+    return [...new Set(sourceIds)]
+      .map(id=>customPrograms.find(p=>p.id===id)?.name)
+      .filter(Boolean);
+  }
+
+  async function refreshCustomVolunteerTeam(programId){
+    if(!programId||!customVolunteerProgramList)return;
+    const program=customPrograms.find(p=>p.id===programId);
+    if(!program)return;
+
+    volunteerTeamProgramId=programId;
+    if(customVolunteerProgramSelect)customVolunteerProgramSelect.value=programId;
+
+    customVolunteerProgramList.innerHTML=`<div class="muted">Cargando equipo de ${escapeTeamHtml(program.name)}…</div>`;
+
+    const directory=await loadVolunteerDirectoryData(programId);
+    const volunteerById=new Map(directory.volunteers.map(v=>[v.id,v]));
+    const current=directory.current
+      .map(member=>({member,volunteer:volunteerById.get(member.volunteer_id)}))
+      .filter(x=>x.volunteer)
+      .sort((a,b)=>a.volunteer.name.localeCompare(b.volunteer.name,"es"));
+
+    if(!current.length){
+      customVolunteerProgramList.innerHTML=`
+        <div class="muted">
+          Esta programación todavía no tiene voluntarios. Puedes añadir una persona nueva o reutilizar una que ya esté en otra programación.
+        </div>`;
+      return;
+    }
+
+    customVolunteerProgramList.innerHTML=current.map(({member,volunteer})=>{
+      const max=member.max_per_month==null?"sin límite":member.max_per_month;
+      return `
+        <div class="customVolunteerMember">
+          <div class="customVolunteerMemberName">${escapeTeamHtml(volunteer.name)}</div>
+          <div class="customVolunteerMemberRules">
+            Mín. ${Number(member.min_per_month)||0} · Máx. ${escapeTeamHtml(max)}
+            ${member.avoid_consecutive!==false?" · Evitar consecutivos":""}
+          </div>
+          <div class="customVolunteerMemberActions">
+            ${teamEditor()?`
+              <button class="btn secondary" type="button" data-edit-program-volunteer="${member.id}">Editar</button>
+              <button class="btn danger" type="button" data-remove-program-volunteer="${member.id}">Quitar</button>
+            `:""}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    customVolunteerProgramList.querySelectorAll("[data-edit-program-volunteer]").forEach(btn=>{
+      btn.addEventListener("click",()=>openProgramVolunteerModal(programId,{
+        membershipId:btn.dataset.editProgramVolunteer
+      }));
+    });
+
+    customVolunteerProgramList.querySelectorAll("[data-remove-program-volunteer]").forEach(btn=>{
+      btn.addEventListener("click",()=>removeProgramVolunteer(programId,btn.dataset.removeProgramVolunteer));
+    });
+  }
+
+  async function openProgramVolunteerModal(programId,opts={}){
+    if(!teamEditor()){
+      window.showAppToast?.("Tu usuario no tiene permisos para modificar voluntarios.","error",1800);
+      return;
+    }
+
+    const program=customPrograms.find(p=>p.id===programId);
+    if(!program)return;
+
+    pendingVolunteerCell=opts.pendingCell||null;
+    editingProgramVolunteerMembershipId=opts.membershipId||null;
+
+    const directory=await loadVolunteerDirectoryData(programId);
+    const currentIds=new Set(directory.current.map(m=>m.volunteer_id));
+    const volunteerById=new Map(directory.volunteers.map(v=>[v.id,v]));
+    const editingMembership=editingProgramVolunteerMembershipId
+      ? directory.current.find(m=>m.id===editingProgramVolunteerMembershipId)
+      : null;
+
+    programVolunteerModalTitle.textContent=editingMembership?"Editar voluntario":"Añadir voluntario";
+    programVolunteerModalProgram.textContent=`Equipo: ${program.name}`;
+    programVolunteerExisting.innerHTML="";
+
+    if(editingMembership){
+      const volunteer=volunteerById.get(editingMembership.volunteer_id);
+      programVolunteerExisting.add(new Option(volunteer?.name||"Voluntario",editingMembership.volunteer_id));
+      programVolunteerExisting.value=editingMembership.volunteer_id;
+      programVolunteerExisting.disabled=true;
+      programVolunteerNewNameWrap.style.display="none";
+      programVolunteerMin.value=String(Number(editingMembership.min_per_month)||0);
+      programVolunteerMax.value=editingMembership.max_per_month==null?"":String(editingMembership.max_per_month);
+      programVolunteerAvoid.checked=editingMembership.avoid_consecutive!==false;
+    }else{
+      programVolunteerExisting.add(new Option("Crear una persona nueva",""));
+      directory.volunteers
+        .filter(v=>!currentIds.has(v.id))
+        .forEach(v=>{
+          const sources=volunteerSources(v.id,programId);
+          const suffix=sources.length?` · ya está en ${sources.join(", ")}`:" · voluntario existente";
+          programVolunteerExisting.add(new Option(`${v.name}${suffix}`,v.id));
+        });
+      programVolunteerExisting.disabled=false;
+      programVolunteerNewNameWrap.style.display="block";
+      programVolunteerNewName.value="";
+      programVolunteerMin.value="0";
+      programVolunteerMax.value="";
+      programVolunteerAvoid.checked=true;
+    }
+
+    const syncNameState=()=>{
+      const usingExisting=!!programVolunteerExisting.value;
+      programVolunteerNewName.disabled=usingExisting||!!editingMembership;
+      if(usingExisting)programVolunteerNewName.value="";
+    };
+    programVolunteerExisting.onchange=syncNameState;
+    syncNameState();
+
+    programVolunteerModal.classList.add("open");
+    programVolunteerModal.setAttribute("aria-hidden","false");
+    setTimeout(()=>{
+      if(!editingMembership&&!programVolunteerExisting.value)programVolunteerNewName.focus();
+      else programVolunteerMin.focus();
+    },0);
+  }
+
+  function closeProgramVolunteerModal(){
+    programVolunteerModal.classList.remove("open");
+    programVolunteerModal.setAttribute("aria-hidden","true");
+    pendingVolunteerCell=null;
+    editingProgramVolunteerMembershipId=null;
+  }
+
+  async function resolveVolunteerIdForMembership(){
+    if(editingProgramVolunteerMembershipId){
+      const membership=customAllProgramMemberships.find(m=>m.id===editingProgramVolunteerMembershipId);
+      if(!membership)throw new Error("No se encontró el voluntario.");
+      return membership.volunteer_id;
+    }
+
+    if(programVolunteerExisting.value)return programVolunteerExisting.value;
+
+    const name=programVolunteerNewName.value.trim();
+    if(!name)throw new Error("Escribe el nombre del voluntario o selecciona una persona existente.");
+
+    const {data:existing,error:findError}=await window.supabaseClient
+      .from("volunteers")
+      .select("id,name")
+      .eq("name",name)
+      .maybeSingle();
+    if(findError)throw findError;
+    if(existing?.id)return existing.id;
+
+    const {data:created,error:createError}=await window.supabaseClient
+      .from("volunteers")
+      .insert({name,active:true})
+      .select("id")
+      .single();
+    if(createError)throw createError;
+    return created.id;
+  }
+
+  async function saveProgramVolunteerMembership(){
+    const programId=volunteerTeamProgramId||activeCustomProgramId;
+    const program=customPrograms.find(p=>p.id===programId);
+    if(!program)throw new Error("No se encontró la programación.");
+
+    const volunteerId=await resolveVolunteerIdForMembership();
+    const min=Math.max(0,Number(programVolunteerMin.value)||0);
+    const maxRaw=programVolunteerMax.value.trim();
+    const max=maxRaw===""?null:Math.max(1,Number(maxRaw)||1);
+    if(max!==null&&max<min)throw new Error("El máximo mensual no puede ser menor que el mínimo.");
+
+    const payload={
+      team_id:window.currentTeam.id,
+      program_id:programId,
+      volunteer_id:volunteerId,
+      min_per_month:min,
+      max_per_month:max,
+      avoid_consecutive:programVolunteerAvoid.checked,
+      active:true,
+      updated_at:new Date().toISOString()
+    };
+
+    const {error}=await window.supabaseClient
+      .from("program_volunteers")
+      .upsert(payload,{onConflict:"program_id,volunteer_id"});
+    if(error)throw error;
+
+    if(pendingVolunteerCell&&activeCustomProgramId===programId){
+      await saveCustomCell(
+        pendingVolunteerCell.entry,
+        pendingVolunteerCell.column,
+        volunteerId,
+        pendingVolunteerCell.locked
+      );
+    }
+
+    closeProgramVolunteerModal();
+    await refreshCustomVolunteerTeam(programId);
+    if(activeCustomProgramId===programId)await loadActiveCustomProgram();
+    window.showAppToast?.("Voluntario añadido al equipo de la programación.","success",1300);
+  }
+
+  async function removeProgramVolunteer(programId,membershipId){
+    const directory=await loadVolunteerDirectoryData(programId);
+    const membership=directory.current.find(m=>m.id===membershipId);
+    if(!membership)return;
+
+    const volunteer=directory.volunteers.find(v=>v.id===membership.volunteer_id);
+    const ok=await window.appConfirm(
+      `¿Quitar a ${volunteer?.name||"este voluntario"} de esta programación?`,
+      {title:"Quitar voluntario",confirmText:"Quitar",tone:"danger",icon:"!"}
+    );
+    if(!ok)return;
+
+    const {data:entries,error:entryError}=await window.supabaseClient
+      .from("program_entries")
+      .select("id")
+      .eq("program_id",programId);
+    if(entryError)throw entryError;
+
+    const entryIds=(entries||[]).map(e=>e.id);
+    if(entryIds.length){
+      const {error:clearError}=await window.supabaseClient
+        .from("program_values")
+        .update({volunteer_id:null,updated_at:new Date().toISOString()})
+        .eq("volunteer_id",membership.volunteer_id)
+        .in("entry_id",entryIds);
+      if(clearError)throw clearError;
+    }
+
+    const {error}=await window.supabaseClient
+      .from("program_volunteers")
+      .delete()
+      .eq("id",membershipId);
+    if(error)throw error;
+
+    await refreshCustomVolunteerTeam(programId);
+    if(activeCustomProgramId===programId)await loadActiveCustomProgram();
+    window.showAppToast?.("Voluntario quitado de esta programación.","success",1100);
+  }
+
   function hasValue(row,column){
     if(!row)return false;
     if(column.field_type==="volunteer")return !!row.volunteer_id;
@@ -12086,13 +12656,19 @@ const FLASH_GUIDE_DATA={
     const payloads=[];
     const valueMap=new Map(customValues.map(v=>[`${v.entry_id}|${v.column_id}`,v]));
     const counts=new Map();
+    const volunteerCounts=new Map();
+
+    customValues.forEach(row=>{
+      if(row.volunteer_id){
+        volunteerCounts.set(row.volunteer_id,(volunteerCounts.get(row.volunteer_id)||0)+1);
+      }
+    });
 
     cols.forEach(col=>{
       customEntries.forEach(entry=>{
         const row=valueMap.get(`${entry.id}|${col.id}`);
         if(row){
-          const key=col.field_type==="volunteer"?row.volunteer_id:
-                    col.field_type==="song"?row.song_id:
+          const key=col.field_type==="song"?row.song_id:
                     col.field_type==="list"?row.option_value:null;
           if(key)counts.set(`${col.id}|${key}`,(counts.get(`${col.id}|${key}`)||0)+1);
         }
@@ -12101,7 +12677,12 @@ const FLASH_GUIDE_DATA={
 
     for(const col of cols){
       const choices=
-        col.field_type==="volunteer"?customRefVolunteers.map(v=>({id:v.id,label:v.name})):
+        col.field_type==="volunteer"?customRefVolunteers.map(v=>({
+          id:v.id,label:v.name,
+          min:Number(v.min_per_month)||0,
+          max:v.max_per_month==null?null:Number(v.max_per_month),
+          avoid:v.avoid_consecutive!==false
+        })):
         col.field_type==="song"?customRefSongs.map(s=>({id:s.id,label:s.name})):
         col.field_type==="list"?(safeOptions(col.options).choices||[]).map(x=>({id:x,label:x})):
         [];
@@ -12119,12 +12700,50 @@ const FLASH_GUIDE_DATA={
           continue;
         }
 
-        const ranked=[...choices].sort((a,b)=>{
-          const ac=counts.get(`${col.id}|${a.id}`)||0;
-          const bc=counts.get(`${col.id}|${b.id}`)||0;
-          if(ac!==bc)return ac-bc;
-          if(a.id===previous)return 1;
-          if(b.id===previous)return -1;
+        if(rebalance&&col.field_type==="volunteer"&&current?.volunteer_id){
+          volunteerCounts.set(
+            current.volunteer_id,
+            Math.max(0,(volunteerCounts.get(current.volunteer_id)||0)-1)
+          );
+        }
+
+        const alreadyUsedInEntry=new Set(
+          customValues
+            .filter(v=>v.entry_id===entry.id&&v.column_id!==col.id&&v.volunteer_id)
+            .map(v=>v.volunteer_id)
+        );
+        payloads
+          .filter(p=>p.entry_id===entry.id&&p.column_id!==col.id&&p.volunteer_id)
+          .forEach(p=>alreadyUsedInEntry.add(p.volunteer_id));
+
+        let availableChoices=choices;
+        if(col.field_type==="volunteer"){
+          const notDuplicated=choices.filter(choice=>!alreadyUsedInEntry.has(choice.id));
+          if(notDuplicated.length)availableChoices=notDuplicated;
+          const underMax=availableChoices.filter(choice=>
+            choice.max==null||(volunteerCounts.get(choice.id)||0)<choice.max
+          );
+          if(underMax.length)availableChoices=underMax;
+        }
+
+        const ranked=[...availableChoices].sort((a,b)=>{
+          if(col.field_type==="volunteer"){
+            const ac=volunteerCounts.get(a.id)||0;
+            const bc=volunteerCounts.get(b.id)||0;
+            const aNeeds=ac<a.min?0:1;
+            const bNeeds=bc<b.min?0:1;
+            if(aNeeds!==bNeeds)return aNeeds-bNeeds;
+            if(ac!==bc)return ac-bc;
+            const aConsecutive=a.avoid&&a.id===previous?1:0;
+            const bConsecutive=b.avoid&&b.id===previous?1:0;
+            if(aConsecutive!==bConsecutive)return aConsecutive-bConsecutive;
+          }else{
+            const ac=counts.get(`${col.id}|${a.id}`)||0;
+            const bc=counts.get(`${col.id}|${b.id}`)||0;
+            if(ac!==bc)return ac-bc;
+            if(a.id===previous)return 1;
+            if(b.id===previous)return -1;
+          }
           return String(a.label).localeCompare(String(b.label),"es");
         });
         const pick=ranked[0];
@@ -12148,7 +12767,11 @@ const FLASH_GUIDE_DATA={
         else continue;
 
         payloads.push(payload);
-        counts.set(`${col.id}|${pick.id}`,(counts.get(`${col.id}|${pick.id}`)||0)+1);
+        if(col.field_type==="volunteer"){
+          volunteerCounts.set(pick.id,(volunteerCounts.get(pick.id)||0)+1);
+        }else{
+          counts.set(`${col.id}|${pick.id}`,(counts.get(`${col.id}|${pick.id}`)||0)+1);
+        }
         previous=pick.id;
       }
     }
@@ -12208,13 +12831,41 @@ const FLASH_GUIDE_DATA={
   }
 
   // Events
+  customVolunteerProgramSelect?.addEventListener("change",()=>{
+    volunteerTeamProgramId=customVolunteerProgramSelect.value||null;
+    if(volunteerTeamProgramId){
+      refreshCustomVolunteerTeam(volunteerTeamProgramId).catch(error=>{
+        console.error(error);
+        window.showAppToast?.("No se pudo cargar el equipo de voluntarios.","error",1800);
+      });
+    }
+  });
+
+  addCustomProgramVolunteer?.addEventListener("click",()=>{
+    if(volunteerTeamProgramId){
+      openProgramVolunteerModal(volunteerTeamProgramId).catch(error=>{
+        console.error(error);
+        window.showAppToast?.("No se pudo abrir el formulario de voluntarios.","error",1800);
+      });
+    }
+  });
+
+  document.getElementById("programVolunteerCancel")?.addEventListener("click",closeProgramVolunteerModal);
+  programVolunteerForm?.addEventListener("submit",async event=>{
+    event.preventDefault();
+    try{
+      await saveProgramVolunteerMembership();
+    }catch(error){
+      console.error(error);
+      window.showAppToast?.(error.message||"No se pudo guardar el voluntario.","error",2200);
+    }
+  });
+
   createBtn?.addEventListener("click",()=>openProgramBuilder(null));
   document.getElementById("backToPrograms")?.addEventListener("click",()=>window.activateAppPanel("programs","Programación"));
   editStructureBtn?.addEventListener("click",()=>openProgramBuilder(activeCustomProgramId));
   document.getElementById("addProgramColumn")?.addEventListener("click",()=>addBuilderColumn({name:"Nueva columna",field_type:"volunteer"}));
-  document.getElementById("programBuilderClose")?.addEventListener("click",closeProgramBuilder);
   document.getElementById("programBuilderCancel")?.addEventListener("click",closeProgramBuilder);
-  builderModal?.addEventListener("click",e=>{if(e.target===builderModal)closeProgramBuilder()});
   builderForm?.addEventListener("submit",async e=>{
     e.preventDefault();
     try{
