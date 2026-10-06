@@ -5616,7 +5616,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 }
 </style>
 </head>
-<!-- Flash Program V76 - Emojis + bloqueos agrupados -->
+<!-- Flash Program V77 - Equipos visibles según programaciones reales -->
 <body class="readonly-mode">
 
 <div id="appLoadingScreen">
@@ -6060,7 +6060,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 <div id="volunteerSyncStatus" class="note" style="margin-bottom:12px">Voluntarios: esperando conexión con la base de datos…</div>
 
 <div class="volunteerTeamStack">
-  <details class="volunteerTeamAccordion" open>
+  <details id="legacyVolunteersBand" class="volunteerTeamAccordion" open>
     <summary>
       <span>Voluntarios de Banda</span>
       <span class="accordionHint">Abrir / cerrar</span>
@@ -6071,7 +6071,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
     </div>
   </details>
 
-  <details class="volunteerTeamAccordion">
+  <details id="legacyVolunteersYouth" class="volunteerTeamAccordion">
     <summary>
       <span>Voluntarios de Banda Jóvenes</span>
       <span class="accordionHint">Abrir / cerrar</span>
@@ -6082,7 +6082,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
     </div>
   </details>
 
-  <details class="volunteerTeamAccordion">
+  <details id="legacyVolunteersMedia" class="volunteerTeamAccordion">
     <summary>
       <span>Voluntarios de Medios</span>
       <span class="accordionHint">Abrir / cerrar</span>
@@ -6094,6 +6094,9 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
   </details>
 
   <div id="customVolunteerAccordions"></div>
+  <div id="volunteerTeamsEmpty" class="muted" style="display:none;padding:.85rem;text-align:center">
+    No hay programaciones con equipo de voluntarios.
+  </div>
 </div>
 
 <!-- Compatibilidad interna V70: se conserva oculto el selector único -->
@@ -6171,7 +6174,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
   <div id="availabilitySyncStatus" class="muted" style="margin:0 0 10px">Disponibilidad: esperando conexión con la base de datos…</div>
 
   <div class="availabilityTeamStack">
-    <details class="volunteerTeamAccordion" open>
+    <details id="legacyAvailabilityBand" class="volunteerTeamAccordion" open>
       <summary><span>Disponibilidad de Banda</span><span class="accordionHint">Abrir / cerrar</span></summary>
       <div class="volunteerTeamBody">
         <div class="row">
@@ -6183,7 +6186,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
       </div>
     </details>
 
-    <details class="volunteerTeamAccordion">
+    <details id="legacyAvailabilityMedia" class="volunteerTeamAccordion">
       <summary><span>Disponibilidad de Medios</span><span class="accordionHint">Abrir / cerrar</span></summary>
       <div class="volunteerTeamBody">
         <div class="row">
@@ -6200,8 +6203,8 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 </section>
 
 <section id="hist" class="panel">
-  <div class="card">
-    <h2>Historial de Banda y Medios</h2>
+  <div id="legacyHistoryCard" class="card">
+    <h2 id="legacyHistoryTitle">Historial</h2>
     <div class="row">
       <div><select id="ht"><option value="person">Personas</option><option value="song">Canciones</option></select></div>
       <div><input id="hq" placeholder="Buscar..."></div>
@@ -12529,6 +12532,7 @@ const FLASH_GUIDE_DATA={
   let builderEditingProgramId=null;
   let editingProgramRuleId=null;
   let hasLegacyPrograms=false;
+  let legacyProgramModules=new Set();
 
   const programCards=document.getElementById("programCards");
   const createBtn=document.getElementById("createCustomProgramBtn");
@@ -12819,17 +12823,77 @@ const FLASH_GUIDE_DATA={
     return days.map(dayLabel).join(" · ");
   }
 
+
+  function legacyModuleForBuiltin(item){
+    if(item.id==="builtin-worship")return "alabanza";
+    if(item.id==="builtin-youth")return "jovenes";
+    if(item.id==="builtin-media")return "multimedia";
+    return "";
+  }
+
+  function templateKeyForBuiltin(item){
+    if(item.id==="builtin-worship")return "band";
+    if(item.id==="builtin-youth")return "youth-band";
+    if(item.id==="builtin-media")return "media";
+    return "";
+  }
+
+  function visibleBuiltinPrograms(){
+    const templateKeys=new Set(customPrograms.map(p=>p.template_key||"custom"));
+    return BUILTIN_PROGRAMS.filter(item=>{
+      const module=legacyModuleForBuiltin(item);
+      const templateKey=templateKeyForBuiltin(item);
+
+      // It is not a real program for this team if that module has no saved services.
+      if(!module||!legacyProgramModules.has(module))return false;
+
+      // If the team already has the new editable template, do not duplicate the old module.
+      if(templateKey&&templateKeys.has(templateKey))return false;
+
+      return true;
+    });
+  }
+
+  function syncLegacyProgramSections(){
+    const visible=visibleBuiltinPrograms();
+    const pages=new Set(visible.map(item=>item.page));
+
+    const setVisible=(id,show)=>{
+      const el=document.getElementById(id);
+      if(el)el.style.display=show?"":"none";
+    };
+
+    // VOLUNTARIOS: show only teams that really exist.
+    setVisible("legacyVolunteersBand",pages.has("worship"));
+    setVisible("legacyVolunteersYouth",pages.has("youth"));
+    setVisible("legacyVolunteersMedia",pages.has("media"));
+
+    // DISPONIBILIDAD: the legacy app only had dedicated Banda/Medios panels.
+    setVisible("legacyAvailabilityBand",pages.has("worship"));
+    setVisible("legacyAvailabilityMedia",pages.has("media"));
+
+    // HISTORIAL antiguo: hide it entirely when no old modules are visible.
+    const legacyHistoryCard=document.getElementById("legacyHistoryCard");
+    if(legacyHistoryCard){
+      legacyHistoryCard.style.display=visible.length?"":"none";
+    }
+
+    const title=document.getElementById("legacyHistoryTitle");
+    if(title&&visible.length){
+      title.textContent=`Historial de ${visible.map(item=>item.name).join(" · ")}`;
+    }
+
+    const customVolunteerCount=customPrograms.filter(
+      program=>safeOptions(program.capabilities).volunteers!==false
+    ).length;
+    const legacyVolunteerCount=visible.length;
+    const empty=document.getElementById("volunteerTeamsEmpty");
+    if(empty)empty.style.display=(customVolunteerCount+legacyVolunteerCount)===0?"block":"none";
+  }
+
   function renderProgramHub(){
     if(!programCards)return;
-    const templateKeys=new Set(customPrograms.map(p=>p.template_key||"custom"));
-    const legacyCards=hasLegacyPrograms
-      ? BUILTIN_PROGRAMS.filter(item=>{
-          if(item.id==="builtin-worship")return !templateKeys.has("band");
-          if(item.id==="builtin-youth")return !templateKeys.has("youth-band");
-          if(item.id==="builtin-media")return !templateKeys.has("media");
-          return true;
-        })
-      : [];
+    const legacyCards=visibleBuiltinPrograms();
     const cards=[
       ...legacyCards.map(item=>`
         <article class="programCard">
@@ -12884,12 +12948,13 @@ const FLASH_GUIDE_DATA={
     syncCustomProgramSelectors();
     renderProgramTemplates();
     updateEmptyTeamExperience();
+    syncLegacyProgramSections();
   }
 
   function renderMobileProgramList(){
     if(!mobileProgramList)return;
     mobileProgramList.innerHTML="";
-    (hasLegacyPrograms?BUILTIN_PROGRAMS:[]).forEach(item=>{
+    visibleBuiltinPrograms().forEach(item=>{
       const btn=document.createElement("button");
       btn.type="button";
       btn.textContent=item.name;
@@ -12937,13 +13002,18 @@ const FLASH_GUIDE_DATA={
         .select("id,program_id,name,field_type,sort_order,required,fill_enabled,rebalance_enabled,lockable,options")
         .order("sort_order"),
       window.supabaseClient.from("services")
-        .select("id,module")
-        .limit(1)
+        .select("module")
+        .limit(1000)
     ]);
     if(defError)throw defError;
     if(colError)throw colError;
     if(legacyError)throw legacyError;
-    hasLegacyPrograms=(legacyRows||[]).length>0;
+    legacyProgramModules=new Set(
+      (legacyRows||[])
+        .map(row=>String(row.module||"").trim().toLowerCase())
+        .filter(Boolean)
+    );
+    hasLegacyPrograms=legacyProgramModules.size>0;
     customPrograms=defs||[];
     customProgramColumns=(cols||[]).map(c=>({...c,options:safeOptions(c.options)}));
     renderProgramHub();
@@ -13599,12 +13669,15 @@ const FLASH_GUIDE_DATA={
       template_key:program.template_key||"custom"
     }))];
 
-    const templateKeys=new Set(customPrograms.map(p=>p.template_key||"custom"));
-    if(hasLegacyPrograms){
-      if(!templateKeys.has("band"))models.unshift({id:"legacy-band",name:"Banda",kind:"legacy-band"});
-      if(!templateKeys.has("youth-band"))models.push({id:"legacy-youth",name:"Banda Jóvenes",kind:"legacy-youth"});
-      if(!templateKeys.has("media"))models.push({id:"legacy-media",name:"Medios",kind:"legacy-media"});
-    }
+    visibleBuiltinPrograms().forEach(item=>{
+      if(item.id==="builtin-worship"){
+        models.unshift({id:"legacy-band",name:item.name,kind:"legacy-band"});
+      }else if(item.id==="builtin-youth"){
+        models.push({id:"legacy-youth",name:item.name,kind:"legacy-youth"});
+      }else if(item.id==="builtin-media"){
+        models.push({id:"legacy-media",name:item.name,kind:"legacy-media"});
+      }
+    });
     return models;
   }
 
@@ -13808,7 +13881,7 @@ const FLASH_GUIDE_DATA={
     const prev=select.value;
     select.innerHTML="";
     if(includeBuiltins){
-      BUILTIN_PROGRAMS.forEach(p=>select.add(new Option(p.name,p.id)));
+      visibleBuiltinPrograms().forEach(p=>select.add(new Option(p.name,p.id)));
     }
     customPrograms.forEach(p=>select.add(new Option(p.name,p.id)));
     if([...select.options].some(o=>o.value===prev))select.value=prev;
@@ -13822,7 +13895,10 @@ const FLASH_GUIDE_DATA={
     if(customRenderProgram&&!customRenderProgram.value&&customPrograms[0])customRenderProgram.value=customPrograms[0].id;
     renderProgramRenderButtons();
     if(programSettingsSelect&&!programSettingsSelect.value){
-      programSettingsSelect.value=customPrograms[0]?.id||BUILTIN_PROGRAMS[0].id;
+      programSettingsSelect.value=
+        customPrograms[0]?.id||
+        visibleBuiltinPrograms()[0]?.id||
+        "";
     }
     renderProgramSettings().catch(console.error);
   }
@@ -13936,7 +14012,9 @@ const FLASH_GUIDE_DATA={
   function renderCustomVolunteerAccordions(){
     if(!customVolunteerAccordions)return;
     customVolunteerAccordions.innerHTML="";
-    customPrograms.forEach(program=>{
+    customPrograms
+      .filter(program=>safeOptions(program.capabilities).volunteers!==false)
+      .forEach(program=>{
       const details=document.createElement("details");
       details.className="volunteerTeamAccordion customProgramVolunteerAccordion";
       details.dataset.programId=program.id;
@@ -13974,7 +14052,9 @@ const FLASH_GUIDE_DATA={
   function renderCustomAvailabilityAccordions(){
     if(!customAvailabilityAccordions)return;
     customAvailabilityAccordions.innerHTML="";
-    customPrograms.forEach(program=>{
+    customPrograms
+      .filter(program=>safeOptions(program.capabilities).availability!==false)
+      .forEach(program=>{
       const details=document.createElement("details");
       details.className="volunteerTeamAccordion customAvailabilityAccordion";
       details.dataset.programId=program.id;
