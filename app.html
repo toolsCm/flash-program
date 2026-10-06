@@ -2,7 +2,7 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V72-TEMPLATES-BANDA-MEDIOS">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V73-TEMPLATES-REAL-DYNAMIC-HOME-RENDERS">
 <title>Flash Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5473,6 +5473,141 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 }
 </style>
 
+
+<style id="v73-real-templates">
+/* Inicio: una columna por programación */
+.homeProgramsTable{
+  width:100%;
+  border-collapse:collapse;
+}
+.homeProgramsTable th{
+  min-width:13rem;
+}
+.homeProgramsTable th:first-child,
+.homeProgramsTable td:first-child{
+  min-width:5.6rem !important;
+  width:5.6rem !important;
+  max-width:5.6rem !important;
+}
+.homeProgramCell{
+  min-width:13rem;
+  vertical-align:top !important;
+}
+.homeProgramGroup{
+  display:grid;
+  gap:.32rem;
+}
+.homeProgramLine{
+  display:grid;
+  grid-template-columns:minmax(5.7rem,.8fr) minmax(0,1fr);
+  gap:.4rem;
+  align-items:start;
+  line-height:1.3;
+}
+.homeProgramLine .key{
+  color:var(--muted);
+  font-weight:800;
+  font-size:.72rem;
+}
+.homeProgramSongs{
+  display:grid;
+  gap:.22rem;
+  margin-top:.35rem;
+  padding-top:.35rem;
+  border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent);
+}
+.homeProgramSongs span{
+  display:block;
+  font-size:.78rem;
+}
+.homeNoPrograms{
+  padding:1rem !important;
+  text-align:center;
+  color:var(--muted);
+}
+
+/* Las plantillas Banda/Medios mantienen la forma original:
+   Fecha + bloque de responsables + canciones/extras. */
+.templateProgramTable .templateResponsibilities,
+.templateProgramTable .templateSongs,
+.templateProgramTable .templateExtras{
+  min-width:18rem;
+  vertical-align:top;
+}
+.templateGroupedCell{
+  display:grid;
+  gap:.4rem;
+}
+.templateGroupedRow{
+  display:grid;
+  grid-template-columns:7.8rem minmax(10rem,1fr);
+  gap:.45rem;
+  align-items:center;
+}
+.templateGroupedRow .templateLabel{
+  color:var(--muted);
+  font-size:.72rem;
+  font-weight:850;
+  line-height:1.2;
+}
+.templateGroupedRow .customProgramCell{
+  min-width:0;
+}
+.templateGroupedRow .customProgramCell select,
+.templateGroupedRow .customProgramCell input{
+  min-width:10rem;
+}
+.templateSongRow{
+  grid-template-columns:1.5rem minmax(11rem,1fr);
+}
+.templateSongNumber{
+  color:var(--muted);
+  font-size:.75rem;
+  font-weight:900;
+  text-align:center;
+}
+
+/* Botones de render dinámicos */
+.programRenderButtons{
+  display:grid;
+  gap:.45rem;
+  margin-bottom:.7rem;
+}
+.programRenderButtons .btn{
+  width:100%;
+  justify-content:flex-start;
+  text-align:left;
+}
+.programRenderButtons .btn.active{
+  background:var(--accentSoft);
+  border-color:color-mix(in srgb,var(--accent) 65%,var(--line));
+}
+
+/* Programación: distingue plantilla sin convertirla en tabla genérica visualmente */
+.programCard.template-band,
+.programCard.template-youth-band{
+  border-color:color-mix(in srgb,var(--accent) 48%,var(--line));
+}
+.programCard.template-media{
+  border-color:color-mix(in srgb,#38bdf8 45%,var(--line));
+}
+
+@media(max-width:47.5rem){
+  .homeProgramsTable{
+    min-width:max-content;
+  }
+  .homeProgramCell{
+    min-width:15rem;
+  }
+  .templateProgramTable{
+    min-width:48rem !important;
+  }
+  .templateGroupedRow{
+    grid-template-columns:6.8rem minmax(9rem,1fr);
+  }
+}
+</style>
+
 </head>
 <body class="readonly-mode">
 
@@ -5816,13 +5951,10 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
     <div id="cal" style="display:none"></div>
 
     <div class="homeTableWrap">
-      <table class="homeTable">
+      <table id="homeProgramsTable" class="homeTable homeProgramsTable">
         <thead>
-          <tr>
+          <tr id="homeProgramsHead">
             <th>FECHA</th>
-            <th>RESPONSABLES</th>
-            <th>CANCIONES</th>
-            <th>MEDIOS</th>
           </tr>
         </thead>
         <tbody id="week"></tbody>
@@ -6112,13 +6244,13 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
   <div class="grid">
     <div class="card s4">
       <h2>Imágenes mensuales</h2>
-      <button id="iw" class="btn primary" style="width:100%;margin-bottom:8px">Generar Banda</button>
-      <button id="ij" class="btn secondary" style="width:100%;margin-bottom:8px">Generar Jóvenes</button>
-      <button id="im" class="btn secondary" style="width:100%;margin-bottom:8px" onclick="window.imageM&&window.imageM()">Generar Medios</button>
-
       <div class="customRenderBox">
-        <label>Programación personalizada</label>
+        <div class="muted" style="margin-bottom:.55rem">Las opciones se actualizan según las programaciones que existen en tu equipo.</div>
+        <div id="programRenderButtons" class="programRenderButtons"></div>
+
+        <label style="margin-top:.75rem">Programación</label>
         <select id="customRenderProgram"></select>
+
         <div class="twoFields" style="margin-top:.45rem">
           <div>
             <label>Año</label>
@@ -6129,7 +6261,8 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
             <select id="customRenderMonth"></select>
           </div>
         </div>
-        <button id="customRenderBtn" class="btn secondary" style="width:100%;margin-top:.55rem" type="button">Generar programación</button>
+
+        <button id="customRenderBtn" class="btn secondary" style="width:100%;margin-top:.55rem" type="button">Generar</button>
       </div>
 
       <button id="idown" class="btn success" style="width:100%;margin-top:8px">Descargar PNG</button>
@@ -7618,6 +7751,15 @@ function ensureHomeWeek(){
  if(!homeSelectedWeek || !sundays.includes(homeSelectedWeek)) homeSelectedWeek=sundays[0];
 }
 function renderHomeRows(dates){
+ if(typeof window.renderUnifiedHomeRows==="function" && window.currentTeam){
+   window.renderUnifiedHomeRows(dates).catch(error=>{
+     console.error("Inicio dinámico:",error);
+     week.innerHTML='<tr><td class="homeNoPrograms">No se pudo cargar Inicio.</td></tr>';
+   });
+   return;
+ }
+
+ // Fallback anterior mientras todavía no se ha cargado el motor de programaciones.
  week.innerHTML="";
  const homeY=+hy.value,homeM=+hm.value;
  const cachedW=typeof getCachedWorkingMonth==="function"?getCachedWorkingMonth("alabanza",homeY,homeM):(typeof getCachedConfirmedMonth==="function"?getCachedConfirmedMonth("alabanza",homeY,homeM):undefined);
@@ -7628,68 +7770,68 @@ function renderHomeRows(dates){
  dates.forEach(date=>{
    const worship=worshipData.find(x=>x.date===date);
    const media=mediaData.find(x=>x.date===date);
+   if(!worship&&!media)return;
    const tr=document.createElement("tr");
-
    const tdDate=document.createElement("td");
    tdDate.className="dateCol";
    const p=parts(date);
    tdDate.innerHTML=`<strong>${p.D}</strong><br><span class="muted">${months[p.M-1]}</span>`;
    tr.appendChild(tdDate);
 
-   const tdResp=document.createElement("td");
-   if(worship&&worship.assign?.length){
+   const tdW=document.createElement("td");
+   tdW.className="homeProgramCell";
+   if(worship){
      const groups={};
-     worship.assign.forEach(a=>(groups[a.role]??=[]).push(a.name));
-     const order=["Voz principal","Coros","Piano","Guitarra","Bajo","Batería"];
-     const homeRoleLabels={
-       "Voz principal":"Voz principal 🎙️",
-       "Coros":"Coros 🎤",
-       "Piano":"Piano 🎹",
-       "Guitarra":"Guitarra 🎸",
-       "Bajo":"Bajo 🪕",
-       "Batería":"Batería 🥁"
-     };
-     tdResp.innerHTML=`<div class="homeCellList">${order.map(role=>`<div class="line"><span class="key">${homeRoleLabels[role]||role}:</span><span>${(groups[role]||[]).join(", ")||"—"}</span></div>`).join("")}</div>`;
-   }else tdResp.innerHTML='<span class="homeEmpty">Pendiente de programar</span>';
-   tr.appendChild(tdResp);
+     worship.assign?.forEach(a=>(groups[a.role]??=[]).push(a.name));
+     tdW.innerHTML=`<div class="homeProgramGroup">
+       ${["Voz principal","Coros","Piano","Guitarra","Bajo","Batería"].map(role=>`
+         <div class="homeProgramLine"><span class="key">${role}</span><span>${(groups[role]||[]).join(", ")||"—"}</span></div>
+       `).join("")}
+       <div class="homeProgramSongs">${(worship.songs||[]).filter(Boolean).map(s=>`<span>• ${s.name}</span>`).join("")}</div>
+     </div>`;
+   }else tdW.innerHTML='<span class="homeEmpty">—</span>';
+   tr.appendChild(tdW);
 
-   const tdSongs=document.createElement("td");
-   if(worship&&worship.songs?.filter(Boolean).length){
-     tdSongs.innerHTML=`<div class="homeSongs">${worship.songs.filter(Boolean).map(song=>`<span>• ${song.name}${song.key?` <strong>(${song.key})</strong>`:""}</span>`).join("")}</div>`;
-   }else tdSongs.innerHTML='<span class="homeEmpty">Sin canciones asignadas</span>';
-   tr.appendChild(tdSongs);
-
-   const tdMedia=document.createElement("td");
+   const tdM=document.createElement("td");
+   tdM.className="homeProgramCell";
    if(media){
-     const homeMediaLabels={
-       "PC":"PC 💻",
-       "Camara":"Cámara 🎥",
-       "Diapositivas":"⏹️ Diapost."
-     };
-     tdMedia.innerHTML=`<div class="homeCellList">${mediaRoles.map(role=>`<div class="line"><span class="key">${homeMediaLabels[role]||role}:</span><span>${media[role]||"—"}</span></div>`).join("")}</div>`;
-   }else tdMedia.innerHTML='<span class="homeEmpty">Pendiente de programar</span>';
-   tr.appendChild(tdMedia);
+     tdM.innerHTML=`<div class="homeProgramGroup">${mediaRoles.map(role=>`
+       <div class="homeProgramLine"><span class="key">${role==="Camara"?"Cámara":role}</span><span>${media[role]||"—"}</span></div>
+     `).join("")}</div>`;
+   }else tdM.innerHTML='<span class="homeEmpty">—</span>';
+   tr.appendChild(tdM);
 
    week.appendChild(tr);
  });
 }
+
 function renderWeek(){
  const Y=+hy.value,M=+hm.value;
  const sundays=getDates(Y,M,[0]);
 
  if(homeViewMode==="month"){
-   homeSubtitle.textContent="Vista previa mensual. Cada fila corresponde a una semana.";
+   homeSubtitle.textContent="Vista mensual. Aquí aparecen todas las programaciones del equipo.";
    homeWeekControls.style.display="";
    weekLabel.textContent=`${months[M]} ${Y}`;
-   renderHomeRows(sundays);
+   const monthDates=[];
+   const total=new Date(Y,M+1,0).getDate();
+   for(let d=1;d<=total;d++)monthDates.push(`${Y}-${String(M+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`);
+   renderHomeRows(monthDates);
  }else{
-   homeSubtitle.textContent="Vista semanal. Aquí ves rápidamente a quién le corresponde servir.";
+   homeSubtitle.textContent="Vista semanal. Cada programación aparece como una columna.";
    homeWeekControls.style.display="flex";
    ensureHomeWeek();
    if(!homeSelectedWeek){week.innerHTML="";weekLabel.textContent="Sin semanas";return}
    const p=parts(homeSelectedWeek);
    weekLabel.innerHTML=`Semana del domingo<br>${p.D} de ${months[p.M-1]}`;
-   renderHomeRows([homeSelectedWeek]);
+   const start=dObj(homeSelectedWeek);
+   const weekDates=[];
+   for(let i=0;i<7;i++){
+     const d=new Date(start);
+     d.setDate(start.getDate()+i);
+     weekDates.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`);
+   }
+   renderHomeRows(weekDates);
  }
 }
 function setHomeView(mode){
@@ -12438,6 +12580,7 @@ const FLASH_GUIDE_DATA={
   const customRenderProgram=document.getElementById("customRenderProgram");
   const customRenderYear=document.getElementById("customRenderYear");
   const customRenderMonth=document.getElementById("customRenderMonth");
+  const programRenderButtons=document.getElementById("programRenderButtons");
 
   const programSettingsSelect=document.getElementById("programSettingsSelect");
   const programSettingsCustom=document.getElementById("programSettingsCustom");
@@ -12540,6 +12683,16 @@ const FLASH_GUIDE_DATA={
         description:`Creada desde la plantilla ${template.name}`,
         date_mode:template.weekdays.length?"mixed":"manual",
         weekdays:template.weekdays,
+        template_key:template.key,
+        capabilities:{
+          volunteers:true,
+          availability:true,
+          rotation:true,
+          rules:true,
+          history:true,
+          render:true,
+          songs:["band","youth-band"].includes(template.key)
+        },
         active:true,
         updated_at:new Date().toISOString()
       })
@@ -12626,7 +12779,15 @@ const FLASH_GUIDE_DATA={
 
   function renderProgramHub(){
     if(!programCards)return;
-    const legacyCards=hasLegacyPrograms?BUILTIN_PROGRAMS:[];
+    const templateKeys=new Set(customPrograms.map(p=>p.template_key||"custom"));
+    const legacyCards=hasLegacyPrograms
+      ? BUILTIN_PROGRAMS.filter(item=>{
+          if(item.id==="builtin-worship")return !templateKeys.has("band");
+          if(item.id==="builtin-youth")return !templateKeys.has("youth-band");
+          if(item.id==="builtin-media")return !templateKeys.has("media");
+          return true;
+        })
+      : [];
     const cards=[
       ...legacyCards.map(item=>`
         <article class="programCard">
@@ -12644,10 +12805,10 @@ const FLASH_GUIDE_DATA={
         const cols=columnsFor(program.id);
         const summary=cols.length?cols.map(c=>c.name).join(" · "):"Sin columnas";
         return `
-          <article class="programCard">
+          <article class="programCard template-${escapeTeamHtml(program.template_key||"custom")}">
             <div class="programCardTop">
               <div><h3>${escapeTeamHtml(program.name)}</h3></div>
-              <span class="programTypeBadge">Personalizada</span>
+              <span class="programTypeBadge">${program.template_key&&program.template_key!=="custom"?"Plantilla":"Personalizada"}</span>
             </div>
             <div class="programCardMeta">
               ${escapeTeamHtml(program.description||programDaysText(program))}<br>
@@ -12723,7 +12884,7 @@ const FLASH_GUIDE_DATA={
       {data:legacyRows,error:legacyError}
     ]=await Promise.all([
       window.supabaseClient.from("program_definitions")
-        .select("id,name,description,date_mode,weekdays,active,sort_order,created_at")
+        .select("id,name,description,date_mode,weekdays,active,sort_order,created_at,template_key,capabilities")
         .eq("active",true)
         .order("sort_order")
         .order("created_at"),
@@ -12741,6 +12902,7 @@ const FLASH_GUIDE_DATA={
     customPrograms=defs||[];
     customProgramColumns=(cols||[]).map(c=>({...c,options:safeOptions(c.options)}));
     renderProgramHub();
+    if(typeof renderWeek==="function")renderWeek();
   }
   window.loadProgramDefinitions=loadProgramDefinitions;
 
@@ -12984,10 +13146,124 @@ const FLASH_GUIDE_DATA={
     const program=activeProgram();
     if(!program||!customHead||!customBody)return;
     const cols=columnsFor(program.id);
+    const template=program.template_key||"custom";
 
-    customHead.innerHTML=`<tr><th>FECHA</th>${cols.map(c=>`<th>${escapeTeamHtml(c.name)}</th>`).join("")}</tr>`;
+    const volunteerCols=cols.filter(c=>c.field_type==="volunteer");
+    const songCols=cols.filter(c=>c.field_type==="song");
+    const extraCols=cols.filter(c=>!["volunteer","song"].includes(c.field_type));
+
+    const groupedBand=["band","youth-band"].includes(template);
+    const groupedMedia=template==="media";
+
     customBody.innerHTML="";
+    document.getElementById("customProgramTable")?.classList.toggle("templateProgramTable",groupedBand||groupedMedia);
 
+    if(groupedBand){
+      customHead.innerHTML=`
+        <tr>
+          <th>FECHA</th>
+          <th>RESPONSABILIDADES</th>
+          <th>CANCIONES</th>
+          ${extraCols.map(c=>`<th>${escapeTeamHtml(c.name)}</th>`).join("")}
+        </tr>`;
+
+      customEntries.forEach(entry=>{
+        const tr=document.createElement("tr");
+
+        const date=document.createElement("td");
+        date.textContent=pretty(entry.service_date);
+        tr.appendChild(date);
+
+        const resp=document.createElement("td");
+        resp.className="templateResponsibilities";
+        const respWrap=document.createElement("div");
+        respWrap.className="templateGroupedCell";
+        volunteerCols.forEach(column=>{
+          const row=document.createElement("div");
+          row.className="templateGroupedRow";
+          const label=document.createElement("span");
+          label.className="templateLabel";
+          label.textContent=column.name;
+          row.appendChild(label);
+          row.appendChild(makeCellControl(entry,column,valueFor(entry.id,column.id)));
+          respWrap.appendChild(row);
+        });
+        resp.appendChild(respWrap);
+        tr.appendChild(resp);
+
+        const songsTd=document.createElement("td");
+        songsTd.className="templateSongs";
+        const songsWrap=document.createElement("div");
+        songsWrap.className="templateGroupedCell";
+        songCols.forEach((column,index)=>{
+          const row=document.createElement("div");
+          row.className="templateGroupedRow templateSongRow";
+          const number=document.createElement("span");
+          number.className="templateSongNumber";
+          number.textContent=String(index+1);
+          row.appendChild(number);
+          row.appendChild(makeCellControl(entry,column,valueFor(entry.id,column.id)));
+          songsWrap.appendChild(row);
+        });
+        songsTd.appendChild(songsWrap);
+        tr.appendChild(songsTd);
+
+        extraCols.forEach(column=>{
+          const td=document.createElement("td");
+          td.appendChild(makeCellControl(entry,column,valueFor(entry.id,column.id)));
+          tr.appendChild(td);
+        });
+
+        customBody.appendChild(tr);
+      });
+      return;
+    }
+
+    if(groupedMedia){
+      customHead.innerHTML=`
+        <tr>
+          <th>FECHA</th>
+          <th>RESPONSABLES</th>
+          ${extraCols.map(c=>`<th>${escapeTeamHtml(c.name)}</th>`).join("")}
+        </tr>`;
+
+      customEntries.forEach(entry=>{
+        const tr=document.createElement("tr");
+
+        const date=document.createElement("td");
+        date.textContent=pretty(entry.service_date);
+        tr.appendChild(date);
+
+        const resp=document.createElement("td");
+        resp.className="templateResponsibilities";
+        const wrap=document.createElement("div");
+        wrap.className="templateGroupedCell";
+        volunteerCols.forEach(column=>{
+          const row=document.createElement("div");
+          row.className="templateGroupedRow";
+          const label=document.createElement("span");
+          label.className="templateLabel";
+          label.textContent=column.name;
+          row.appendChild(label);
+          row.appendChild(makeCellControl(entry,column,valueFor(entry.id,column.id)));
+          wrap.appendChild(row);
+        });
+        resp.appendChild(wrap);
+        tr.appendChild(resp);
+
+        extraCols.forEach(column=>{
+          const td=document.createElement("td");
+          td.appendChild(makeCellControl(entry,column,valueFor(entry.id,column.id)));
+          tr.appendChild(td);
+        });
+
+        customBody.appendChild(tr);
+      });
+      return;
+    }
+
+    // Programación completamente personalizada
+    customHead.innerHTML=`<tr><th>FECHA</th>${cols.map(c=>`<th>${escapeTeamHtml(c.name)}</th>`).join("")}</tr>`;
     customEntries.forEach(entry=>{
       const tr=document.createElement("tr");
       const date=document.createElement("td");
@@ -13161,6 +13437,12 @@ const FLASH_GUIDE_DATA={
       description:builderDescription.value.trim()||null,
       date_mode:weekdays.length?"mixed":"manual",
       weekdays,
+      template_key:builderEditingProgramId
+        ? (customPrograms.find(p=>p.id===builderEditingProgramId)?.template_key||"custom")
+        : "custom",
+      capabilities:builderEditingProgramId
+        ? (customPrograms.find(p=>p.id===builderEditingProgramId)?.capabilities||{})
+        : {volunteers:true,availability:true,rotation:true,rules:true,history:true,render:true},
       active:true,
       updated_at:new Date().toISOString()
     };
@@ -13250,6 +13532,219 @@ const FLASH_GUIDE_DATA={
     return customPrograms.find(p=>p.id===id)||null;
   }
 
+
+  function getHomeProgramModels(){
+    const models=[...customPrograms.map(program=>({
+      id:program.id,
+      name:program.name,
+      kind:"custom",
+      template_key:program.template_key||"custom"
+    }))];
+
+    const templateKeys=new Set(customPrograms.map(p=>p.template_key||"custom"));
+    if(hasLegacyPrograms){
+      if(!templateKeys.has("band"))models.unshift({id:"legacy-band",name:"Banda",kind:"legacy-band"});
+      if(!templateKeys.has("youth-band"))models.push({id:"legacy-youth",name:"Banda Jóvenes",kind:"legacy-youth"});
+      if(!templateKeys.has("media"))models.push({id:"legacy-media",name:"Medios",kind:"legacy-media"});
+    }
+    return models;
+  }
+
+  function allDatesBetween(startIso,endIsoInclusive){
+    const out=[];
+    let cur=dObj(startIso);
+    const end=dObj(endIsoInclusive);
+    while(cur<=end){
+      out.push(`${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,"0")}-${String(cur.getDate()).padStart(2,"0")}`);
+      cur.setDate(cur.getDate()+1);
+    }
+    return out;
+  }
+
+  function legacyHomeCell(model,date,year,monthZero){
+    if(model.kind==="legacy-band"||model.kind==="legacy-youth"){
+      const module=model.kind==="legacy-band"?"alabanza":"jovenes";
+      const cached=typeof getCachedWorkingMonth==="function"
+        ? getCachedWorkingMonth(module,year,monthZero)
+        : (typeof getCachedConfirmedMonth==="function"?getCachedConfirmedMonth(module,year,monthZero):undefined);
+
+      let source=cached;
+      if(source===undefined){
+        if(module==="alabanza"&&typeof wy!=="undefined"&&+wy.value===year&&+wm.value===monthZero)source=(cw||wmonth);
+        else if(module==="jovenes"&&typeof jy!=="undefined"&&+jy.value===year&&+jm.value===monthZero)source=(cj||jmonth);
+        else source=[];
+      }
+
+      const schedule=(source||[]).find(x=>x.date===date);
+      if(!schedule)return "";
+
+      const groups={};
+      (schedule.assign||[]).forEach(a=>(groups[a.role]??=[]).push(a.name));
+      const roles=["Voz principal","Coros","Piano","Guitarra","Bajo","Batería"];
+      const responsibilities=roles.map(role=>`
+        <div class="homeProgramLine">
+          <span class="key">${escapeTeamHtml(role)}</span>
+          <span>${escapeTeamHtml((groups[role]||[]).join(", ")||"—")}</span>
+        </div>`).join("");
+
+      const songs=(schedule.songs||[]).filter(Boolean).map(song=>
+        `<span>• ${escapeTeamHtml(song.name)}${song.key?` <strong>(${escapeTeamHtml(song.key)})</strong>`:""}</span>`
+      ).join("");
+
+      return `<div class="homeProgramGroup">${responsibilities}${songs?`<div class="homeProgramSongs">${songs}</div>`:""}</div>`;
+    }
+
+    if(model.kind==="legacy-media"){
+      const cached=typeof getCachedWorkingMonth==="function"
+        ? getCachedWorkingMonth("multimedia",year,monthZero)
+        : (typeof getCachedConfirmedMonth==="function"?getCachedConfirmedMonth("multimedia",year,monthZero):undefined);
+      const source=cached!==undefined?cached:((typeof my!=="undefined"&&+my.value===year&&+mm.value===monthZero)?(cm||mmonth):[]);
+      const schedule=(source||[]).find(x=>x.date===date);
+      if(!schedule)return "";
+      return `<div class="homeProgramGroup">${mediaRoles.map(role=>`
+        <div class="homeProgramLine">
+          <span class="key">${escapeTeamHtml(role==="Camara"?"Cámara":role)}</span>
+          <span>${escapeTeamHtml(schedule[role]||"—")}</span>
+        </div>`).join("")}</div>`;
+    }
+
+    return "";
+  }
+
+  window.renderUnifiedHomeRows=async function(dates){
+    const tbody=document.getElementById("week");
+    const head=document.getElementById("homeProgramsHead");
+    if(!tbody||!head)return;
+
+    const models=getHomeProgramModels();
+    head.innerHTML=`<th>FECHA</th>${models.map(m=>`<th>${escapeTeamHtml(m.name)}</th>`).join("")}`;
+
+    if(!models.length){
+      tbody.innerHTML=`<tr><td colspan="1" class="homeNoPrograms">Todavía no hay programaciones.</td></tr>`;
+      return;
+    }
+
+    const isoDates=[...new Set(dates)].sort();
+    if(!isoDates.length){
+      tbody.innerHTML=`<tr><td colspan="${models.length+1}" class="homeNoPrograms">No hay fechas para mostrar.</td></tr>`;
+      return;
+    }
+
+    const customModels=models.filter(m=>m.kind==="custom");
+    const customIds=customModels.map(m=>m.id);
+    let entries=[],values=[],vols=[],songsRows=[];
+
+    if(customIds.length){
+      const start=isoDates[0];
+      const endDate=dObj(isoDates[isoDates.length-1]);
+      endDate.setDate(endDate.getDate()+1);
+      const end=`${endDate.getFullYear()}-${String(endDate.getMonth()+1).padStart(2,"0")}-${String(endDate.getDate()).padStart(2,"0")}`;
+
+      const [
+        {data:entryRows,error:e1},
+        {data:volRows,error:e2},
+        {data:songRows,error:e3}
+      ]=await Promise.all([
+        window.supabaseClient.from("program_entries")
+          .select("id,program_id,service_date,status")
+          .in("program_id",customIds)
+          .gte("service_date",start)
+          .lt("service_date",end)
+          .order("service_date"),
+        window.supabaseClient.from("volunteers").select("id,name"),
+        window.supabaseClient.from("songs").select("id,name,artist")
+      ]);
+      if(e1)throw e1;if(e2)throw e2;if(e3)throw e3;
+      entries=entryRows||[];vols=volRows||[];songsRows=songRows||[];
+
+      const entryIds=entries.map(e=>e.id);
+      if(entryIds.length){
+        const {data:valueRows,error:e4}=await window.supabaseClient.from("program_values")
+          .select("entry_id,column_id,volunteer_id,song_id,text_value,number_value,option_value")
+          .in("entry_id",entryIds);
+        if(e4)throw e4;
+        values=valueRows||[];
+      }
+    }
+
+    const volunteerMap=new Map(vols.map(v=>[v.id,v.name]));
+    const songMap=new Map(songsRows.map(s=>[s.id,s.name]));
+    const entryByProgramDate=new Map(entries.map(e=>[`${e.program_id}|${e.service_date}`,e]));
+    const valuesByEntry=new Map();
+    values.forEach(v=>{
+      if(!valuesByEntry.has(v.entry_id))valuesByEntry.set(v.entry_id,[]);
+      valuesByEntry.get(v.entry_id).push(v);
+    });
+
+    function valueText(column,value){
+      if(!value)return "—";
+      if(column.field_type==="volunteer")return volunteerMap.get(value.volunteer_id)||"—";
+      if(column.field_type==="song")return songMap.get(value.song_id)||"—";
+      if(column.field_type==="number")return value.number_value??"—";
+      if(column.field_type==="list")return value.option_value||"—";
+      return value.text_value||"—";
+    }
+
+    function customHomeCell(model,date){
+      const entry=entryByProgramDate.get(`${model.id}|${date}`);
+      if(!entry)return "";
+      const cols=columnsFor(model.id);
+      const valueMap=new Map((valuesByEntry.get(entry.id)||[]).map(v=>[v.column_id,v]));
+      const template=model.template_key||"custom";
+
+      if(["band","youth-band"].includes(template)){
+        const volunteerCols=cols.filter(c=>c.field_type==="volunteer");
+        const songCols=cols.filter(c=>c.field_type==="song");
+        const extras=cols.filter(c=>!["volunteer","song"].includes(c.field_type));
+
+        return `<div class="homeProgramGroup">
+          ${volunteerCols.map(c=>`
+            <div class="homeProgramLine">
+              <span class="key">${escapeTeamHtml(c.name)}</span>
+              <span>${escapeTeamHtml(valueText(c,valueMap.get(c.id)))}</span>
+            </div>`).join("")}
+          ${songCols.length?`<div class="homeProgramSongs">${songCols.map((c,i)=>
+            `<span>${i+1}. ${escapeTeamHtml(valueText(c,valueMap.get(c.id)))}</span>`
+          ).join("")}</div>`:""}
+          ${extras.map(c=>`
+            <div class="homeProgramLine">
+              <span class="key">${escapeTeamHtml(c.name)}</span>
+              <span>${escapeTeamHtml(valueText(c,valueMap.get(c.id)))}</span>
+            </div>`).join("")}
+        </div>`;
+      }
+
+      return `<div class="homeProgramGroup">${cols.map(c=>`
+        <div class="homeProgramLine">
+          <span class="key">${escapeTeamHtml(c.name)}</span>
+          <span>${escapeTeamHtml(valueText(c,valueMap.get(c.id)))}</span>
+        </div>`).join("")}</div>`;
+    }
+
+    const year=Number(document.getElementById("hy")?.value||new Date().getFullYear());
+    const monthZero=Number(document.getElementById("hm")?.value||new Date().getMonth());
+
+    const rows=[];
+    isoDates.forEach(date=>{
+      const cells=models.map(model=>{
+        if(model.kind==="custom")return customHomeCell(model,date);
+        return legacyHomeCell(model,date,year,monthZero);
+      });
+
+      const hasAny=cells.some(Boolean);
+      if(!hasAny)return;
+
+      const p=parts(date);
+      rows.push(`
+        <tr>
+          <td class="dateCol"><strong>${p.D}</strong><br><span class="muted">${months[p.M-1]}</span></td>
+          ${cells.map(cell=>`<td class="homeProgramCell">${cell||'<span class="homeEmpty">—</span>'}</td>`).join("")}
+        </tr>`);
+    });
+
+    tbody.innerHTML=rows.join("")||`<tr><td colspan="${models.length+1}" class="homeNoPrograms">No hay programaciones en este periodo.</td></tr>`;
+  };
+
   function syncSelect(select,includeBuiltins=false){
     if(!select)return;
     const prev=select.value;
@@ -13267,6 +13762,7 @@ const FLASH_GUIDE_DATA={
     syncSelect(programSettingsSelect,true);
     if(customHistoryProgram&&!customHistoryProgram.value&&customPrograms[0])customHistoryProgram.value=customPrograms[0].id;
     if(customRenderProgram&&!customRenderProgram.value&&customPrograms[0])customRenderProgram.value=customPrograms[0].id;
+    renderProgramRenderButtons();
     if(programSettingsSelect&&!programSettingsSelect.value){
       programSettingsSelect.value=customPrograms[0]?.id||BUILTIN_PROGRAMS[0].id;
     }
@@ -13563,113 +14059,167 @@ const FLASH_GUIDE_DATA={
     if(!canvas)return;
     const ctx=canvas.getContext("2d");
 
+    const template=program.template_key||"custom";
+    const volunteerCols=columns.filter(c=>c.field_type==="volunteer");
+    const songCols=columns.filter(c=>c.field_type==="song");
+    const extraCols=columns.filter(c=>!["volunteer","song"].includes(c.field_type));
+
+    let displayCols;
+    if(["band","youth-band"].includes(template)){
+      displayCols=[
+        {kind:"date",name:"FECHA"},
+        {kind:"responsibilities",name:"RESPONSABILIDADES"},
+        {kind:"songs",name:"CANCIONES"},
+        ...extraCols.map(c=>({kind:"column",name:c.name,column:c}))
+      ];
+    }else if(template==="media"){
+      displayCols=[
+        {kind:"date",name:"FECHA"},
+        {kind:"responsibilities",name:"RESPONSABLES"},
+        ...extraCols.map(c=>({kind:"column",name:c.name,column:c}))
+      ];
+    }else{
+      displayCols=[
+        {kind:"date",name:"FECHA"},
+        ...columns.map(c=>({kind:"column",name:c.name,column:c}))
+      ];
+    }
+
     const W=1500;
     const margin=48;
-    const titleH=88;
-    const headerH=72;
-    const rowH=78;
-    const cols=[{id:"date",name:"FECHA"},...columns];
+    const titleH=84;
+    const headerH=70;
+    const baseRowH=(["band","youth-band"].includes(template)?220:template==="media"?150:78);
     const tableW=W-(margin*2);
 
     const widths=[];
-    const fixedDate=Math.min(190,Math.max(150,tableW*.14));
-    const other=(tableW-fixedDate)/Math.max(1,columns.length);
-    widths.push(fixedDate);
-    columns.forEach(()=>widths.push(other));
+    if(["band","youth-band"].includes(template)){
+      widths.push(165,665,420);
+      const remaining=tableW-(165+665+420);
+      extraCols.forEach(()=>widths.push(Math.max(160,remaining/Math.max(1,extraCols.length))));
+    }else if(template==="media"){
+      widths.push(175,760);
+      const remaining=tableW-(175+760);
+      extraCols.forEach(()=>widths.push(Math.max(170,remaining/Math.max(1,extraCols.length))));
+    }else{
+      const dateW=175;
+      const other=(tableW-dateW)/Math.max(1,columns.length);
+      widths.push(dateW);
+      columns.forEach(()=>widths.push(other));
+    }
 
-    const H=Math.max(
-      420,
-      (margin*2)+titleH+headerH+(rowH*Math.max(1,entries.length))
-    );
+    // normalize if special widths exceed/under table width
+    const sum=widths.reduce((a,b)=>a+b,0);
+    if(sum!==tableW&&widths.length){
+      const diff=tableW-sum;
+      widths[widths.length-1]+=diff;
+    }
 
+    const H=Math.max(430,(margin*2)+titleH+headerH+(baseRowH*Math.max(1,entries.length)));
     canvas.width=W;
     canvas.height=H;
 
     ctx.fillStyle="#0b1020";
     ctx.fillRect(0,0,W,H);
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
 
     let y=margin;
 
-    // Título enmarcado: ocupa exactamente todo el ancho de la tabla.
+    // Título enmarcado sobre toda la tabla.
     ctx.fillStyle="#18213b";
     ctx.fillRect(margin,y,tableW,titleH);
     ctx.strokeStyle="#6171bb";
     ctx.lineWidth=2;
     ctx.strokeRect(margin,y,tableW,titleH);
-
-    ctx.textAlign="center";
-    ctx.textBaseline="middle";
     ctx.fillStyle="#ffffff";
     ctx.font="700 31px Arial";
-    ctx.fillText(
-      `${program.name.toUpperCase()} · ${months[Number(customRenderMonth.value)].toUpperCase()} ${customRenderYear.value}`,
-      margin+(tableW/2),
-      y+(titleH/2),
-      tableW-40
-    );
+
+    let title=`${program.name.toUpperCase()} · ${months[Number(customRenderMonth.value)].toUpperCase()} ${customRenderYear.value}`;
+    while(title.length>2&&ctx.measureText(title).width>tableW-40)title=title.slice(0,-2)+"…";
+    ctx.fillText(title,margin+(tableW/2),y+(titleH/2),tableW-40);
 
     y+=titleH;
-
-    // Encabezados de columnas
     let x=margin;
-    cols.forEach((col,i)=>{
+
+    displayCols.forEach((col,i)=>{
       ctx.fillStyle="#34489a";
       ctx.fillRect(x,y,widths[i],headerH);
       ctx.strokeStyle="#6171bb";
       ctx.strokeRect(x,y,widths[i],headerH);
       ctx.fillStyle="#ffffff";
-      ctx.font="700 20px Arial";
-
+      ctx.font="700 19px Arial";
       let label=String(col.name).toUpperCase();
-      while(label.length>1&&ctx.measureText(label).width>widths[i]-18){
-        label=label.slice(0,-2)+"…";
-      }
+      while(label.length>2&&ctx.measureText(label).width>widths[i]-18)label=label.slice(0,-2)+"…";
       ctx.fillText(label,x+(widths[i]/2),y+(headerH/2),widths[i]-18);
       x+=widths[i];
     });
 
     y+=headerH;
-
     const valueMap=new Map(values.map(v=>[`${v.entry_id}|${v.column_id}`,v]));
+    const rows=entries.length?entries:[{id:"__empty__",service_date:""}];
 
-    const rows=entries.length?entries:[{
-      id:"__empty__",
-      service_date:"",
-      status:"draft"
-    }];
+    function textFor(column,entryId){
+      const val=valueMap.get(`${entryId}|${column.id}`);
+      if(!val)return "";
+      if(column.field_type==="volunteer")return volunteersMap.get(val.volunteer_id)||"";
+      if(column.field_type==="song")return songsMap.get(val.song_id)||"";
+      if(column.field_type==="number")return val.number_value??"";
+      if(column.field_type==="list")return val.option_value||"";
+      return val.text_value||"";
+    }
+
+    function drawFitted(text,cx,cy,maxWidth,font="20px Arial"){
+      ctx.font=font;
+      let fitted=String(text||"");
+      while(fitted.length>1&&ctx.measureText(fitted).width>maxWidth)fitted=fitted.slice(0,-2)+"…";
+      ctx.fillText(fitted,cx,cy,maxWidth);
+    }
+
+    function drawStack(lines,left,top,width,height,labelWidth=165){
+      const clean=lines.filter(line=>line.value||line.label);
+      if(!clean.length)return;
+      const lineH=Math.min(35,(height-18)/clean.length);
+      let yy=top+12+(lineH/2);
+      clean.forEach(line=>{
+        ctx.textAlign="left";
+        ctx.fillStyle="#9eabd1";
+        drawFitted(line.label,left+12,yy,labelWidth-20,"700 17px Arial");
+        ctx.fillStyle="#ffffff";
+        drawFitted(line.value||"—",left+labelWidth,yy,width-labelWidth-16,"19px Arial");
+        yy+=lineH;
+      });
+      ctx.textAlign="center";
+    }
 
     rows.forEach((entry,rowIndex)=>{
       x=margin;
-      cols.forEach((col,i)=>{
+      const rowH=baseRowH;
+
+      displayCols.forEach((displayCol,i)=>{
         ctx.fillStyle=rowIndex%2===0?"#171d33":"#1d2540";
         ctx.fillRect(x,y,widths[i],rowH);
         ctx.strokeStyle="#39466f";
         ctx.strokeRect(x,y,widths[i],rowH);
 
-        let value="";
-        if(i===0){
-          value=entry.service_date?short(entry.service_date):"";
-        }else if(entry.id!=="__empty__"){
-          const val=valueMap.get(`${entry.id}|${col.id}`);
-          if(val){
-            if(col.field_type==="volunteer")value=volunteersMap.get(val.volunteer_id)||"";
-            else if(col.field_type==="song")value=songsMap.get(val.song_id)||"";
-            else if(col.field_type==="number")value=val.number_value??"";
-            else if(col.field_type==="list")value=val.option_value||"";
-            else value=val.text_value||"";
-          }
+        if(displayCol.kind==="date"){
+          ctx.fillStyle="#ffffff";
+          drawFitted(entry.service_date?short(entry.service_date):"",x+(widths[i]/2),y+(rowH/2),widths[i]-20,"700 21px Arial");
+        }else if(displayCol.kind==="responsibilities"){
+          const lines=volunteerCols.map(c=>({label:c.name,value:entry.id==="__empty__"?"":textFor(c,entry.id)}));
+          drawStack(lines,x,y,widths[i],rowH,180);
+        }else if(displayCol.kind==="songs"){
+          const lines=songCols.map((c,index)=>({label:String(index+1),value:entry.id==="__empty__"?"":textFor(c,entry.id)}));
+          drawStack(lines,x,y,widths[i],rowH,48);
+        }else{
+          ctx.fillStyle="#ffffff";
+          const value=entry.id==="__empty__"?"":textFor(displayCol.column,entry.id);
+          drawFitted(value,x+(widths[i]/2),y+(rowH/2),widths[i]-20,"19px Arial");
         }
 
-        ctx.fillStyle="#ffffff";
-        ctx.font="20px Arial";
-        const max=widths[i]-22;
-        let fitted=String(value);
-        while(fitted.length>1&&ctx.measureText(fitted).width>max){
-          fitted=fitted.slice(0,-2)+"…";
-        }
-        ctx.fillText(fitted,x+(widths[i]/2),y+(rowH/2),max);
         x+=widths[i];
       });
+
       y+=rowH;
     });
 
@@ -14450,6 +15000,7 @@ const FLASH_GUIDE_DATA={
     });
   });
 
+  customRenderProgram?.addEventListener("change",renderProgramRenderButtons);
   document.getElementById("customRenderBtn")?.addEventListener("click",()=>{
     renderSelectedCustomProgram().catch(error=>{
       console.error(error);
