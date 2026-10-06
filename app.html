@@ -2,7 +2,7 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V73-TEMPLATES-REAL-DYNAMIC-HOME-RENDERS">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V74-FIX-CREAR-PROGRAMACION">
 <title>Flash Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5608,6 +5608,13 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 }
 </style>
 
+<style id="v74-create-program-fix">
+#programBuilderModal,
+#programVolunteerModal,
+#programRuleModal{
+  z-index:1300 !important;
+}
+</style>
 </head>
 <body class="readonly-mode">
 
@@ -12671,6 +12678,7 @@ const FLASH_GUIDE_DATA={
     if(!template)return;
 
     if(template.key==="blank"){
+      closeProgramCreationOverlays();
       openProgramBuilder(null);
       return;
     }
@@ -12726,7 +12734,10 @@ const FLASH_GUIDE_DATA={
     await openCustomProgram(program.id);
   }
 
-  function teamAdmin(){return window.currentTeam?.role==="admin"}
+  function teamAdmin(){
+    const role=String(window.currentTeam?.role||window.currentProfile?.app_role||"").toLowerCase();
+    return role==="admin"||role==="owner"||role==="administrator";
+  }
   function teamEditor(){return ["admin","editor"].includes(window.currentTeam?.role||"")}
 
   function activeProgram(){
@@ -12866,7 +12877,10 @@ const FLASH_GUIDE_DATA={
       create.type="button";
       create.className="mobileCreateProgram";
       create.textContent="+ Crear programación";
-      create.addEventListener("click",()=>openProgramBuilder(null));
+      create.addEventListener("click",()=>{
+        closeProgramCreationOverlays();
+        openProgramBuilder(null);
+      });
       mobileProgramList.appendChild(create);
     }
   }
@@ -13362,7 +13376,20 @@ const FLASH_GUIDE_DATA={
     weekdayChecks.forEach(cb=>cb.checked=false);
   }
 
+  function closeProgramCreationOverlays(){
+    document.getElementById("mobileProgramMenu")?.classList.remove("open");
+    document.getElementById("mobileProgramMenu")?.setAttribute("aria-hidden","true");
+    document.getElementById("mobileProgramBackdrop")?.classList.remove("show");
+    document.getElementById("mobileProgramBackdrop")?.setAttribute("aria-hidden","true");
+    document.getElementById("mobileMoreMenu")?.classList.remove("open");
+    document.getElementById("mobileMoreMenu")?.setAttribute("aria-hidden","true");
+    document.getElementById("side")?.classList.remove("open");
+    document.getElementById("overlay")?.classList.remove("show");
+    document.body.classList.remove("mobile-program-focus","mobile-more-focus");
+  }
+
   function openProgramBuilder(programId=null){
+    closeProgramCreationOverlays();
     if(!teamAdmin()){
       window.showAppToast?.("Solo el Administrador puede cambiar la estructura de una programación.","error",1800);
       return;
@@ -14985,6 +15012,7 @@ const FLASH_GUIDE_DATA={
   });
   homeCreateBlankProgram?.addEventListener("click",()=>{
     window.activateAppPanel("programs","Programación");
+    closeProgramCreationOverlays();
     openProgramBuilder(null);
   });
 
@@ -15059,7 +15087,10 @@ const FLASH_GUIDE_DATA={
     }
   });
 
-  createBtn?.addEventListener("click",()=>openProgramBuilder(null));
+  createBtn?.addEventListener("click",()=>{
+    closeProgramCreationOverlays();
+    openProgramBuilder(null);
+  });
   document.getElementById("backToPrograms")?.addEventListener("click",()=>window.activateAppPanel("programs","Programación"));
   editStructureBtn?.addEventListener("click",()=>openProgramBuilder(activeCustomProgramId));
   document.getElementById("addProgramColumn")?.addEventListener("click",()=>addBuilderColumn({name:"Nueva columna",field_type:"volunteer"}));
@@ -15070,7 +15101,15 @@ const FLASH_GUIDE_DATA={
       await saveProgramBuilder();
     }catch(error){
       console.error(error);
-      window.showAppToast?.(error.message||"No se pudo guardar la programación.","error",2200);
+      const message=String(error?.message||"");
+      const schemaMissing=/template_key|capabilities|schema cache|column .* does not exist/i.test(message);
+      window.showAppToast?.(
+        schemaMissing
+          ?"Falta ejecutar el SQL V73 en Supabase antes de guardar programaciones."
+          :(message||"No se pudo guardar la programación."),
+        "error",
+        3200
+      );
     }
   });
   deleteProgramBtn?.addEventListener("click",async()=>{
@@ -15085,6 +15124,16 @@ const FLASH_GUIDE_DATA={
   document.getElementById("customProgramRebalance")?.addEventListener("click",()=>autoFillCustomProgram(true).catch(console.error));
   document.getElementById("customProgramAddService")?.addEventListener("click",()=>addCustomService().catch(console.error));
   document.getElementById("customProgramConfirm")?.addEventListener("click",()=>confirmCustomProgram().catch(console.error));
+
+  // Respaldo: cualquier botón de creación que sea regenerado dinámicamente
+  // sigue abriendo el constructor.
+  document.addEventListener("click",event=>{
+    const target=event.target.closest("#createCustomProgramBtn,.mobileCreateProgram");
+    if(!target)return;
+    event.preventDefault();
+    closeProgramCreationOverlays();
+    openProgramBuilder(null);
+  });
 
   // Dynamic mobile program menu handles custom items too.
   document.getElementById("mobileProgramBtn")?.addEventListener("click",()=>renderMobileProgramList());
