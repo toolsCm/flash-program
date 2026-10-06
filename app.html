@@ -5616,7 +5616,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 }
 </style>
 </head>
-<!-- Flash Program V75 - Fix real Crear programación -->
+<!-- Flash Program V76 - Emojis + bloqueos agrupados -->
 <body class="readonly-mode">
 
 <div id="appLoadingScreen">
@@ -12755,6 +12755,36 @@ const FLASH_GUIDE_DATA={
   function dayLabel(day){
     return ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"][Number(day)]||"";
   }
+
+  function templateRoleLabel(template,name){
+    const clean=String(name||"");
+    if(["band","youth-band"].includes(template)){
+      if(/^Voz principal$/i.test(clean))return `${clean} 🎙️`;
+      if(/^Coros(?:\s+\d+)?$/i.test(clean))return `${clean} 🎤`;
+      if(/^Piano$/i.test(clean))return `${clean} 🎹`;
+      if(/^Guitarra(?:\s+\d+)?$/i.test(clean))return `${clean} 🎸`;
+      if(/^Bajo$/i.test(clean))return `${clean} 🪕`;
+      if(/^Bater[ií]a$/i.test(clean))return `${clean} 🥁`;
+    }
+    if(template==="media"){
+      if(/^PC$/i.test(clean))return `${clean} 💻`;
+      if(/^C[aá]mara$/i.test(clean))return `${clean} 🎥`;
+      if(/^Diapositivas$/i.test(clean))return `⏹️ Diapositivas`;
+    }
+    return clean;
+  }
+
+  function compactHomeRoleLabel(template,name){
+    const clean=String(name||"");
+    if(["band","youth-band"].includes(template))return templateRoleLabel(template,clean);
+    if(template==="media"){
+      if(/^PC$/i.test(clean))return "💻 PC";
+      if(/^C[aá]mara$/i.test(clean))return "🎥 Cámara";
+      if(/^Diapositivas$/i.test(clean))return "⏹️ Diapost.";
+    }
+    return clean;
+  }
+
   function safeOptions(options){
     if(!options)return {};
     if(typeof options==="string"){
@@ -13177,7 +13207,7 @@ const FLASH_GUIDE_DATA={
       customHead.innerHTML=`
         <tr>
           <th>FECHA</th>
-          <th>RESPONSABILIDADES</th>
+          <th>RESPONSABLES</th>
           <th>CANCIONES</th>
           ${extraCols.map(c=>`<th>${escapeTeamHtml(c.name)}</th>`).join("")}
         </tr>`;
@@ -13198,7 +13228,7 @@ const FLASH_GUIDE_DATA={
           row.className="templateGroupedRow";
           const label=document.createElement("span");
           label.className="templateLabel";
-          label.textContent=column.name;
+          label.textContent=templateRoleLabel(template,column.name);
           row.appendChild(label);
           row.appendChild(makeCellControl(entry,column,valueFor(entry.id,column.id)));
           respWrap.appendChild(row);
@@ -13215,7 +13245,7 @@ const FLASH_GUIDE_DATA={
           row.className="templateGroupedRow templateSongRow";
           const number=document.createElement("span");
           number.className="templateSongNumber";
-          number.textContent=String(index+1);
+          number.textContent=`${index+1} 🎵`;
           row.appendChild(number);
           row.appendChild(makeCellControl(entry,column,valueFor(entry.id,column.id)));
           songsWrap.appendChild(row);
@@ -13258,7 +13288,7 @@ const FLASH_GUIDE_DATA={
           row.className="templateGroupedRow";
           const label=document.createElement("span");
           label.className="templateLabel";
-          label.textContent=column.name;
+          label.textContent=templateRoleLabel(template,column.name);
           row.appendChild(label);
           row.appendChild(makeCellControl(entry,column,valueFor(entry.id,column.id)));
           wrap.appendChild(row);
@@ -13611,7 +13641,7 @@ const FLASH_GUIDE_DATA={
       const roles=["Voz principal","Coros","Piano","Guitarra","Bajo","Batería"];
       const responsibilities=roles.map(role=>`
         <div class="homeProgramLine">
-          <span class="key">${escapeTeamHtml(role)}</span>
+          <span class="key">${escapeTeamHtml(templateRoleLabel(module==="alabanza"||module==="jovenes"?(module==="jovenes"?"youth-band":"band"):"custom",role))}</span>
           <span>${escapeTeamHtml((groups[role]||[]).join(", ")||"—")}</span>
         </div>`).join("");
 
@@ -13631,7 +13661,7 @@ const FLASH_GUIDE_DATA={
       if(!schedule)return "";
       return `<div class="homeProgramGroup">${mediaRoles.map(role=>`
         <div class="homeProgramLine">
-          <span class="key">${escapeTeamHtml(role==="Camara"?"Cámara":role)}</span>
+          <span class="key">${escapeTeamHtml(compactHomeRoleLabel("media",role==="Camara"?"Cámara":role))}</span>
           <span>${escapeTeamHtml(schedule[role]||"—")}</span>
         </div>`).join("")}</div>`;
     }
@@ -13728,7 +13758,7 @@ const FLASH_GUIDE_DATA={
         return `<div class="homeProgramGroup">
           ${volunteerCols.map(c=>`
             <div class="homeProgramLine">
-              <span class="key">${escapeTeamHtml(c.name)}</span>
+              <span class="key">${escapeTeamHtml(compactHomeRoleLabel(template,c.name))}</span>
               <span>${escapeTeamHtml(valueText(c,valueMap.get(c.id)))}</span>
             </div>`).join("")}
           ${songCols.length?`<div class="homeProgramSongs">${songCols.map((c,i)=>
@@ -13744,7 +13774,7 @@ const FLASH_GUIDE_DATA={
 
       return `<div class="homeProgramGroup">${cols.map(c=>`
         <div class="homeProgramLine">
-          <span class="key">${escapeTeamHtml(c.name)}</span>
+          <span class="key">${escapeTeamHtml(compactHomeRoleLabel(template,c.name))}</span>
           <span>${escapeTeamHtml(valueText(c,valueMap.get(c.id)))}</span>
         </div>`).join("")}</div>`;
     }
@@ -13801,32 +13831,66 @@ const FLASH_GUIDE_DATA={
     return customColumnLocks.some(row=>row.column_id===columnId&&row.locked===true);
   }
 
-  async function toggleCustomColumnLock(column){
+  function areColumnsLocked(columns){
+    const lockable=columns.filter(c=>c.lockable);
+    return lockable.length>0 && lockable.every(c=>isColumnLocked(c.id));
+  }
+
+  async function setColumnsLocked(columns,locked){
     const program=activeProgram();
     if(!program||!teamEditor())return;
+
     const year=Number(customYear.value);
     const month=Number(customMonth.value)+1;
-    const next=!isColumnLocked(column.id);
+    const lockable=columns.filter(c=>c.lockable);
+    if(!lockable.length)return;
 
-    const payload={
+    const payloads=lockable.map(column=>({
       team_id:window.currentTeam.id,
       program_id:program.id,
       column_id:column.id,
       year,
       month,
-      locked:next,
+      locked,
       updated_at:new Date().toISOString()
-    };
+    }));
 
     const {error}=await window.supabaseClient
       .from("program_column_locks")
-      .upsert(payload,{onConflict:"program_id,column_id,year,month"});
+      .upsert(payloads,{onConflict:"program_id,column_id,year,month"});
     if(error)throw error;
 
-    const existing=customColumnLocks.find(r=>r.column_id===column.id);
-    if(existing)existing.locked=next;
-    else customColumnLocks.push({...payload});
+    payloads.forEach(payload=>{
+      const existing=customColumnLocks.find(r=>r.column_id===payload.column_id);
+      if(existing)existing.locked=locked;
+      else customColumnLocks.push({...payload});
+    });
+
     renderCustomColumnLocks();
+  }
+
+  async function toggleCustomColumnLock(column){
+    await setColumnsLocked([column],!isColumnLocked(column.id));
+  }
+
+  function appendGroupLockButton(label,columns){
+    const lockable=columns.filter(c=>c.lockable);
+    if(!lockable.length)return;
+
+    const locked=areColumnsLocked(lockable);
+    const btn=document.createElement("button");
+    btn.type="button";
+    btn.className="btn secondary customColumnLockBtn"+(locked?" is-locked":"");
+    btn.textContent=`${locked?"🔒":"🔓"} ${label}`;
+    btn.title=locked
+      ? `Desbloquear columna ${label}`
+      : `Bloquear columna ${label}`;
+    btn.disabled=!teamEditor();
+    btn.addEventListener("click",()=>setColumnsLocked(lockable,!locked).catch(error=>{
+      console.error(error);
+      window.showAppToast?.("No se pudo cambiar el bloqueo de la columna.","error",1800);
+    }));
+    customProgramColumnLocks.appendChild(btn);
   }
 
   function renderCustomColumnLocks(){
@@ -13836,9 +13900,23 @@ const FLASH_GUIDE_DATA={
       customProgramColumnLocks.innerHTML="";
       return;
     }
-    const cols=columnsFor(program.id).filter(c=>c.lockable);
+
+    const cols=columnsFor(program.id);
+    const template=program.template_key||"custom";
     customProgramColumnLocks.innerHTML="";
-    cols.forEach(column=>{
+
+    if(["band","youth-band"].includes(template)){
+      appendGroupLockButton("Responsables",cols.filter(c=>c.field_type==="volunteer"));
+      appendGroupLockButton("Canciones",cols.filter(c=>c.field_type==="song"));
+      return;
+    }
+
+    if(template==="media"){
+      appendGroupLockButton("Responsables",cols.filter(c=>c.field_type==="volunteer"));
+      return;
+    }
+
+    cols.filter(c=>c.lockable).forEach(column=>{
       const btn=document.createElement("button");
       btn.type="button";
       btn.className="btn secondary customColumnLockBtn"+(isColumnLocked(column.id)?" is-locked":"");
@@ -14096,8 +14174,8 @@ const FLASH_GUIDE_DATA={
     if(["band","youth-band"].includes(template)){
       displayCols=[
         {kind:"date",name:"FECHA"},
-        {kind:"responsibilities",name:"RESPONSABILIDADES"},
-        {kind:"songs",name:"CANCIONES"},
+        {kind:"responsibilities",name:"RESPONSABLES"},
+        {kind:"songs",name:"CANCIONES 🎵"},
         ...extraCols.map(c=>({kind:"column",name:c.name,column:c}))
       ];
     }else if(template==="media"){
@@ -14234,7 +14312,7 @@ const FLASH_GUIDE_DATA={
           ctx.fillStyle="#ffffff";
           drawFitted(entry.service_date?short(entry.service_date):"",x+(widths[i]/2),y+(rowH/2),widths[i]-20,"700 21px Arial");
         }else if(displayCol.kind==="responsibilities"){
-          const lines=volunteerCols.map(c=>({label:c.name,value:entry.id==="__empty__"?"":textFor(c,entry.id)}));
+          const lines=volunteerCols.map(c=>({label:templateRoleLabel(template,c.name),value:entry.id==="__empty__"?"":textFor(c,entry.id)}));
           drawStack(lines,x,y,widths[i],rowH,180);
         }else if(displayCol.kind==="songs"){
           const lines=songCols.map((c,index)=>({label:String(index+1),value:entry.id==="__empty__"?"":textFor(c,entry.id)}));
