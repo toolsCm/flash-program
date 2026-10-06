@@ -5616,7 +5616,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 }
 </style>
 </head>
-<!-- Flash Program V77 - Equipos visibles según programaciones reales -->
+<!-- Flash Program V78 - Regla musical Banda + renders cuenta principal -->
 <body class="readonly-mode">
 
 <div id="appLoadingScreen">
@@ -6705,6 +6705,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
             <option value="unique_same_date">No repetir la misma persona en una fecha</option>
             <option value="avoid_consecutive">Evitar fechas consecutivas</option>
             <option value="minimum_rest_days">Días mínimos de descanso</option>
+            <option value="song_category_pattern">Mezcla Rápida / Media / Lenta</option>
           </select>
         </div>
 
@@ -10332,9 +10333,9 @@ songEditForm.addEventListener("submit",saveSongEditor);
 awa.onclick=async()=>{if(!awd.value||!awp.value)return;awa.disabled=true;try{await addAvailabilityToSupabase("alabanza",awp.value,awd.value);awd.value=""}catch(error){console.error(error);alert("No se pudo guardar la indisponibilidad: "+(error.message||error))}finally{awa.disabled=false}};
 ama.onclick=async()=>{if(!amd.value||!amp.value)return;ama.disabled=true;try{await addAvailabilityToSupabase("multimedia",amp.value,amd.value);amd.value=""}catch(error){console.error(error);alert("No se pudo guardar la indisponibilidad: "+(error.message||error))}finally{ama.disabled=false}};
 document.getElementById("hr").onclick=history;
-document.getElementById("iw").onclick=()=>window.imageW&&window.imageW();
-document.getElementById("ij").onclick=()=>window.imageJ&&window.imageJ();
-document.getElementById("im").onclick=()=>window.imageM&&window.imageM();
+document.getElementById("iw")?.addEventListener("click",()=>window.imageW&&window.imageW());
+document.getElementById("ij")?.addEventListener("click",()=>window.imageJ&&window.imageJ());
+document.getElementById("im")?.addEventListener("click",()=>window.imageM&&window.imageM());
 document.getElementById("idown").onclick=()=>{
   const posterCanvas=document.getElementById("poster");
   let a=document.createElement("a");
@@ -10879,8 +10880,8 @@ refreshRoles();renderVols();refreshPeople();refreshMediaRoleControl();renderMedi
   let data=(Array.isArray(cj)&&cj.length?cj:jmonth);
   renderWorshipPoster(data,'youth');
  };
- iw.onclick=window.imageW;
- ij.onclick=window.imageJ;
+ document.getElementById("iw")?.addEventListener("click",window.imageW);
+ document.getElementById("ij")?.addEventListener("click",window.imageJ);
 })();;
 </script>
 <script>
@@ -12657,19 +12658,39 @@ const FLASH_GUIDE_DATA={
     });
   }
 
-  async function insertDefaultProgramRules(programId){
+  async function insertDefaultProgramRules(programId,templateKey="custom"){
     const defaultRules=[
       {name:"Balancear participaciones",rule_type:"balance_assignments",enabled:true,config:{},sort_order:0},
       {name:"No repetir persona en una misma fecha",rule_type:"unique_same_date",enabled:true,config:{},sort_order:1},
       {name:"Evitar fechas consecutivas",rule_type:"avoid_consecutive",enabled:true,config:{},sort_order:2}
-    ].map(rule=>({
+    ];
+
+    if(templateKey==="band"){
+      defaultRules.push({
+        name:"Mezcla musical Rápida / Media / Lenta",
+        rule_type:"song_category_pattern",
+        enabled:true,
+        sort_order:3,
+        config:{
+          patterns:[
+            ["Rápida","Rápida","Lenta","Lenta"],
+            ["Rápida","Media","Lenta","Lenta"],
+            ["Rápida","Rápida","Media","Lenta"]
+          ],
+          shuffle_order:true
+        }
+      });
+    }
+
+    const rows=defaultRules.map(rule=>({
       ...rule,
       team_id:window.currentTeam.id,
       program_id:programId,
       column_id:null,
       updated_at:new Date().toISOString()
     }));
-    const {error}=await window.supabaseClient.from("program_rules").insert(defaultRules);
+
+    const {error}=await window.supabaseClient.from("program_rules").insert(rows);
     if(error)throw error;
   }
 
@@ -12732,7 +12753,7 @@ const FLASH_GUIDE_DATA={
       if(columnError)throw columnError;
     }
 
-    await insertDefaultProgramRules(program.id);
+    await insertDefaultProgramRules(program.id,template.key);
     await loadProgramDefinitions();
     updateEmptyTeamExperience();
     window.showAppToast?.(`${template.name} creada. Ahora puedes editarla.`, "success", 1300);
@@ -13036,7 +13057,7 @@ const FLASH_GUIDE_DATA={
       {data:memberships,error:membershipError}
     ]=await Promise.all([
       window.supabaseClient.from("volunteers").select("id,name,active").eq("active",true).order("name"),
-      window.supabaseClient.from("songs").select("id,name,artist,active").eq("active",true).order("name"),
+      window.supabaseClient.from("songs").select("id,name,artist,category,active").eq("active",true).order("name"),
       window.supabaseClient.from("program_volunteers")
         .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,active")
         .eq("program_id",program.id)
@@ -13588,7 +13609,10 @@ const FLASH_GUIDE_DATA={
       if(error)throw error;
       programId=data.id;
 
-      await insertDefaultProgramRules(programId);
+      await insertDefaultProgramRules(
+        programId,
+        customPrograms.find(p=>p.id===programId)?.template_key||"custom"
+      );
     }
 
     const existingIds=new Set(columnsFor(programId).map(c=>c.id));
@@ -14467,7 +14491,8 @@ const FLASH_GUIDE_DATA={
       balance_assignments:"Balancear participaciones",
       unique_same_date:"No repetir en la misma fecha",
       avoid_consecutive:"Evitar fechas consecutivas",
-      minimum_rest_days:"Días mínimos de descanso"
+      minimum_rest_days:"Días mínimos de descanso",
+      song_category_pattern:"Mezcla Rápida / Media / Lenta"
     }[type]||type;
   }
 
@@ -14495,8 +14520,15 @@ const FLASH_GUIDE_DATA={
             <strong>${escapeTeamHtml(rule.name)}</strong>
             <div class="programRuleMeta">
               ${escapeTeamHtml(ruleTypeLabel(rule.rule_type))}
-              ${column?` · ${escapeTeamHtml(column.name)}`:" · todas las columnas de voluntarios"}
+              ${column
+                ?` · ${escapeTeamHtml(column.name)}`
+                :(rule.rule_type==="song_category_pattern"
+                  ?" · columnas de canciones"
+                  :" · todas las columnas de voluntarios")}
               ${rule.rule_type==="minimum_rest_days"?` · ${Number(config.days)||7} días`:""}
+              ${rule.rule_type==="song_category_pattern"
+                ?` · ${(config.patterns||[]).map(p=>p.join(" + ")).join(" / ")}`
+                :""}
             </div>
           </div>
           <div>${rule.enabled?"Activa":"Inactiva"}</div>
@@ -14528,16 +14560,25 @@ const FLASH_GUIDE_DATA={
     programRuleProgramName.textContent=`Programación: ${program.name}`;
     programRuleName.value=rule?.name||"";
     programRuleType.value=rule?.rule_type||"balance_assignments";
-    programRuleColumn.innerHTML=`<option value="">Todas las columnas de voluntarios</option>`;
-    columnsFor(programId).filter(c=>c.field_type==="volunteer").forEach(c=>{
-      programRuleColumn.add(new Option(c.name,c.id));
-    });
-    programRuleColumn.value=rule?.column_id||"";
+
+    const syncRuleEditor=()=>{
+      const songRule=programRuleType.value==="song_category_pattern";
+      programRuleColumn.innerHTML=`<option value="">${songRule?"Todas las columnas de canciones":"Todas las columnas de voluntarios"}</option>`;
+      columnsFor(programId)
+        .filter(c=>c.field_type===(songRule?"song":"volunteer"))
+        .forEach(c=>programRuleColumn.add(new Option(c.name,c.id)));
+
+      if(rule?.column_id&&[...programRuleColumn.options].some(o=>o.value===rule.column_id)){
+        programRuleColumn.value=rule.column_id;
+      }
+
+      programRuleDaysWrap.style.display=programRuleType.value==="minimum_rest_days"?"block":"none";
+    };
+
     programRuleDays.value=String(Number(config.days)||7);
     programRuleEnabled.checked=rule?.enabled!==false;
-
-    const sync=()=>programRuleDaysWrap.style.display=programRuleType.value==="minimum_rest_days"?"block":"none";
-    programRuleType.onchange=sync;sync();
+    programRuleType.onchange=syncRuleEditor;
+    syncRuleEditor();
 
     programRuleModal.dataset.programId=programId;
     programRuleModal.classList.add("open");
@@ -14561,7 +14602,18 @@ const FLASH_GUIDE_DATA={
       name,
       rule_type:programRuleType.value,
       enabled:programRuleEnabled.checked,
-      config:programRuleType.value==="minimum_rest_days"?{days:Math.max(1,Number(programRuleDays.value)||7)}:{},
+      config:programRuleType.value==="minimum_rest_days"
+        ?{days:Math.max(1,Number(programRuleDays.value)||7)}
+        :(programRuleType.value==="song_category_pattern"
+          ?{
+            patterns:[
+              ["Rápida","Rápida","Lenta","Lenta"],
+              ["Rápida","Media","Lenta","Lenta"],
+              ["Rápida","Rápida","Media","Lenta"]
+            ],
+            shuffle_order:true
+          }
+          :{}),
       updated_at:new Date().toISOString()
     };
 
@@ -14951,6 +15003,74 @@ const FLASH_GUIDE_DATA={
       r.rule_type==="minimum_rest_days"&&(!r.column_id||r.column_id===columnId)
     )||null;
 
+    const songPatternRule=activeRules.find(r=>r.rule_type==="song_category_pattern")||null;
+    const songColumns=columnsFor(program.id)
+      .filter(c=>c.field_type==="song")
+      .sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+    const songCategoryTargets=new Map();
+
+    if(songPatternRule&&songColumns.length){
+      const config=safeOptions(songPatternRule.config);
+      const configured=(Array.isArray(config.patterns)?config.patterns:[])
+        .filter(pattern=>Array.isArray(pattern)&&pattern.length);
+
+      const fallback=[
+        ["Rápida","Rápida","Lenta","Lenta"],
+        ["Rápida","Media","Lenta","Lenta"],
+        ["Rápida","Rápida","Media","Lenta"]
+      ];
+      const patterns=configured.length?configured:fallback;
+
+      const availableCounts={Rápida:0,Media:0,Lenta:0};
+      customRefSongs.forEach(song=>{
+        if(Object.prototype.hasOwnProperty.call(availableCounts,song.category)){
+          availableCounts[song.category]++;
+        }
+      });
+
+      const feasible=patterns.filter(pattern=>{
+        const need={};
+        pattern.slice(0,songColumns.length).forEach(category=>{
+          need[category]=(need[category]||0)+1;
+        });
+        return Object.entries(need).every(([category,count])=>
+          (availableCounts[category]||0)>=count
+        );
+      });
+      const pool=feasible.length?feasible:patterns;
+
+      const hashText=text=>{
+        let h=0;
+        for(const ch of String(text||""))h=((h<<5)-h+ch.charCodeAt(0))|0;
+        return Math.abs(h);
+      };
+
+      const seededShuffle=(items,seedText)=>{
+        const arr=[...items];
+        let seed=hashText(seedText)||1;
+        for(let i=arr.length-1;i>0;i--){
+          seed=(seed*1664525+1013904223)>>>0;
+          const j=seed%(i+1);
+          [arr[i],arr[j]]=[arr[j],arr[i]];
+        }
+        return arr;
+      };
+
+      customEntries.forEach(entry=>{
+        const seed=`${program.id}|${entry.service_date}`;
+        const selected=pool[hashText(seed)%pool.length]||pool[0];
+        const ordered=config.shuffle_order===false
+          ?selected.slice()
+          :seededShuffle(selected,seed);
+
+        songColumns.forEach((column,index)=>{
+          if(ordered[index]){
+            songCategoryTargets.set(`${entry.id}|${column.id}`,ordered[index]);
+          }
+        });
+      });
+    }
+
     const payloads=[];
     const valueMap=new Map(customValues.map(v=>[`${v.entry_id}|${v.column_id}`,v]));
     const counts=new Map();
@@ -14981,7 +15101,7 @@ const FLASH_GUIDE_DATA={
           max:v.max_per_month==null?null:Number(v.max_per_month),
           avoid:v.avoid_consecutive!==false
         })):
-        col.field_type==="song"?customRefSongs.map(s=>({id:s.id,label:s.name})):
+        col.field_type==="song"?customRefSongs.map(s=>({id:s.id,label:s.name,category:s.category||"Media"})):
         col.field_type==="list"?(safeOptions(col.options).choices||[]).map(x=>({id:x,label:x})):
         [];
 
@@ -15015,6 +15135,27 @@ const FLASH_GUIDE_DATA={
           .forEach(p=>alreadyUsedInEntry.add(p.volunteer_id));
 
         let availableChoices=choices;
+
+        if(col.field_type==="song"){
+          const targetCategory=songCategoryTargets.get(`${entry.id}|${col.id}`)||null;
+          if(targetCategory){
+            const categoryMatches=availableChoices.filter(choice=>choice.category===targetCategory);
+            if(categoryMatches.length)availableChoices=categoryMatches;
+          }
+
+          const usedSongIds=new Set(
+            customValues
+              .filter(v=>v.entry_id===entry.id&&v.column_id!==col.id&&v.song_id)
+              .map(v=>v.song_id)
+          );
+          payloads
+            .filter(p=>p.entry_id===entry.id&&p.column_id!==col.id&&p.song_id)
+            .forEach(p=>usedSongIds.add(p.song_id));
+
+          const notRepeated=availableChoices.filter(choice=>!usedSongIds.has(choice.id));
+          if(notRepeated.length)availableChoices=notRepeated;
+        }
+
         if(col.field_type==="volunteer"){
           availableChoices=availableChoices.filter(choice=>
             !unavailableSet.has(`${choice.id}|${entry.service_date}`)
@@ -15171,17 +15312,56 @@ const FLASH_GUIDE_DATA={
     const selected=customRenderProgram?.value||"";
     programRenderButtons.innerHTML="";
 
-    customPrograms.forEach(program=>{
+    const renderItems=[];
+
+    visibleBuiltinPrograms().forEach(item=>{
+      renderItems.push({
+        id:item.id,
+        name:item.name,
+        kind:"legacy",
+        page:item.page
+      });
+    });
+
+    customPrograms
+      .filter(program=>safeOptions(program.capabilities).render!==false)
+      .forEach(program=>{
+        renderItems.push({
+          id:program.id,
+          name:program.name,
+          kind:"custom",
+          program
+        });
+      });
+
+    renderItems.forEach(item=>{
       const button=document.createElement("button");
       button.type="button";
       button.className="btn secondary";
-      button.textContent=`Generar ${program.name}`;
-      button.dataset.renderProgramId=program.id;
+      button.textContent=`Generar ${item.name}`;
+      button.dataset.renderProgramId=item.id;
 
-      if(selected===program.id)button.classList.add("active");
+      if(item.kind==="custom"&&selected===item.id)button.classList.add("active");
 
       button.addEventListener("click",()=>{
-        if(customRenderProgram)customRenderProgram.value=program.id;
+        if(item.kind==="legacy"){
+          try{
+            if(item.page==="worship"&&typeof window.imageW==="function")window.imageW();
+            else if(item.page==="youth"&&typeof window.imageJ==="function")window.imageJ();
+            else if(item.page==="media"&&typeof window.imageM==="function")window.imageM();
+            else throw new Error("El render de esta programación no está disponible.");
+          }catch(error){
+            console.error(error);
+            window.showAppToast?.(
+              error?.message||"No se pudo generar la imagen.",
+              "error",
+              1800
+            );
+          }
+          return;
+        }
+
+        if(customRenderProgram)customRenderProgram.value=item.id;
         renderProgramRenderButtons();
         renderSelectedCustomProgram().catch(error=>{
           console.error(error);
@@ -15196,7 +15376,7 @@ const FLASH_GUIDE_DATA={
       programRenderButtons.appendChild(button);
     });
 
-    if(!customPrograms.length){
+    if(!renderItems.length){
       programRenderButtons.innerHTML=
         '<div class="muted">Crea una programación para habilitar sus renders.</div>';
     }
@@ -15227,6 +15407,10 @@ const FLASH_GUIDE_DATA={
 
   customRenderProgram?.addEventListener("change",renderProgramRenderButtons);
   document.getElementById("customRenderBtn")?.addEventListener("click",()=>{
+    if(!customRenderProgram?.value){
+      window.showAppToast?.("Usa uno de los botones de generación disponibles.","info",1600);
+      return;
+    }
     renderSelectedCustomProgram().catch(error=>{
       console.error(error);
       window.showAppToast?.(error.message||"No se pudo generar la imagen.","error",1800);
