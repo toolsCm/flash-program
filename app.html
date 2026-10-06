@@ -2,7 +2,7 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V71-UNIFIED-PROGRAM-TOOLS">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V72-TEMPLATES-BANDA-MEDIOS">
 <title>Flash Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -112,7 +112,7 @@ body[data-theme="light"] .modalCard{background:#ffffff !important}
 .weekCurrent{font-weight:700;text-align:center;min-width:190px}
 .csvImport{display:grid;grid-template-columns:minmax(220px,1fr) auto auto;gap:8px;align-items:end;margin-bottom:6px}
 
-/* Alabanza compacta y centrada */
+/* Banda compacta y centrada */
 #worship .card,#youth .card{padding:14px}
 #worship .sheet,#youth .sheet{max-width:1080px;margin:12px auto 0}
 .wtable{min-width:760px}
@@ -327,7 +327,7 @@ body[data-theme="light"] .modalCard .btn.primary{
 .removeSongFilter{width:30px;height:30px;border:1px solid var(--line);border-radius:7px;background:transparent;color:var(--muted);padding:0;flex:0 0 auto}
 .removeSongFilter:hover{color:#ef7d7d;border-color:#ef7d7d}
 
-/* Bloqueo independiente de Alabanza */
+/* Bloqueo independiente de Banda */
 .lockToggle{display:inline-flex;align-items:center;gap:6px}
 .lockToggle.locked{background:#2a2030 !important;border-color:#7c4d8f !important;color:#e9c8f5 !important}
 body[data-theme="light"] .lockToggle.locked{background:#f7ecfb !important;border-color:#c995dc !important;color:#6c2c82 !important}
@@ -795,7 +795,7 @@ body[data-theme="light"] .day.sel{
   box-shadow:0 3px 9px rgba(48,63,159,.25);
 }
 
-/* Buscador Alabanza */
+/* Buscador Banda */
 .worshipSongSearch{
   border:1.5px solid var(--indigo-300) !important;
   box-shadow:0 2px 6px rgba(48,63,159,.12) !important;
@@ -3372,7 +3372,7 @@ select:disabled{
   #home .homeTable td:nth-child(1)::before{content:"Fecha"}
   #home .homeTable td:nth-child(2)::before{content:"Responsables"}
   #home .homeTable td:nth-child(3)::before{content:"Canciones"}
-  #home .homeTable td:nth-child(4)::before{content:"Multimedia"}
+  #home .homeTable td:nth-child(4)::before{content:"Medios"}
   #home .homeTable .dateCol{
     font-size:.78rem !important;
   }
@@ -3987,7 +3987,7 @@ body[data-theme="light"] #media .mtable select{
   color:#1a237e !important;
 }
 
-/* 2. SOLO la columna Fecha queda fija en Alabanza/Jóvenes.
+/* 2. SOLO la columna Fecha queda fija en Banda/Jóvenes.
       Esto corrige que las filas sin rowspan fijaran "Responsables". */
 #worship .wtable tbody td:first-child:not(.date),
 #youth .wtable tbody td:first-child:not(.date){
@@ -4344,7 +4344,7 @@ body[data-theme="light"] #home .homeTable th:first-child{
    V64 · INICIO MES/SEMANA + MENÚ PROGRAMACIÓN ENFOCADO
    ========================================================== */
 
-/* Multimedia en Inicio: etiqueta compacta y sin superposición */
+/* Medios en Inicio: etiqueta compacta y sin superposición */
 #home .homeMediaCell .homeCellList .line{
   grid-template-columns:7rem minmax(0,1fr) !important;
   gap:.45rem !important;
@@ -4420,7 +4420,7 @@ body[data-theme="light"] #home .homeTable th:first-child{
     font-size:.9rem;
   }
 
-  /* En móvil mantiene legibles las etiquetas de Multimedia de Inicio */
+  /* En móvil mantiene legibles las etiquetas de Medios de Inicio */
   #home .homeMediaCell .homeCellList .line{
     grid-template-columns:6.4rem minmax(0,1fr) !important;
   }
@@ -5383,6 +5383,96 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 }
 </style>
 
+
+<style id="v72-templates-onboarding">
+.homeEmptyPrograms{
+  max-width:44rem;
+  margin:2rem auto;
+  text-align:center;
+  padding:2rem !important;
+}
+.homeEmptyIcon{
+  width:4rem;
+  height:4rem;
+  display:grid;
+  place-items:center;
+  margin:0 auto .85rem;
+  border:1px solid color-mix(in srgb,var(--accent) 55%,var(--line));
+  border-radius:1rem;
+  background:var(--accentSoft);
+  font-size:1.8rem;
+  font-weight:900;
+}
+.homeEmptyActions{
+  display:flex;
+  justify-content:center;
+  gap:.6rem;
+  margin-top:1.1rem;
+}
+
+.programTemplateOnboarding{
+  margin-bottom:1rem;
+}
+.templateIntro{
+  margin-bottom:.8rem;
+}
+.programTemplateCards{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:.75rem;
+}
+.programTemplateCard{
+  display:flex;
+  flex-direction:column;
+  gap:.65rem;
+  min-height:12rem;
+  padding:1rem;
+  border:1px solid var(--line);
+  border-radius:.85rem;
+  background:var(--panel2);
+}
+.programTemplateCard h3{
+  margin:0 !important;
+}
+.programTemplateCard .templateMeta{
+  flex:1;
+  color:var(--muted);
+  font-size:.82rem;
+  line-height:1.45;
+}
+.programTemplateBadge{
+  display:inline-flex;
+  align-items:center;
+  align-self:flex-start;
+  min-height:1.7rem;
+  padding:.15rem .45rem;
+  border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));
+  border-radius:999px;
+  background:var(--accentSoft);
+  font-size:.68rem;
+  font-weight:850;
+}
+.programTemplateCard .btn{
+  width:100%;
+}
+
+@media(max-width:64rem){
+  .programTemplateCards{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:47.5rem){
+  .programTemplateCards{grid-template-columns:1fr}
+  .homeEmptyPrograms{
+    margin:.7rem 0;
+    padding:1.2rem !important;
+  }
+  .homeEmptyActions{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+  .homeEmptyActions .btn{width:100%}
+}
+</style>
+
 </head>
 <body class="readonly-mode">
 
@@ -5414,7 +5504,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
         <h3>Crear un equipo</h3>
         <p>Serás el único administrador del equipo y podrás asignar Editores.</p>
         <label for="createTeamName">Nombre del equipo</label>
-        <input id="createTeamName" maxlength="80" placeholder="Ej. Alabanza Central" required>
+        <input id="createTeamName" maxlength="80" placeholder="Ej. Banda Central" required>
         <button class="btn primary" type="submit">Crear equipo</button>
       </form>
 
@@ -5687,7 +5777,19 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 <main class="main"><div class="top"><div class="topLeft"><button id="menu" class="menu">☰</button><h1 id="title">Inicio</h1></div><div class="topAuth"><span id="topTeamBadge" title="Equipo actual"></span><button id="topAuthBtn" class="btn secondary" type="button">Iniciar sesión</button></div><span class="versionTag"></span></div><div id="sectionToast" class="sectionToast"><strong id="toastTitle"></strong><span id="toastText"></span></div><div id="confirmToast" class="sectionToast"><strong>Programación Confirmada ✅</strong></div>
 
 <section id="home" class="panel active">
-  <div class="card">
+  <div id="homeEmptyPrograms" class="card homeEmptyPrograms" style="display:none">
+    <div class="homeEmptyIcon">▦</div>
+    <h2>Crea tu primera programación</h2>
+    <div class="muted">
+      Tu equipo todavía no tiene programaciones. Puedes empezar con una plantilla o construir una desde cero.
+    </div>
+    <div class="homeEmptyActions">
+      <button id="homeGoTemplates" class="btn primary" type="button">Usar plantilla</button>
+      <button id="homeCreateBlankProgram" class="btn secondary" type="button">Crear desde cero</button>
+    </div>
+  </div>
+
+  <div class="card homeMainCard">
     <div class="homeHeader">
       <div>
         <h2 style="margin-bottom:4px">Programación</h2>
@@ -5720,7 +5822,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
             <th>FECHA</th>
             <th>RESPONSABLES</th>
             <th>CANCIONES</th>
-            <th>MULTIMEDIA</th>
+            <th>MEDIOS</th>
           </tr>
         </thead>
         <tbody id="week"></tbody>
@@ -5738,6 +5840,16 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
     </div>
     <button id="createCustomProgramBtn" class="btn primary" type="button">+ Crear programación</button>
   </div>
+  <div id="programTemplateOnboarding" class="programTemplateOnboarding" style="display:none">
+    <div class="templateIntro">
+      <h2>¿Qué quieres programar?</h2>
+      <div class="muted">
+        Las plantillas solo crean la estructura. No incluyen voluntarios, canciones, disponibilidad ni datos de otro equipo.
+      </div>
+    </div>
+    <div id="programTemplateCards" class="programTemplateCards"></div>
+  </div>
+
   <div id="programCards" class="programCards"></div>
 </section>
 
@@ -5802,7 +5914,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 </div>
 </section>
 
-<section id="media" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="my" type="number" value="2026"></div><div><label>Mes</label><select id="mm"></select></div><div class="auto generateDatesControl"><button id="mg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="mf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="mr" class="btn secondary rebalanceBtn" title="Vuelve a repartir Multimedia para mejorar rotación y equilibrio">Reequilibrar</button><button id="me" class="btn secondary">Añadir servicio</button><button id="mc" class="btn success" title="Guarda la programación para continuar editándola desde otro lugar cuando tengas la sesión iniciada">Confirmar</button></div><div id="mstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="mtable"><thead><tr><th>FECHAS 📅</th><th>PC 💻</th><th>CAMARA 🎥</th><th>⏹️DIAPOSITVAS PREDICAS</th></tr></thead><tbody id="mbody"></tbody></table></div><div id="mMobileCards" class="mobileScheduleCards"></div></div></section>
+<section id="media" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="my" type="number" value="2026"></div><div><label>Mes</label><select id="mm"></select></div><div class="auto generateDatesControl"><button id="mg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="mf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="mr" class="btn secondary rebalanceBtn" title="Vuelve a repartir Medios para mejorar rotación y equilibrio">Reequilibrar</button><button id="me" class="btn secondary">Añadir servicio</button><button id="mc" class="btn success" title="Guarda la programación para continuar editándola desde otro lugar cuando tengas la sesión iniciada">Confirmar</button></div><div id="mstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="mtable"><thead><tr><th>FECHAS 📅</th><th>PC 💻</th><th>CAMARA 🎥</th><th>⏹️DIAPOSITVAS PREDICAS</th></tr></thead><tbody id="mbody"></tbody></table></div><div id="mMobileCards" class="mobileScheduleCards"></div></div></section>
 
 <section id="vols" class="panel">
 <div id="volunteerSyncStatus" class="note" style="margin-bottom:12px">Voluntarios: esperando conexión con la base de datos…</div>
@@ -5810,7 +5922,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 <div class="volunteerTeamStack">
   <details class="volunteerTeamAccordion" open>
     <summary>
-      <span>Voluntarios de Alabanza</span>
+      <span>Voluntarios de Banda</span>
       <span class="accordionHint">Abrir / cerrar</span>
     </summary>
     <div class="volunteerTeamBody">
@@ -5821,7 +5933,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 
   <details class="volunteerTeamAccordion">
     <summary>
-      <span>Voluntarios de Alabanza Jóvenes</span>
+      <span>Voluntarios de Banda Jóvenes</span>
       <span class="accordionHint">Abrir / cerrar</span>
     </summary>
     <div class="volunteerTeamBody">
@@ -5832,7 +5944,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 
   <details class="volunteerTeamAccordion">
     <summary>
-      <span>Voluntarios de Multimedia</span>
+      <span>Voluntarios de Medios</span>
       <span class="accordionHint">Abrir / cerrar</span>
     </summary>
     <div class="volunteerTeamBody">
@@ -5920,7 +6032,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 
   <div class="availabilityTeamStack">
     <details class="volunteerTeamAccordion" open>
-      <summary><span>Disponibilidad de Alabanza</span><span class="accordionHint">Abrir / cerrar</span></summary>
+      <summary><span>Disponibilidad de Banda</span><span class="accordionHint">Abrir / cerrar</span></summary>
       <div class="volunteerTeamBody">
         <div class="row">
           <div><select id="awp"></select></div>
@@ -5932,7 +6044,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
     </details>
 
     <details class="volunteerTeamAccordion">
-      <summary><span>Disponibilidad de Multimedia</span><span class="accordionHint">Abrir / cerrar</span></summary>
+      <summary><span>Disponibilidad de Medios</span><span class="accordionHint">Abrir / cerrar</span></summary>
       <div class="volunteerTeamBody">
         <div class="row">
           <div><select id="amp"></select></div>
@@ -5949,7 +6061,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 
 <section id="hist" class="panel">
   <div class="card">
-    <h2>Historial de Alabanza y Multimedia</h2>
+    <h2>Historial de Banda y Medios</h2>
     <div class="row">
       <div><select id="ht"><option value="person">Personas</option><option value="song">Canciones</option></select></div>
       <div><input id="hq" placeholder="Buscar..."></div>
@@ -6000,9 +6112,9 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
   <div class="grid">
     <div class="card s4">
       <h2>Imágenes mensuales</h2>
-      <button id="iw" class="btn primary" style="width:100%;margin-bottom:8px">Generar Alabanza</button>
+      <button id="iw" class="btn primary" style="width:100%;margin-bottom:8px">Generar Banda</button>
       <button id="ij" class="btn secondary" style="width:100%;margin-bottom:8px">Generar Jóvenes</button>
-      <button id="im" class="btn secondary" style="width:100%;margin-bottom:8px" onclick="window.imageM&&window.imageM()">Generar Multimedia</button>
+      <button id="im" class="btn secondary" style="width:100%;margin-bottom:8px" onclick="window.imageM&&window.imageM()">Generar Medios</button>
 
       <div class="customRenderBox">
         <label>Programación personalizada</label>
@@ -6116,7 +6228,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
       <summary>Configuración de pestañas</summary>
       <div class="gsAdvancedBody">
         <div>
-          <label>Alabanza</label>
+          <label>Banda</label>
           <input id="gsWorshipSheetName" value="{MES}" placeholder="{MES}">
           <div class="muted">Usa <strong>{MES}</strong> para ENERO, FEBRERO, MARZO…</div>
         </div>
@@ -6125,7 +6237,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
           <input id="gsYouthSheetName" value="jovenes">
         </div>
         <div>
-          <label>Multimedia</label>
+          <label>Medios</label>
           <input id="gsMediaSheetName" value="MULTIMEDIA ">
         </div>
       </div>
@@ -6278,10 +6390,10 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
           </div>
 
           <div style="margin-top:14px">
-            <label>Alabanza Jóvenes</label>
+            <label>Banda Jóvenes</label>
             <div class="checkLine">
               <input id="veYouth" type="checkbox">
-              <span>Participa en Alabanza Jóvenes</span>
+              <span>Participa en Banda Jóvenes</span>
             </div>
             <div class="muted" style="margin-top:6px">
               Solo las personas marcadas aquí pueden aparecer en la programación de Jóvenes.
@@ -6290,7 +6402,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
         </div>
 
         <div id="veMediaFields" class="span2" style="display:none">
-          <label>Funciones Multimedia</label>
+          <label>Funciones Medios</label>
           <div id="veMediaRoleChecks" class="checkGrid"></div>
           <div style="margin-top:12px">
             <label>Mínimo al mes</label>
@@ -6488,16 +6600,16 @@ let volunteers=[
 {name:"Juan",primary:"Voz principal",secondary:["Coros"],min:1,max:2,active:true},{name:"Rut",primary:"Voz principal",secondary:["Coros"],min:1,max:2,active:true},{name:"Diana",primary:"Voz principal",secondary:["Coros"],min:1,max:2,active:true},{name:"Luisa",primary:"Voz principal",secondary:["Coros","Piano"],min:1,max:1,active:true},{name:"Camila",primary:"Voz principal",secondary:["Coros"],min:1,max:1,active:true},
 {name:"Camilo",primary:"Guitarra",secondary:["Piano","Bajo","Batería","Coros"],min:1,max:2,active:true},{name:"Moisés",primary:"Piano",secondary:["Guitarra","Bajo","Batería","Coros"],min:1,max:2,active:true},{name:"Samuel",primary:"Guitarra",secondary:[],min:1,max:2,active:true},{name:"Brayan",primary:"Bajo",secondary:[],min:2,max:4,active:true},{name:"Sebas",primary:"Bajo",secondary:[],min:1,max:1,active:true},{name:"Daniel",primary:"Batería",secondary:[],min:1,max:3,active:true},{name:"Anders",primary:"Batería",secondary:[],min:1,max:3,active:true},{name:"Alber",primary:"Piano",secondary:[],min:1,max:1,active:true},{name:"Ana",primary:"Piano",secondary:[],min:1,max:1,active:true},{name:"Angie",primary:"Coros",secondary:[],min:1,max:2,active:true},{name:"Harold",primary:"Coros",secondary:[],min:1,max:2,active:true},{name:"Estela",primary:"Coros",secondary:[],min:1,max:2,active:true},{name:"Adriana",primary:"Coros",secondary:[],min:1,max:2,active:true}];
 let songs=[
-{name:"Santo por siempre",artist:"La IBI",cat:"Adoración",singer:"Juan",key:"G"},{name:"Dios incomparable",artist:"Generación 12",cat:"Adoración",singer:"Diana",key:"A"},{name:"La bondad de Dios",artist:"Bethel",cat:"Adoración",singer:"Luisa",key:"G"},{name:"Libre soy",artist:"Barak",cat:"Alabanza",singer:"Camila",key:"D"},{name:"Alaba",artist:"Evan Craft",cat:"Alabanza",singer:"Juan",key:"D",tones:{Juan:"D",Camilo:"B"}},{name:"Fiesta en el desierto",artist:"Montesanto",cat:"Alabanza",singer:"Rut",key:"D"},{name:"Tu gozo",artist:"Barak",cat:"Alabanza",singer:"Luisa",key:"C"},{name:"Por amor",artist:"Aline Barros",cat:"Santa Cena",singer:"Juan",key:"G"}];
+{name:"Santo por siempre",artist:"La IBI",cat:"Adoración",singer:"Juan",key:"G"},{name:"Dios incomparable",artist:"Generación 12",cat:"Adoración",singer:"Diana",key:"A"},{name:"La bondad de Dios",artist:"Bethel",cat:"Adoración",singer:"Luisa",key:"G"},{name:"Libre soy",artist:"Barak",cat:"Banda",singer:"Camila",key:"D"},{name:"Alaba",artist:"Evan Craft",cat:"Banda",singer:"Juan",key:"D",tones:{Juan:"D",Camilo:"B"}},{name:"Fiesta en el desierto",artist:"Montesanto",cat:"Banda",singer:"Rut",key:"D"},{name:"Tu gozo",artist:"Barak",cat:"Banda",singer:"Luisa",key:"C"},{name:"Por amor",artist:"Aline Barros",cat:"Santa Cena",singer:"Juan",key:"G"}];
 songs.forEach(s=>{
  s.tones=s.tones||{};
  s.moods=Array.isArray(s.moods)?s.moods:[];
  s.bpm=Number.isFinite(Number(s.bpm))?Number(s.bpm):null;
 
  // Migración del prototipo anterior:
- // Alabanza -> Rápida, Adoración/Santa Cena -> Lenta.
+ // Banda -> Rápida, Adoración/Santa Cena -> Lenta.
  if(!["Lenta","Media","Rápida"].includes(s.category)){
-   if(s.cat==="Alabanza")s.category="Rápida";
+   if(s.cat==="Banda")s.category="Rápida";
    else if(s.cat==="Adoración")s.category="Lenta";
    else if(s.cat==="Santa Cena"){s.category="Lenta";if(!s.moods.includes("Santa Cena"))s.moods.push("Santa Cena")}
    else if(["Lenta","Media","Rápida"].includes(s.cat))s.category=s.cat;
@@ -6573,7 +6685,7 @@ function genJ(){
 function fillJ(){
  let counts={};
  const firstDate=jmonth.map(s=>s.date).filter(Boolean).sort()[0]||null;
- let previousNames=seedPreviousVolunteerNames("Alabanza Jóvenes",firstDate);
+ let previousNames=seedPreviousVolunteerNames("Banda Jóvenes",firstDate);
  const monthSongCounts={};
  const lastSongUsed=seedSongHistory();
 
@@ -6893,7 +7005,7 @@ function chooseFeasibleCategoryPattern(patterns){
 }
 
 function chooseRegularWorshipPattern(){
- // Alabanza: siempre 4 canciones normales.
+ // Banda: siempre 4 canciones normales.
  // Las tres combinaciones autorizadas también cambian de orden.
  return chooseFeasibleCategoryPattern([
    ["Rápida","Rápida","Lenta","Lenta"],
@@ -7068,7 +7180,7 @@ function fillW(){
  }
  let counts={};
  const firstDate=wmonth.map(s=>s.date).filter(Boolean).sort()[0]||null;
- let previousNames=seedPreviousVolunteerNames("Alabanza",firstDate);
+ let previousNames=seedPreviousVolunteerNames("Banda",firstDate);
  const monthSongCounts={};
  const lastSongUsed=seedSongHistory();
  wmonth.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(s=>{
@@ -7219,7 +7331,7 @@ function renderMobileWorshipCards(){
   wmonth.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(service=>{
     const card=document.createElement("article");
     card.className="mobileScheduleCard";
-    card.appendChild(mobileServiceHeader(service,"Alabanza"));
+    card.appendChild(mobileServiceHeader(service,"Banda"));
 
     const responsibles=document.createElement("div");
     responsibles.className="mobileScheduleSection";
@@ -7304,7 +7416,7 @@ function renderMobileYouthCards(){
   jmonth.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(service=>{
     const card=document.createElement("article");
     card.className="mobileScheduleCard";
-    card.appendChild(mobileServiceHeader(service,"Alabanza Jóvenes"));
+    card.appendChild(mobileServiceHeader(service,"Banda Jóvenes"));
 
     const responsibles=document.createElement("div");
     responsibles.className="mobileScheduleSection";
@@ -7381,7 +7493,7 @@ function renderMobileMediaCards(){
   mmonth.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(service=>{
     const card=document.createElement("article");
     card.className="mobileScheduleCard";
-    card.appendChild(mobileServiceHeader(service,"Multimedia"));
+    card.appendChild(mobileServiceHeader(service,"Medios"));
 
     const section=document.createElement("div");
     section.className="mobileScheduleSection";
@@ -7693,7 +7805,7 @@ function openVolunteerEditor(module,i=null,mode="edit"){
  const isWorship=module==="worship";
  veWorshipFields.style.display=isWorship?"block":"none";
  veMediaFields.style.display=isWorship?"none":"block";
- volunteerEditTitle.textContent=(mode==="add"?"Añadir ":"Editar ")+(isWorship?"voluntario de Alabanza":"voluntario de Multimedia");
+ volunteerEditTitle.textContent=(mode==="add"?"Añadir ":"Editar ")+(isWorship?"voluntario de Banda":"voluntario de Medios");
 
  if(isWorship){
    const v=mode==="edit"?volunteers[i]:{name:"",primary:roles[0]||"",secondary:[],min:1,max:2,youth:false,active:true};
@@ -7862,7 +7974,7 @@ async function loadVolunteersFromSupabase(){
  renderMediaVolunteers();
  refreshPeople();
  renderW();renderJ();renderM();
- setVolunteerSyncStatus(`Voluntarios en base de datos · ${volunteers.length} Alabanza · ${mediaVolunteers.length} Multimedia`);
+ setVolunteerSyncStatus(`Voluntarios en base de datos · ${volunteers.length} Banda · ${mediaVolunteers.length} Medios`);
  return true;
 }
 
@@ -7978,7 +8090,7 @@ async function deleteVolunteerFromSupabase(v){
  const ok=await window.appConfirm(
    `¿Eliminar definitivamente a ${v.name}?
 
-Se eliminará de Alabanza, Multimedia, sus roles y sus indisponibilidades. Los registros históricos confirmados se conservarán cuando corresponda.`,
+Se eliminará de Banda, Medios, sus roles y sus indisponibilidades. Los registros históricos confirmados se conservarán cuando corresponda.`,
    {title:"Eliminar voluntario",confirmText:"Eliminar",tone:"danger",icon:"!"}
  );
  if(!ok)return false;
@@ -8014,7 +8126,7 @@ function renderVols(){
  vlist.innerHTML="";
  volunteers.forEach((v,i)=>{
    let d=document.createElement("div");d.className="item";
-   d.innerHTML=`<b>${v.name}</b> ${v.active?"":"<span class='muted'>(inactivo)</span>"}<div class="chips"><span class="chip">Principal: ${v.primary}</span>${v.secondary.map(x=>`<span class="chip">${x}</span>`).join("")}${v.youth?'<span class="chip">Alabanza Jóvenes</span>':""}<span class="chip">${v.min}-${v.max}/mes</span></div><div class="itemActions"><button class="miniBtn edit">Editar</button><button class="miniBtn toggle">${v.active?"Inactivar":"Activar"}</button><button class="miniBtn danger delete">Eliminar</button></div>`;
+   d.innerHTML=`<b>${v.name}</b> ${v.active?"":"<span class='muted'>(inactivo)</span>"}<div class="chips"><span class="chip">Principal: ${v.primary}</span>${v.secondary.map(x=>`<span class="chip">${x}</span>`).join("")}${v.youth?'<span class="chip">Banda Jóvenes</span>':""}<span class="chip">${v.min}-${v.max}/mes</span></div><div class="itemActions"><button class="miniBtn edit">Editar</button><button class="miniBtn toggle">${v.active?"Inactivar":"Activar"}</button><button class="miniBtn danger delete">Eliminar</button></div>`;
    d.querySelector(".edit").onclick=()=>editVolunteer(i);
    d.querySelector(".toggle").onclick=async e=>{
      const btn=e.currentTarget;btn.disabled=true;
@@ -8056,7 +8168,7 @@ function renderYouthVolunteersOverview(){
    box.appendChild(d);
  });
  if(!box.children.length){
-   box.innerHTML=`<div class="muted">No hay voluntarios habilitados para Alabanza Jóvenes.</div>`;
+   box.innerHTML=`<div class="muted">No hay voluntarios habilitados para Banda Jóvenes.</div>`;
  }
 }
 function refreshMediaRoleControl(){ /* multimedia roles are rendered inside the volunteer modal */ }
@@ -8252,7 +8364,7 @@ function uniqueSorted(values){
 function legacyGroupForSong(song){
  if((song.moods||[]).some(m=>moodKey(m)==="santa cena"))return "Santa Cena";
  if(song.category==="Lenta")return "Adoración";
- return "Alabanza";
+ return "Banda";
 }
 function refreshMoodSelect(select,selected=[]){
  const chosen=new Set((selected||[]).map(moodKey));
@@ -8530,7 +8642,7 @@ async function loadAvailabilityFromSupabase(){
    if(r.module==="multimedia")um.push(item);
  });
  renderAvail();
- setAvailabilitySyncStatus(`Disponibilidad en base de datos · ${uw.length} Alabanza · ${um.length} Multimedia`);
+ setAvailabilitySyncStatus(`Disponibilidad en base de datos · ${uw.length} Banda · ${um.length} Medios`);
  return true;
 }
 
@@ -8680,7 +8792,7 @@ async function syncConfirmedMonthToGoogleSheets(module,services,year,monthZeroBa
 }
 
 function sheetsSuccessMessage(module,count,result){
-  const label=module==="alabanza"?"Alabanza":module==="jovenes"?"Jóvenes":"Multimedia";
+  const label=module==="alabanza"?"Banda":module==="jovenes"?"Jóvenes":"Medios";
   const unit=module==="multimedia"?"fechas":"servicios";
 
   if(result?.skipped){
@@ -8870,13 +8982,13 @@ function deepCopy(value){
  return JSON.parse(JSON.stringify(value));
 }
 function moduleLabel(module){
- return module==="alabanza"?"Alabanza":module==="jovenes"?"Alabanza Jóvenes":"Multimedia";
+ return module==="alabanza"?"Banda":module==="jovenes"?"Banda Jóvenes":"Medios";
 }
 function normalizeServiceName(module,s){
  if(String(s?.name||"").trim())return String(s.name).trim();
  if(module==="alabanza")return s?.extra?"Servicio especial":"Servicio dominical";
  if(module==="jovenes")return s?.extra?"Jóvenes especial":"Jóvenes";
- return s?.extra?"Multimedia especial":"Multimedia";
+ return s?.extra?"Medios especial":"Medios";
 }
 function dbRoleName(module,uiRole){
  if(module==="multimedia"&&uiRole==="Camara")return "Cámara";
@@ -9061,7 +9173,7 @@ async function fetchConfirmedMonth(module,Y,M){
      const item={
        date:service.service_date,
        extra:!!service.is_extra,
-       name:service.name||"Multimedia",
+       name:service.name||"Medios",
        PC:"",
        Camara:"",
        Diapositivas:""
@@ -9162,12 +9274,12 @@ async function applyConfirmedMonth(module,Y,M,{silent=false}={}){
    if(data.length){
      mmonth=deepCopy(data);cm=deepCopy(data);
      renderM();
-     if(!silent)setScheduleStatus(module,`Programación Multimedia cargada desde la base de datos · ${data.length} fechas.`,"loaded");
+     if(!silent)setScheduleStatus(module,`Programación Medios cargada desde la base de datos · ${data.length} fechas.`,"loaded");
    }else{
      cm=null;
-     mmonth=getDates(+Y,+M,[0,3,6]).map(d=>({date:d,extra:false,name:"Multimedia",PC:"",Camara:"",Diapositivas:""}));
+     mmonth=getDates(+Y,+M,[0,3,6]).map(d=>({date:d,extra:false,name:"Medios",PC:"",Camara:"",Diapositivas:""}));
      renderM();
-     if(!silent)setScheduleStatus(module,"No hay programación Multimedia confirmada para este mes.","empty");
+     if(!silent)setScheduleStatus(module,"No hay programación Medios confirmada para este mes.","empty");
    }
  }
  updateHome();
@@ -9319,15 +9431,15 @@ async function confirmW(){
        "saved"
      );
    }catch(sheetError){
-     console.error("Alabanza confirmada, pero falló Google Sheets:",sheetError);
+     console.error("Banda confirmada, pero falló Google Sheets:",sheetError);
      setScheduleStatus(
        "alabanza",
-       `Alabanza quedó confirmada en la base de datos · ${loaded.length} servicios. <strong>Google Sheets pendiente:</strong> ${sheetError.message||sheetError}`,
+       `Banda quedó confirmada en la base de datos · ${loaded.length} servicios. <strong>Google Sheets pendiente:</strong> ${sheetError.message||sheetError}`,
        "draft"
      );
    }
  }catch(error){
-   console.error("Error confirmando Alabanza:",error);
+   console.error("Error confirmando Banda:",error);
    setScheduleStatus(
      "alabanza",
      "No se pudo confirmar la programación: "+(error.message||error),
@@ -9411,18 +9523,18 @@ async function confirmM(){
        "saved"
      );
    }catch(sheetError){
-     console.error("Multimedia confirmado, pero falló Google Sheets:",sheetError);
+     console.error("Medios confirmado, pero falló Google Sheets:",sheetError);
      setScheduleStatus(
        "multimedia",
-       `Multimedia quedó confirmado en la base de datos · ${loaded.length} fechas. <strong>Google Sheets pendiente:</strong> ${sheetError.message||sheetError}`,
+       `Medios quedó confirmado en la base de datos · ${loaded.length} fechas. <strong>Google Sheets pendiente:</strong> ${sheetError.message||sheetError}`,
        "draft"
      );
    }
  }catch(error){
-   console.error("Error confirmando Multimedia:",error);
+   console.error("Error confirmando Medios:",error);
    setScheduleStatus(
      "multimedia",
-     "No se pudo confirmar Multimedia: "+(error.message||error),
+     "No se pudo confirmar Medios: "+(error.message||error),
      "error"
    );
  }finally{
@@ -9563,9 +9675,71 @@ async function ensureHistoryLoaded(){
 async function history(){
  hout.innerHTML='<div class="note">Cargando historial…</div>';
  try{await ensureHistoryLoaded()}
- catch(error){console.error(error);hout.innerHTML='<div class="note">No se pudo cargar el historial.</div>';return}
- let t=ht.value,q=hq.value.toLowerCase(),rows=hist.filter(x=>x.type===t&&(!q||(x.name+" "+x.detail).toLowerCase().includes(q)));
- hout.innerHTML=rows.length?`<table style="width:100%;border-collapse:collapse">${rows.map(x=>`<tr><td style="padding:7px;border-bottom:1px solid #ddd">${pretty(x.date)}</td><td>${x.name}</td><td>${x.detail}</td><td>${x.module}</td></tr>`).join("")}</table>`:'<div class="note">Sin resultados todavía.</div>'
+ catch(error){
+   console.error(error);
+   hout.innerHTML='<div class="note">No se pudo cargar el historial.</div>';
+   return;
+ }
+
+ const type=ht.value;
+ const query=hq.value.toLowerCase().trim();
+ const source=hist.filter(x=>x.type===type&&(!query||(x.name+" "+x.detail+" "+x.module).toLowerCase().includes(query)));
+
+ const groups=new Map();
+ source.forEach(row=>{
+   const key=row.name||"Sin nombre";
+   if(!groups.has(key)){
+     groups.set(key,{
+       name:key,
+       count:0,
+       lastDate:null,
+       modules:new Map(),
+       details:new Map()
+     });
+   }
+   const group=groups.get(key);
+   group.count++;
+   if(!group.lastDate||row.date>group.lastDate)group.lastDate=row.date;
+   const moduleLabel=row.module==="alabanza"?"Banda":
+                     row.module==="jovenes"?"Banda Jóvenes":
+                     row.module==="multimedia"?"Medios":
+                     row.module||"Otro";
+   group.modules.set(moduleLabel,(group.modules.get(moduleLabel)||0)+1);
+   if(row.detail)group.details.set(row.detail,(group.details.get(row.detail)||0)+1);
+ });
+
+ const rows=[...groups.values()].sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name,"es"));
+ if(!rows.length){
+   hout.innerHTML='<div class="note">Sin resultados todavía.</div>';
+   return;
+ }
+
+ const label=type==="person"?"Voluntario":"Canción";
+ hout.innerHTML=`
+   <div class="sheet">
+     <table style="width:100%;border-collapse:collapse">
+       <thead>
+         <tr>
+           <th style="padding:8px;border-bottom:1px solid var(--line);text-align:left">${label}</th>
+           <th style="padding:8px;border-bottom:1px solid var(--line);text-align:center">Total</th>
+           <th style="padding:8px;border-bottom:1px solid var(--line);text-align:left">Distribución</th>
+           <th style="padding:8px;border-bottom:1px solid var(--line);text-align:left">Última vez</th>
+         </tr>
+       </thead>
+       <tbody>
+         ${rows.map(group=>`
+           <tr>
+             <td style="padding:8px;border-bottom:1px solid var(--line)"><strong>${group.name}</strong></td>
+             <td style="padding:8px;border-bottom:1px solid var(--line);text-align:center">${group.count}</td>
+             <td style="padding:8px;border-bottom:1px solid var(--line)">
+               ${[...group.modules.entries()].map(([name,count])=>`${name}: ${count}`).join(" · ")}
+             </td>
+             <td style="padding:8px;border-bottom:1px solid var(--line)">${group.lastDate?pretty(group.lastDate):"—"}</td>
+           </tr>
+         `).join("")}
+       </tbody>
+     </table>
+   </div>`;
 }
 
 function imageW(){
@@ -9775,7 +9949,7 @@ function imageM(){
   ctx.textAlign="center";
   ctx.textBaseline="middle";
   ctx.font="700 24px Roboto Mono";
-  ctx.fillText("PROGRAMACION  MULTIMEDIA", width/2, titleH/2);
+  ctx.fillText("PROGRAMACION  MEDIOS", width/2, titleH/2);
 
   // header
   const top=titleH;
@@ -9844,7 +10018,7 @@ function imageM(){
  }
 }
 window.imageM=imageM;
-const sectionDescriptions={home:["Inicio","Vista semanal y acceso rápido."],worship:["Alabanza","Programación mensual dominical."],youth:["Alabanza Jóvenes","Programación mensual de sábados."],media:["Multimedia","PC, cámara y diapositivas."],vols:["Voluntarios","Personas, roles y edición."],songs:["Canciones","Repertorio y tonos por cantante."],avail:["Disponibilidad","Indisponibilidades por módulo."],hist:["Historial","Participaciones y repertorio."],imgs:["Imágenes","Exportación mensual."],settings:["Configuración","Ajustes generales."]};
+const sectionDescriptions={home:["Inicio","Vista semanal y acceso rápido."],worship:["Banda","Programación mensual dominical."],youth:["Banda Jóvenes","Programación mensual de sábados."],media:["Medios","PC, cámara y diapositivas."],vols:["Voluntarios","Personas, roles y edición."],songs:["Canciones","Repertorio y tonos por cantante."],avail:["Disponibilidad","Indisponibilidades por módulo."],hist:["Historial","Participaciones y repertorio."],imgs:["Imágenes","Exportación mensual."],settings:["Configuración","Ajustes generales."]};
 function showSectionToast(id){return;}
 function showConfirmToast(){
   const t=document.getElementById("confirmToast");
@@ -9955,7 +10129,7 @@ wLockResp.onclick=()=>{worshipLockResponsibilities=!worshipLockResponsibilities;
 wLockSongs.onclick=()=>{worshipLockSongs=!worshipLockSongs;localStorage.setItem("worship-lock-songs",worshipLockSongs?"1":"0");updateWorshipLockButtons()};
 wc.onclick=confirmW;we.onclick=async()=>{let d=await window.appPrompt("Agregar servicio especial",{message:"Selecciona la fecha del servicio.",inputType:"date",confirmText:"Agregar"});if(!d)return;wmonth.push({date:d,extra:true,name:"Servicio especial",santa:false,assign:[],songs:[]});wmonth.sort((a,b)=>a.date.localeCompare(b.date));renderW();updateHome();queueScheduleDraftSave("alabanza");window.showAppToast("Servicio agregado.","success",1000)};
 jg.onclick=genJ;jf.onclick=fillJEmpty;jr.onclick=fillJ;jc.onclick=confirmJ;je.onclick=async()=>{let d=await window.appPrompt("Agregar servicio de Jóvenes",{message:"Selecciona la fecha del servicio.",inputType:"date",confirmText:"Agregar"});if(!d)return;jmonth.push({date:d,extra:true,name:"Jóvenes especial",santa:false,assign:[],songs:[]});jmonth.sort((a,b)=>a.date.localeCompare(b.date));renderJ();updateHome();queueScheduleDraftSave("jovenes");window.showAppToast("Servicio agregado.","success",1000)};
-mg.onclick=genM;mf.onclick=fillMEmpty;mr.onclick=fillM;mc.onclick=confirmM;me.onclick=async()=>{let d=await window.appPrompt("Agregar servicio de Multimedia",{message:"Selecciona la fecha del servicio.",inputType:"date",confirmText:"Agregar"});if(!d)return;mmonth.push({date:d,extra:true,PC:"",Camara:"",Diapositivas:""});mmonth.sort((a,b)=>a.date.localeCompare(b.date));renderM();updateHome();queueScheduleDraftSave("multimedia");window.showAppToast("Servicio agregado.","success",1000)};
+mg.onclick=genM;mf.onclick=fillMEmpty;mr.onclick=fillM;mc.onclick=confirmM;me.onclick=async()=>{let d=await window.appPrompt("Agregar servicio de Medios",{message:"Selecciona la fecha del servicio.",inputType:"date",confirmText:"Agregar"});if(!d)return;mmonth.push({date:d,extra:true,PC:"",Camara:"",Diapositivas:""});mmonth.sort((a,b)=>a.date.localeCompare(b.date));renderM();updateHome();queueScheduleDraftSave("multimedia");window.showAppToast("Servicio agregado.","success",1000)};
 
 seAddMood.onclick=async()=>{
  let mood=addMoodToCatalog(seNewMood.value);
@@ -10338,7 +10512,7 @@ openAddWorshipVolunteer.onclick=()=>openVolunteerEditor("worship",null,"add");
 document.getElementById("openAddYouthVolunteer")?.addEventListener("click",()=>{
   openVolunteerEditor("worship",null,"add");
   veYouth.checked=true;
-  volunteerEditTitle.textContent="Añadir voluntario de Alabanza Jóvenes";
+  volunteerEditTitle.textContent="Añadir voluntario de Banda Jóvenes";
 });
 openAddMediaVolunteer.onclick=()=>openVolunteerEditor("media",null,"add");
 volunteerModalCancel.onclick=closeVolunteerEditor;
@@ -10394,7 +10568,7 @@ refreshRoles();renderVols();refreshPeople();refreshMediaRoleControl();renderMedi
 <script id="v8-ui-script">
 (function(){
  const icons={home:'⌂',worship:'♪',youth:'♬',media:'▣',vols:'◌',songs:'♫',avail:'□',hist:'◷',imgs:'▧',settings:'⚙'};
- const desc={home:['Inicio','Vista general de la semana y acceso rápido a la programación.'],worship:['Alabanza','Programación mensual dominical, responsables y canciones.'],youth:['Alabanza Jóvenes','Programación independiente para los sábados.'],media:['Multimedia','Programación mensual de PC, cámara y diapositivas.'],vols:['Voluntarios','Administra personas y roles por módulo.'],songs:['Canciones','Consulta y administra la base de repertorio.'],avail:['Disponibilidad','Indisponibilidades separadas por módulo.'],hist:['Historial','Consulta participaciones y canciones.'],imgs:['Imágenes','Genera imágenes mensuales listas para compartir.'],settings:['Configuración','Ajustes generales de la aplicación.']};
+ const desc={home:['Inicio','Vista general de la semana y acceso rápido a la programación.'],worship:['Banda','Programación mensual dominical, responsables y canciones.'],youth:['Banda Jóvenes','Programación independiente para los sábados.'],media:['Medios','Programación mensual de PC, cámara y diapositivas.'],vols:['Voluntarios','Administra personas y roles por módulo.'],songs:['Canciones','Consulta y administra la base de repertorio.'],avail:['Disponibilidad','Indisponibilidades separadas por módulo.'],hist:['Historial','Consulta participaciones y canciones.'],imgs:['Imágenes','Genera imágenes mensuales listas para compartir.'],settings:['Configuración','Ajustes generales de la aplicación.']};
  document.body.dataset.theme=localStorage.getItem('alabanza-theme')||'dark';
  document.querySelector('.brand').innerHTML='<div class="brandMark">F</div><div class="brandText">Flash Program</div>';
  const navButtons=[...document.querySelectorAll('.nav button[data-p]')];
@@ -10407,7 +10581,7 @@ refreshRoles();renderVols();refreshPeople();refreshMediaRoleControl();renderMedi
  document.getElementById('v8Collapse').onclick=()=>setCollapsed(!side.classList.contains('collapsed'));
  document.getElementById('v8Theme').onclick=()=>{document.body.dataset.theme=document.body.dataset.theme==='dark'?'light':'dark';localStorage.setItem('alabanza-theme',document.body.dataset.theme)};
  navButtons.forEach(b=>b.onclick=()=>{document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById(b.dataset.p).classList.add('active');navButtons.forEach(x=>x.classList.toggle('active',x===b));title.textContent=(desc[b.dataset.p]||[''])[0];side.classList.remove('open');overlay.classList.remove('show')});
- // Improve exported Alabanza and Jóvenes images.
+ // Improve exported Banda and Jóvenes images.
  function spanishKeyLabel(key){
   let raw=String(key||'').trim();
   if(!raw)return '';
@@ -10443,7 +10617,7 @@ refreshRoles();renderVols();refreshPeople();refreshMediaRoleControl();renderMedi
   if(!c)return;
   const x=c.getContext('2d');
 
-  // El render fija SIEMPRE su propio tamaño para que Multimedia no lo deje en 1000 px.
+  // El render fija SIEMPRE su propio tamaño para que Medios no lo deje en 1000 px.
   const W=1500;
   const hh=96;
   const blockH=240;
@@ -11885,10 +12059,10 @@ const FLASH_GUIDE_DATA={
   home:[
     {target:"#homeWeekViewBtn",title:"Semana o Mes",text:"Cambia entre la vista semanal y la vista mensual de la programación."},
     {target:"#prevWeek",title:"Navega por fechas",text:"Anterior y Siguiente mueven semanas cuando estás en Semana y meses completos cuando estás en Mes."},
-    {target:"#homeTableWrap",title:"Vista general",text:"Aquí ves rápidamente responsables, canciones y Multimedia de cada fecha."}
+    {target:"#homeTableWrap",title:"Vista general",text:"Aquí ves rápidamente responsables, canciones y Medios de cada fecha."}
   ],
   programs:[
-    {target:"#programCards",title:"1. Elige una programación",text:"Aquí aparecen Alabanza, Jóvenes, Multimedia y todas las programaciones personalizadas del equipo."},
+    {target:"#programCards",title:"1. Elige una programación",text:"Aquí aparecen Banda, Banda Jóvenes, Medios y todas las programaciones creadas por el equipo."},
     {target:"#createCustomProgramBtn",title:"2. Crea otra programación",text:"El Administrador puede crear nuevas tablas, definir sus días y editar el nombre o función de cada columna."}
   ],
   customProgram:[
@@ -11912,14 +12086,14 @@ const FLASH_GUIDE_DATA={
     {target:"#jc",title:"4. Confirma y guarda",text:"Confirmar guarda los cambios del equipo para continuar editando desde otro lugar cuando tengas la sesión iniciada."}
   ],
   media:[
-    {target:"#mf",title:"1. Completa Multimedia",text:"Rellenar vacíos completa PC, Cámara y Diapositivas; Reequilibrar vuelve a repartir las asignaciones."},
+    {target:"#mf",title:"1. Completa Medios",text:"Rellenar vacíos completa PC, Cámara y Diapositivas; Reequilibrar vuelve a repartir las asignaciones."},
     {target:"#media .sheet",title:"2. Edita responsables",text:"Puedes cambiar cada responsable manualmente desde los selectores de la tabla."},
-    {target:"#me",title:"3. Añade un servicio",text:"Agrega una fecha adicional de Multimedia cuando sea necesario."},
+    {target:"#me",title:"3. Añade un servicio",text:"Agrega una fecha adicional de Medios cuando sea necesario."},
     {target:"#mc",title:"4. Confirma y guarda",text:"Confirmar guarda la programación para que puedas continuar editándola desde otro lugar cuando tengas la sesión iniciada."}
   ],
   vols:[
-    {target:"#openAddWorshipVolunteer",title:"1. Añade voluntarios",text:"Crea una persona de Alabanza y define su rol principal, roles secundarios y límites de participación."},
-    {target:"#openAddMediaVolunteer",title:"2. Configura Multimedia",text:"También puedes añadir personas para PC, Cámara o Diapositivas."},
+    {target:"#openAddWorshipVolunteer",title:"1. Añade voluntarios",text:"Crea una persona de Banda y define su rol principal, roles secundarios y límites de participación."},
+    {target:"#openAddMediaVolunteer",title:"2. Configura Medios",text:"También puedes añadir personas para PC, Cámara o Diapositivas."},
     {target:"#vols .list",title:"3. Administra el equipo",text:"Edita roles, estado y configuración de cada voluntario. Al guardar, los cambios quedan en tu equipo cuando tienes la sesión iniciada."}
   ],
   songs:[
@@ -11939,9 +12113,9 @@ const FLASH_GUIDE_DATA={
     {target:"#hr",title:"3. Revisa resultados",text:"Aquí puedes comprobar cómo se ha utilizado la programación confirmada."}
   ],
   imgs:[
-    {target:"#iw",title:"1. Imagen de Alabanza",text:"Genera el render de Alabanza con la programación que tienes cargada."},
-    {target:"#ij",title:"2. Imagen de Jóvenes",text:"Genera la imagen de Alabanza Jóvenes usando el mismo diseño de la aplicación."},
-    {target:"#im",title:"3. Imagen de Multimedia",text:"Genera el render de Multimedia con responsables y fechas."},
+    {target:"#iw",title:"1. Imagen de Banda",text:"Genera el render de Banda con la programación que tienes cargada."},
+    {target:"#ij",title:"2. Imagen de Jóvenes",text:"Genera la imagen de Banda Jóvenes usando el mismo diseño de la aplicación."},
+    {target:"#im",title:"3. Imagen de Medios",text:"Genera el render de Medios con responsables y fechas."},
     {target:"#idown",title:"4. Descarga",text:"Cuando tengas una imagen generada, descárgala en PNG para compartirla."}
   ],
   settings:[
@@ -12118,9 +12292,73 @@ const FLASH_GUIDE_DATA={
   }
 
   const BUILTIN_PROGRAMS=[
-    {id:"builtin-worship",name:"Alabanza",page:"worship",badge:"Avanzada",description:"Voluntarios, canciones, tonalidades, bloqueos, Santa Cena y render."},
-    {id:"builtin-youth",name:"Alabanza Jóvenes",page:"youth",badge:"Avanzada",description:"Programación de Jóvenes con voluntarios y repertorio independiente."},
-    {id:"builtin-media",name:"Multimedia",page:"media",badge:"Avanzada",description:"PC, Cámara y Diapositivas con rotación y render."}
+    {id:"builtin-worship",name:"Banda",page:"worship",badge:"Actual",description:"Tu programación actual de Banda, con canciones, tonalidades, bloqueos, Santa Cena y render."},
+    {id:"builtin-youth",name:"Banda Jóvenes",page:"youth",badge:"Actual",description:"Tu programación actual de Banda Jóvenes."},
+    {id:"builtin-media",name:"Medios",page:"media",badge:"Actual",description:"Tu programación actual de Medios."}
+  ];
+
+  const PROGRAM_TEMPLATES=[
+    {
+      key:"band",
+      name:"Banda",
+      badge:"Plantilla",
+      description:"Crea una Banda editable con voluntarios y cuatro columnas de canciones.",
+      weekdays:[0],
+      columns:[
+        ["Voz principal","volunteer"],
+        ["Coros 1","volunteer"],
+        ["Coros 2","volunteer"],
+        ["Piano","volunteer"],
+        ["Guitarra 1","volunteer"],
+        ["Guitarra 2","volunteer"],
+        ["Bajo","volunteer"],
+        ["Batería","volunteer"],
+        ["Canción 1","song"],
+        ["Canción 2","song"],
+        ["Canción 3","song"],
+        ["Canción 4","song"]
+      ]
+    },
+    {
+      key:"youth-band",
+      name:"Banda Jóvenes",
+      badge:"Plantilla",
+      description:"Crea una programación editable para Banda Jóvenes, normalmente los sábados.",
+      weekdays:[6],
+      columns:[
+        ["Voz principal","volunteer"],
+        ["Coros 1","volunteer"],
+        ["Coros 2","volunteer"],
+        ["Piano","volunteer"],
+        ["Guitarra 1","volunteer"],
+        ["Guitarra 2","volunteer"],
+        ["Bajo","volunteer"],
+        ["Batería","volunteer"],
+        ["Canción 1","song"],
+        ["Canción 2","song"],
+        ["Canción 3","song"]
+      ]
+    },
+    {
+      key:"media",
+      name:"Medios",
+      badge:"Plantilla",
+      description:"Crea Medios con PC, Cámara y Diapositivas como columnas editables.",
+      weekdays:[0,3,6],
+      columns:[
+        ["PC","volunteer"],
+        ["Cámara","volunteer"],
+        ["Diapositivas","volunteer"]
+      ]
+    },
+    {
+      key:"blank",
+      name:"Desde cero",
+      badge:"Personalizada",
+      description:"Empieza con una tabla vacía y decide el nombre, días, columnas y funciones.",
+      weekdays:[],
+      columns:[]
+    }
   ];
 
   let customPrograms=[];
@@ -12140,9 +12378,16 @@ const FLASH_GUIDE_DATA={
   let pendingVolunteerCell=null;
   let builderEditingProgramId=null;
   let editingProgramRuleId=null;
+  let hasLegacyPrograms=false;
 
   const programCards=document.getElementById("programCards");
   const createBtn=document.getElementById("createCustomProgramBtn");
+  const programTemplateOnboarding=document.getElementById("programTemplateOnboarding");
+  const programTemplateCards=document.getElementById("programTemplateCards");
+  const homeEmptyPrograms=document.getElementById("homeEmptyPrograms");
+  const homeMainCard=document.querySelector("#home .homeMainCard");
+  const homeGoTemplates=document.getElementById("homeGoTemplates");
+  const homeCreateBlankProgram=document.getElementById("homeCreateBlankProgram");
   const mobileProgramList=document.getElementById("mobileProgramList");
   const customTitle=document.getElementById("customProgramTitle");
   const customMeta=document.getElementById("customProgramMeta");
@@ -12222,6 +12467,112 @@ const FLASH_GUIDE_DATA={
   if(customRenderMonth)customRenderMonth.value=String(new Date().getMonth());
   if(customRenderYear)customRenderYear.value=String(new Date().getFullYear());
 
+
+  function isEmptyTeamProgramState(){
+    return !hasLegacyPrograms && customPrograms.length===0;
+  }
+
+  function updateEmptyTeamExperience(){
+    const empty=isEmptyTeamProgramState();
+    if(homeEmptyPrograms)homeEmptyPrograms.style.display=empty?"block":"none";
+    if(homeMainCard)homeMainCard.style.display=empty?"none":"block";
+    if(programTemplateOnboarding)programTemplateOnboarding.style.display=empty?"block":"none";
+  }
+
+  function renderProgramTemplates(){
+    if(!programTemplateCards)return;
+    programTemplateCards.innerHTML=PROGRAM_TEMPLATES.map(template=>`
+      <article class="programTemplateCard">
+        <span class="programTemplateBadge">${escapeTeamHtml(template.badge)}</span>
+        <h3>${escapeTeamHtml(template.name)}</h3>
+        <div class="templateMeta">${escapeTeamHtml(template.description)}</div>
+        <button class="btn ${template.key==="blank"?"secondary":"primary"}" type="button" data-create-template="${template.key}">
+          ${template.key==="blank"?"Crear desde cero":"Usar plantilla"}
+        </button>
+      </article>
+    `).join("");
+
+    programTemplateCards.querySelectorAll("[data-create-template]").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        createProgramFromTemplate(btn.dataset.createTemplate).catch(error=>{
+          console.error(error);
+          window.showAppToast?.(error.message||"No se pudo crear la programación.","error",2200);
+        });
+      });
+    });
+  }
+
+  async function insertDefaultProgramRules(programId){
+    const defaultRules=[
+      {name:"Balancear participaciones",rule_type:"balance_assignments",enabled:true,config:{},sort_order:0},
+      {name:"No repetir persona en una misma fecha",rule_type:"unique_same_date",enabled:true,config:{},sort_order:1},
+      {name:"Evitar fechas consecutivas",rule_type:"avoid_consecutive",enabled:true,config:{},sort_order:2}
+    ].map(rule=>({
+      ...rule,
+      team_id:window.currentTeam.id,
+      program_id:programId,
+      column_id:null,
+      updated_at:new Date().toISOString()
+    }));
+    const {error}=await window.supabaseClient.from("program_rules").insert(defaultRules);
+    if(error)throw error;
+  }
+
+  async function createProgramFromTemplate(templateKey){
+    if(!teamAdmin()){
+      window.showAppToast?.("Solo el Administrador puede crear programaciones.","error",1800);
+      return;
+    }
+
+    const template=PROGRAM_TEMPLATES.find(t=>t.key===templateKey);
+    if(!template)return;
+
+    if(template.key==="blank"){
+      openProgramBuilder(null);
+      return;
+    }
+
+    const {data:program,error:programError}=await window.supabaseClient
+      .from("program_definitions")
+      .insert({
+        team_id:window.currentTeam.id,
+        name:template.name,
+        description:`Creada desde la plantilla ${template.name}`,
+        date_mode:template.weekdays.length?"mixed":"manual",
+        weekdays:template.weekdays,
+        active:true,
+        updated_at:new Date().toISOString()
+      })
+      .select("id")
+      .single();
+    if(programError)throw programError;
+
+    const columns=template.columns.map(([name,field_type],index)=>({
+      team_id:window.currentTeam.id,
+      program_id:program.id,
+      name,
+      field_type,
+      sort_order:index,
+      required:false,
+      fill_enabled:true,
+      rebalance_enabled:true,
+      lockable:true,
+      options:{},
+      updated_at:new Date().toISOString()
+    }));
+
+    if(columns.length){
+      const {error:columnError}=await window.supabaseClient.from("program_columns").insert(columns);
+      if(columnError)throw columnError;
+    }
+
+    await insertDefaultProgramRules(program.id);
+    await loadProgramDefinitions();
+    updateEmptyTeamExperience();
+    window.showAppToast?.(`${template.name} creada. Ahora puedes editarla.`, "success", 1300);
+    await openCustomProgram(program.id);
+  }
+
   function teamAdmin(){return window.currentTeam?.role==="admin"}
   function teamEditor(){return ["admin","editor"].includes(window.currentTeam?.role||"")}
 
@@ -12275,8 +12626,9 @@ const FLASH_GUIDE_DATA={
 
   function renderProgramHub(){
     if(!programCards)return;
+    const legacyCards=hasLegacyPrograms?BUILTIN_PROGRAMS:[];
     const cards=[
-      ...BUILTIN_PROGRAMS.map(item=>`
+      ...legacyCards.map(item=>`
         <article class="programCard">
           <div class="programCardTop">
             <div><h3>${item.name}</h3></div>
@@ -12327,12 +12679,14 @@ const FLASH_GUIDE_DATA={
     renderCustomVolunteerAccordions();
     renderCustomAvailabilityAccordions();
     syncCustomProgramSelectors();
+    renderProgramTemplates();
+    updateEmptyTeamExperience();
   }
 
   function renderMobileProgramList(){
     if(!mobileProgramList)return;
     mobileProgramList.innerHTML="";
-    BUILTIN_PROGRAMS.forEach(item=>{
+    (hasLegacyPrograms?BUILTIN_PROGRAMS:[]).forEach(item=>{
       const btn=document.createElement("button");
       btn.type="button";
       btn.textContent=item.name;
@@ -12363,7 +12717,11 @@ const FLASH_GUIDE_DATA={
       renderProgramHub();
       return;
     }
-    const [{data:defs,error:defError},{data:cols,error:colError}]=await Promise.all([
+    const [
+      {data:defs,error:defError},
+      {data:cols,error:colError},
+      {data:legacyRows,error:legacyError}
+    ]=await Promise.all([
       window.supabaseClient.from("program_definitions")
         .select("id,name,description,date_mode,weekdays,active,sort_order,created_at")
         .eq("active",true)
@@ -12371,10 +12729,15 @@ const FLASH_GUIDE_DATA={
         .order("created_at"),
       window.supabaseClient.from("program_columns")
         .select("id,program_id,name,field_type,sort_order,required,fill_enabled,rebalance_enabled,lockable,options")
-        .order("sort_order")
+        .order("sort_order"),
+      window.supabaseClient.from("services")
+        .select("id,module")
+        .limit(1)
     ]);
     if(defError)throw defError;
     if(colError)throw colError;
+    if(legacyError)throw legacyError;
+    hasLegacyPrograms=(legacyRows||[]).length>0;
     customPrograms=defs||[];
     customProgramColumns=(cols||[]).map(c=>({...c,options:safeOptions(c.options)}));
     renderProgramHub();
@@ -12815,19 +13178,7 @@ const FLASH_GUIDE_DATA={
       if(error)throw error;
       programId=data.id;
 
-      const defaultRules=[
-        {name:"Balancear participaciones",rule_type:"balance_assignments",enabled:true,config:{},sort_order:0},
-        {name:"No repetir persona en una misma fecha",rule_type:"unique_same_date",enabled:true,config:{},sort_order:1},
-        {name:"Evitar fechas consecutivas",rule_type:"avoid_consecutive",enabled:true,config:{},sort_order:2}
-      ].map(rule=>({
-        ...rule,
-        team_id:window.currentTeam.id,
-        program_id:programId,
-        column_id:null,
-        updated_at:new Date().toISOString()
-      }));
-      const {error:defaultRuleError}=await window.supabaseClient.from("program_rules").insert(defaultRules);
-      if(defaultRuleError)throw defaultRuleError;
+      await insertDefaultProgramRules(programId);
     }
 
     const existingIds=new Set(columnsFor(programId).map(c=>c.id));
@@ -13211,67 +13562,119 @@ const FLASH_GUIDE_DATA={
     const canvas=document.getElementById("poster");
     if(!canvas)return;
     const ctx=canvas.getContext("2d");
+
     const W=1500;
-    const margin=70;
-    const titleH=130;
-    const rowH=76;
+    const margin=48;
+    const titleH=88;
+    const headerH=72;
+    const rowH=78;
     const cols=[{id:"date",name:"FECHA"},...columns];
+    const tableW=W-(margin*2);
+
     const widths=[];
-    const fixedDate=180;
-    const other=(W-margin*2-fixedDate)/Math.max(1,columns.length);
+    const fixedDate=Math.min(190,Math.max(150,tableW*.14));
+    const other=(tableW-fixedDate)/Math.max(1,columns.length);
     widths.push(fixedDate);
     columns.forEach(()=>widths.push(other));
-    const H=Math.max(720,titleH+margin*2+rowH*(entries.length+1));
-    canvas.width=W;canvas.height=H;
 
-    ctx.fillStyle="#0f1424";ctx.fillRect(0,0,W,H);
-    ctx.fillStyle="#ffffff";ctx.font="700 44px Arial";
-    ctx.fillText(program.name,margin,margin+48);
-    ctx.fillStyle="#aab4cf";ctx.font="24px Arial";
-    ctx.fillText(`${months[Number(customRenderMonth.value)]} ${customRenderYear.value}`,margin,margin+88);
+    const H=Math.max(
+      420,
+      (margin*2)+titleH+headerH+(rowH*Math.max(1,entries.length))
+    );
 
-    let y=margin+titleH;
+    canvas.width=W;
+    canvas.height=H;
+
+    ctx.fillStyle="#0b1020";
+    ctx.fillRect(0,0,W,H);
+
+    let y=margin;
+
+    // Título enmarcado: ocupa exactamente todo el ancho de la tabla.
+    ctx.fillStyle="#18213b";
+    ctx.fillRect(margin,y,tableW,titleH);
+    ctx.strokeStyle="#6171bb";
+    ctx.lineWidth=2;
+    ctx.strokeRect(margin,y,tableW,titleH);
+
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.fillStyle="#ffffff";
+    ctx.font="700 31px Arial";
+    ctx.fillText(
+      `${program.name.toUpperCase()} · ${months[Number(customRenderMonth.value)].toUpperCase()} ${customRenderYear.value}`,
+      margin+(tableW/2),
+      y+(titleH/2),
+      tableW-40
+    );
+
+    y+=titleH;
+
+    // Encabezados de columnas
     let x=margin;
-    ctx.textAlign="center";ctx.textBaseline="middle";
     cols.forEach((col,i)=>{
-      ctx.fillStyle="#34489a";ctx.fillRect(x,y,widths[i],rowH);
-      ctx.strokeStyle="#6171bb";ctx.strokeRect(x,y,widths[i],rowH);
-      ctx.fillStyle="#ffffff";ctx.font="700 21px Arial";
-      ctx.fillText(String(col.name).toUpperCase(),x+widths[i]/2,y+rowH/2,widths[i]-20);
+      ctx.fillStyle="#34489a";
+      ctx.fillRect(x,y,widths[i],headerH);
+      ctx.strokeStyle="#6171bb";
+      ctx.strokeRect(x,y,widths[i],headerH);
+      ctx.fillStyle="#ffffff";
+      ctx.font="700 20px Arial";
+
+      let label=String(col.name).toUpperCase();
+      while(label.length>1&&ctx.measureText(label).width>widths[i]-18){
+        label=label.slice(0,-2)+"…";
+      }
+      ctx.fillText(label,x+(widths[i]/2),y+(headerH/2),widths[i]-18);
       x+=widths[i];
     });
-    y+=rowH;
+
+    y+=headerH;
 
     const valueMap=new Map(values.map(v=>[`${v.entry_id}|${v.column_id}`,v]));
-    entries.forEach((entry,rowIndex)=>{
+
+    const rows=entries.length?entries:[{
+      id:"__empty__",
+      service_date:"",
+      status:"draft"
+    }];
+
+    rows.forEach((entry,rowIndex)=>{
       x=margin;
       cols.forEach((col,i)=>{
         ctx.fillStyle=rowIndex%2===0?"#171d33":"#1d2540";
         ctx.fillRect(x,y,widths[i],rowH);
-        ctx.strokeStyle="#39466f";ctx.strokeRect(x,y,widths[i],rowH);
-        let text="";
+        ctx.strokeStyle="#39466f";
+        ctx.strokeRect(x,y,widths[i],rowH);
+
+        let value="";
         if(i===0){
-          text=short(entry.service_date);
-        }else{
+          value=entry.service_date?short(entry.service_date):"";
+        }else if(entry.id!=="__empty__"){
           const val=valueMap.get(`${entry.id}|${col.id}`);
           if(val){
-            if(col.field_type==="volunteer")text=volunteersMap.get(val.volunteer_id)||"";
-            else if(col.field_type==="song")text=songsMap.get(val.song_id)||"";
-            else if(col.field_type==="number")text=val.number_value??"";
-            else if(col.field_type==="list")text=val.option_value||"";
-            else text=val.text_value||"";
+            if(col.field_type==="volunteer")value=volunteersMap.get(val.volunteer_id)||"";
+            else if(col.field_type==="song")value=songsMap.get(val.song_id)||"";
+            else if(col.field_type==="number")value=val.number_value??"";
+            else if(col.field_type==="list")value=val.option_value||"";
+            else value=val.text_value||"";
           }
         }
-        ctx.fillStyle="#ffffff";ctx.font="20px Arial";
-        const max=widths[i]-24;
-        let fitted=String(text);
-        while(fitted.length>1&&ctx.measureText(fitted).width>max)fitted=fitted.slice(0,-2)+"…";
-        ctx.fillText(fitted,x+widths[i]/2,y+rowH/2,max);
+
+        ctx.fillStyle="#ffffff";
+        ctx.font="20px Arial";
+        const max=widths[i]-22;
+        let fitted=String(value);
+        while(fitted.length>1&&ctx.measureText(fitted).width>max){
+          fitted=fitted.slice(0,-2)+"…";
+        }
+        ctx.fillText(fitted,x+(widths[i]/2),y+(rowH/2),max);
         x+=widths[i];
       });
       y+=rowH;
     });
-    ctx.textAlign="start";ctx.textBaseline="alphabetic";
+
+    ctx.textAlign="start";
+    ctx.textBaseline="alphabetic";
   }
 
   async function renderSelectedCustomProgram(){
@@ -14026,6 +14429,15 @@ const FLASH_GUIDE_DATA={
   }
 
   // Events
+  homeGoTemplates?.addEventListener("click",()=>{
+    window.activateAppPanel("programs","Programación");
+    setTimeout(()=>programTemplateOnboarding?.scrollIntoView({behavior:"smooth",block:"start"}),50);
+  });
+  homeCreateBlankProgram?.addEventListener("click",()=>{
+    window.activateAppPanel("programs","Programación");
+    openProgramBuilder(null);
+  });
+
   customHistoryPeriod?.addEventListener("change",()=>{
     const period=customHistoryPeriod.value;
     customHistoryMonthWrap.style.display=period==="month"?"block":"none";
