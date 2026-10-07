@@ -5996,9 +5996,104 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 }
 </style>
 
+
+<style id="v85-fixes">
+.programVolunteerEmergencyRule{
+  grid-column:1/-1;
+  padding:.65rem .75rem !important;
+  border:1px solid color-mix(in srgb,#7c3aed 55%,var(--line));
+  border-radius:.7rem;
+  background:color-mix(in srgb,#7c3aed 11%,var(--panel2));
+}
+.legacyProgramConfigCard{
+  width:min(38rem,95vw)!important;
+}
+.legacyProgramConfigBody{
+  display:grid;
+  gap:.85rem;
+  padding-top:.85rem;
+}
+.legacyProgramConfigBody input{
+  width:100%;
+}
+.legacyProgramLabelFields{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.7rem;
+}
+.legacyBackToPrograms{
+  margin-bottom:.8rem;
+}
+
+/* Inicio móvil: mantener la tabla, pero con ancho suficiente y scroll local */
+@media(max-width:47.5rem){
+  #home .homeTableWrap{
+    overflow-x:auto !important;
+    overflow-y:visible;
+    -webkit-overflow-scrolling:touch;
+    max-width:100%;
+  }
+  #homeProgramsTable{
+    width:max-content !important;
+    min-width:100% !important;
+    table-layout:auto !important;
+  }
+  #homeProgramsTable th:first-child,
+  #homeProgramsTable td:first-child{
+    position:sticky !important;
+    left:0 !important;
+    z-index:6 !important;
+    min-width:5.5rem !important;
+    width:5.5rem !important;
+    max-width:5.5rem !important;
+    background:var(--panel) !important;
+  }
+  #homeProgramsTable:not(.homeSpecificTable) th:not(:first-child),
+  #homeProgramsTable:not(.homeSpecificTable) td:not(:first-child){
+    min-width:17rem !important;
+    width:17rem !important;
+    max-width:17rem !important;
+  }
+  #homeProgramsTable.homeSpecificTable th:not(:first-child),
+  #homeProgramsTable.homeSpecificTable td:not(:first-child){
+    min-width:11rem !important;
+    width:auto !important;
+    max-width:none !important;
+  }
+  #homeProgramsTable .homeProgramCell{
+    min-width:17rem !important;
+  }
+  #homeProgramsTable .homeProgramGroup{
+    min-width:0;
+    overflow:visible;
+  }
+  #homeProgramsTable .homeProgramLine{
+    grid-template-columns:minmax(7rem,8.4rem) minmax(7rem,1fr) !important;
+    gap:.45rem !important;
+    white-space:normal !important;
+  }
+  #homeProgramsTable .homeProgramLine .key,
+  #homeProgramsTable .homeProgramLine span{
+    white-space:normal !important;
+    overflow-wrap:anywhere;
+    word-break:normal;
+  }
+  #homeProgramsTable .homeProgramSongs{
+    white-space:normal !important;
+  }
+  #homeProgramsTable .homeProgramSongs span{
+    white-space:normal !important;
+    overflow-wrap:anywhere;
+  }
+  .legacyProgramLabelFields{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+
 </head>
 <!-- Flash Program V79 - Inicio correcto + selector de plantillas + render único -->
-<!-- Flash Program V84 - Creación atómica de programaciones -->
+<!-- Flash Program V85 - permisos equipo + maximo estricto + inicio movil + configurar legacy -->
 <body class="readonly-mode">
 
 <div id="appLoadingScreen">
@@ -6387,7 +6482,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
   <div class="card">
     <div class="customProgramHead">
       <div>
-        <button id="backToPrograms" class="btn secondary" type="button">‹ Programaciones</button>
+        <button id="backToPrograms" class="btn secondary" type="button">‹ Programación</button>
         <h2 id="customProgramTitle" style="margin:.8rem 0 .2rem">Programación</h2>
         <div id="customProgramMeta" class="muted"></div>
       </div>
@@ -6428,10 +6523,10 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
   </div>
 </section>
 
-<section id="worship" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto generateDatesControl"><button id="wg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="wf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="wr" class="btn secondary rebalanceBtn" title="Vuelve a repartir los campos desbloqueados para mejorar rotación y equilibrio">Reequilibrar</button><button id="wLockResp" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Responsables</button><button id="wLockSongs" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Canciones</button><button id="we" class="btn secondary">Añadir servicio</button><button id="wc" class="btn success" title="Guarda la programación para continuar editándola desde otro lugar cuando tengas la sesión iniciada">Confirmar</button></div><div class="worshipLockHint">Puedes fijar músicos o canciones por separado. “Rellenar vacíos” conserva lo ya elegido; “Reequilibrar” vuelve a repartir lo desbloqueado.</div><div class="worshipMixNote">Mezcla automática: 2 Rápidas + 2 Lentas, 1 Rápida + 1 Media + 2 Lentas, o 2 Rápidas + 1 Media + 1 Lenta. El orden también se mezcla aleatoriamente.</div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div><div id="wMobileCards" class="mobileScheduleCards"></div></div></section>
+<section id="worship" class="panel"><div class="card"><button class="btn secondary legacyBackToPrograms" type="button">‹ Programación</button><div class="row compactControls"><div><label>Año</label><input id="wy" type="number" value="2026"></div><div><label>Mes</label><select id="wm"></select></div><div class="auto generateDatesControl"><button id="wg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="wf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="wr" class="btn secondary rebalanceBtn" title="Vuelve a repartir los campos desbloqueados para mejorar rotación y equilibrio">Reequilibrar</button><button id="wLockResp" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Responsables</button><button id="wLockSongs" class="btn secondary lockToggle" type="button" aria-pressed="false">🔓 Canciones</button><button id="we" class="btn secondary">Añadir servicio</button><button id="wc" class="btn success" title="Guarda la programación para continuar editándola desde otro lugar cuando tengas la sesión iniciada">Confirmar</button></div><div class="worshipLockHint">Puedes fijar músicos o canciones por separado. “Rellenar vacíos” conserva lo ya elegido; “Reequilibrar” vuelve a repartir lo desbloqueado.</div><div class="worshipMixNote">Mezcla automática: 2 Rápidas + 2 Lentas, 1 Rápida + 1 Media + 2 Lentas, o 2 Rápidas + 1 Media + 1 Lenta. El orden también se mezcla aleatoriamente.</div><div id="wstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="wtable"><thead><tr><th>FECHA</th><th colspan="2">RESPONSABLES</th><th>CANCIONES</th></tr></thead><tbody id="wbody"></tbody></table></div><div id="wMobileCards" class="mobileScheduleCards"></div></div></section>
 
 <section id="youth" class="panel">
-<div class="card">
+<div class="card"><button class="btn secondary legacyBackToPrograms" type="button">‹ Programación</button>
   <div class="row compactControls">
     <div><label>Año</label><input id="jy" type="number" value="2026"></div>
     <div><label>Mes</label><select id="jm"></select></div>
@@ -6454,7 +6549,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 </div>
 </section>
 
-<section id="media" class="panel"><div class="card"><div class="row compactControls"><div><label>Año</label><input id="my" type="number" value="2026"></div><div><label>Mes</label><select id="mm"></select></div><div class="auto generateDatesControl"><button id="mg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="mf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="mr" class="btn secondary rebalanceBtn" title="Vuelve a repartir Medios para mejorar rotación y equilibrio">Reequilibrar</button><button id="me" class="btn secondary">Añadir servicio</button><button id="mc" class="btn success" title="Guarda la programación para continuar editándola desde otro lugar cuando tengas la sesión iniciada">Confirmar</button></div><div id="mstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="mtable"><thead><tr><th>FECHAS 📅</th><th>PC 💻</th><th>CAMARA 🎥</th><th>⏹️DIAPOSITVAS PREDICAS</th></tr></thead><tbody id="mbody"></tbody></table></div><div id="mMobileCards" class="mobileScheduleCards"></div></div></section>
+<section id="media" class="panel"><div class="card"><button class="btn secondary legacyBackToPrograms" type="button">‹ Programación</button><div class="row compactControls"><div><label>Año</label><input id="my" type="number" value="2026"></div><div><label>Mes</label><select id="mm"></select></div><div class="auto generateDatesControl"><button id="mg" class="btn secondary generateDatesBtn" title="Crea las fechas del mes sin asignar personas ni canciones"><span>Generar</span><span class="generateSecondLine">fechas</span></button></div></div><div class="row actionRow" style="margin-top:12px"><button id="mf" class="btn primary fillEmptyBtn" title="Completa únicamente los espacios vacíos y conserva lo que ya elegiste">Rellenar vacíos</button><button id="mr" class="btn secondary rebalanceBtn" title="Vuelve a repartir Medios para mejorar rotación y equilibrio">Reequilibrar</button><button id="me" class="btn secondary">Añadir servicio</button><button id="mc" class="btn success" title="Guarda la programación para continuar editándola desde otro lugar cuando tengas la sesión iniciada">Confirmar</button></div><div id="mstatus" style="margin-top:10px"></div><div class="sheet" style="margin-top:12px"><table class="mtable"><thead><tr><th>FECHAS 📅</th><th>PC 💻</th><th>CAMARA 🎥</th><th>⏹️DIAPOSITVAS PREDICAS</th></tr></thead><tbody id="mbody"></tbody></table></div><div id="mMobileCards" class="mobileScheduleCards"></div></div></section>
 
 <section id="vols" class="panel">
 <div id="volunteerSyncStatus" class="note" style="margin-bottom:12px">Voluntarios: esperando conexión con la base de datos…</div>
@@ -7034,6 +7129,36 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
   </div>
 </div>
 
+
+<div id="legacyProgramConfigModal" class="modalBackdrop" aria-hidden="true">
+  <div class="modalCard legacyProgramConfigCard" role="dialog" aria-modal="true" aria-labelledby="legacyProgramConfigTitle">
+    <form id="legacyProgramConfigForm">
+      <div class="modalHeader">
+        <div>
+          <h2 id="legacyProgramConfigTitle">Configurar programación</h2>
+          <div id="legacyProgramConfigMeta" class="muted">
+            Esta configuración cambia nombres y presentación sin modificar las reglas actuales de la programación.
+          </div>
+        </div>
+      </div>
+
+      <div class="legacyProgramConfigBody">
+        <div>
+          <label>Nombre de la programación</label>
+          <input id="legacyProgramDisplayName" maxlength="80">
+        </div>
+
+        <div id="legacyProgramLabelFields" class="legacyProgramLabelFields"></div>
+      </div>
+
+      <div class="modalActions">
+        <button id="legacyProgramConfigCancel" class="btn secondary" type="button">Cancelar</button>
+        <button class="btn primary" type="submit">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div id="programTemplateChooserModal" class="modalBackdrop" aria-hidden="true">
   <div class="modalCard programTemplateChooserCard" role="dialog" aria-modal="true" aria-labelledby="programTemplateChooserTitle">
     <div class="modalHeader">
@@ -7172,7 +7297,11 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
           </div>
           <label class="programVolunteerCheck">
             <input id="programVolunteerAvoid" type="checkbox" checked>
-            Evitar fechas consecutivas
+            Evitar fechas consecutivas si existe otra alternativa
+          </label>
+          <label class="programVolunteerCheck programVolunteerEmergencyRule">
+            <input id="programVolunteerAllowOverMax" type="checkbox">
+            Permitir superar el máximo solo si no existe otra persona válida
           </label>
         </div>
       </div>
@@ -8304,7 +8433,11 @@ function ensureHomeWeek(){
  const Y=+hy.value,M=+hm.value;
  const key=`${Y}-${M}`;
  if(!homeSelectedWeek||homeWeekContext!==key){
-   homeSelectedWeek=homeWeekStartFor(Y,M,1);
+   const now=new Date();
+   const isCurrentMonth=now.getFullYear()===Y&&now.getMonth()===M;
+   homeSelectedWeek=isCurrentMonth
+     ?homeWeekStartFor(Y,M,now.getDate())
+     :homeWeekStartFor(Y,M,1);
    homeWeekContext=key;
  }
 }
@@ -13033,6 +13166,15 @@ const FLASH_GUIDE_DATA={
   let editingProgramRuleId=null;
   let hasLegacyPrograms=false;
   let legacyProgramModules=new Set();
+  let legacyProgramConfigs=[];
+  let legacyProgramConfigTargetModule=null;
+
+  const legacyProgramConfigModal=document.getElementById("legacyProgramConfigModal");
+  const legacyProgramConfigForm=document.getElementById("legacyProgramConfigForm");
+  const legacyProgramConfigTitle=document.getElementById("legacyProgramConfigTitle");
+  const legacyProgramConfigMeta=document.getElementById("legacyProgramConfigMeta");
+  const legacyProgramDisplayName=document.getElementById("legacyProgramDisplayName");
+  const legacyProgramLabelFields=document.getElementById("legacyProgramLabelFields");
 
   const programCards=document.getElementById("programCards");
   const createBtn=document.getElementById("createCustomProgramBtn");
@@ -13090,6 +13232,7 @@ const FLASH_GUIDE_DATA={
   const programVolunteerMin=document.getElementById("programVolunteerMin");
   const programVolunteerMax=document.getElementById("programVolunteerMax");
   const programVolunteerAvoid=document.getElementById("programVolunteerAvoid");
+  const programVolunteerAllowOverMax=document.getElementById("programVolunteerAllowOverMax");
   const programVolunteerBandRoles=document.getElementById("programVolunteerBandRoles");
   const programVolunteerPrimaryRole=document.getElementById("programVolunteerPrimaryRole");
   const programVolunteerSecondaryRoles=document.getElementById("programVolunteerSecondaryRoles");
@@ -13428,8 +13571,9 @@ const FLASH_GUIDE_DATA={
     }));
 
     const {data,error}=await window.supabaseClient.rpc(
-      "create_program_structure_v84",
+      "create_program_structure_v85",
       {
+        p_team_id:window.currentTeam.id,
         p_name:name,
         p_description:description,
         p_weekdays:weekdays,
@@ -13442,8 +13586,8 @@ const FLASH_GUIDE_DATA={
 
     if(error){
       const msg=String(error.message||error);
-      if(/create_program_structure_v84|function .* does not exist|schema cache/i.test(msg)){
-        throw new Error("Falta ejecutar el SQL V84 en Supabase antes de crear programaciones.");
+      if(/create_program_structure_v85|function .* does not exist|schema cache/i.test(msg)){
+        throw new Error("Falta ejecutar el SQL V85 en Supabase antes de crear programaciones.");
       }
       throw error;
     }
@@ -13746,7 +13890,9 @@ const FLASH_GUIDE_DATA={
   };
 
   function openBuiltin(page,name){
-    window.activateAppPanel(page,name);
+    const module=page==="worship"?"alabanza":page==="youth"?"jovenes":page==="media"?"multimedia":"";
+    window.activateAppPanel(page,module?legacyProgramName(module):name);
+    applyLegacyProgramLabels();
   }
 
   function programDaysText(program){
@@ -13755,6 +13901,118 @@ const FLASH_GUIDE_DATA={
     return days.map(dayLabel).join(" · ");
   }
 
+
+
+  function legacyConfigForModule(module){
+    return legacyProgramConfigs.find(row=>row.module===module)||null;
+  }
+
+  function legacyDefaultName(module){
+    return module==="alabanza"?"Banda":
+           module==="jovenes"?"Banda Jóvenes":
+           module==="multimedia"?"Medios":
+           module;
+  }
+
+  function legacyProgramName(module){
+    return legacyConfigForModule(module)?.display_name||legacyDefaultName(module);
+  }
+
+  function legacyLabel(module,key,fallback){
+    const labels=safeOptions(legacyConfigForModule(module)?.column_labels);
+    return labels[key]||fallback;
+  }
+
+  function legacyConfigFields(module){
+    if(module==="multimedia"){
+      return [
+        ["pc","PC"],
+        ["camera","Cámara"],
+        ["slides","Diapositivas"]
+      ];
+    }
+    return [
+      ["lead","Voz principal"],
+      ["chorus","Coros"],
+      ["keys","Teclados"],
+      ["guitar","Guitarras"],
+      ["bass","Bajo"],
+      ["drums","Batería"],
+      ["songs","Canciones"]
+    ];
+  }
+
+  function applyLegacyProgramLabels(){
+    // Medios clásico: los encabezados sí son columnas visibles directas.
+    const mediaHeads=document.querySelectorAll("#media .mtable thead th");
+    if(mediaHeads.length>=4){
+      mediaHeads[0].textContent="FECHAS 📅";
+      mediaHeads[1].textContent=`${legacyLabel("multimedia","pc","PC")} 💻`;
+      mediaHeads[2].textContent=`${legacyLabel("multimedia","camera","Cámara")} 🎥`;
+      mediaHeads[3].textContent=`⏹️ ${legacyLabel("multimedia","slides","Diapositivas")}`;
+    }
+  }
+
+  function openLegacyProgramConfig(pageOrModule){
+    if(!teamAdmin()){
+      window.showAppToast?.("Solo el Administrador puede configurar la programación.","error",1800);
+      return;
+    }
+
+    const module=
+      pageOrModule==="worship"?"alabanza":
+      pageOrModule==="youth"?"jovenes":
+      pageOrModule==="media"?"multimedia":
+      pageOrModule;
+
+    legacyProgramConfigTargetModule=module;
+    legacyProgramConfigTitle.textContent=`Configurar ${legacyProgramName(module)}`;
+    legacyProgramDisplayName.value=legacyProgramName(module);
+
+    const labels=safeOptions(legacyConfigForModule(module)?.column_labels);
+    legacyProgramLabelFields.innerHTML=legacyConfigFields(module).map(([key,label])=>`
+      <div>
+        <label>${escapeTeamHtml(label)}</label>
+        <input data-legacy-label-key="${key}" maxlength="60" value="${escapeTeamHtml(labels[key]||label)}">
+      </div>
+    `).join("");
+
+    legacyProgramConfigModal.classList.add("open");
+    legacyProgramConfigModal.setAttribute("aria-hidden","false");
+    setTimeout(()=>legacyProgramDisplayName.focus(),0);
+  }
+
+  function closeLegacyProgramConfig(){
+    legacyProgramConfigModal?.classList.remove("open");
+    legacyProgramConfigModal?.setAttribute("aria-hidden","true");
+    legacyProgramConfigTargetModule=null;
+  }
+
+  async function saveLegacyProgramConfig(){
+    const module=legacyProgramConfigTargetModule;
+    if(!module)throw new Error("No se encontró la programación.");
+
+    const displayName=legacyProgramDisplayName.value.trim()||legacyDefaultName(module);
+    const columnLabels={};
+    legacyProgramLabelFields.querySelectorAll("[data-legacy-label-key]").forEach(input=>{
+      columnLabels[input.dataset.legacyLabelKey]=input.value.trim()||input.previousElementSibling?.textContent||"";
+    });
+
+    const {error}=await window.supabaseClient
+      .from("legacy_program_configs")
+      .upsert({
+        team_id:window.currentTeam.id,
+        module,
+        display_name:displayName,
+        column_labels:columnLabels,
+        updated_at:new Date().toISOString()
+      },{onConflict:"team_id,module"});
+    if(error)throw error;
+
+    closeLegacyProgramConfig();
+    await loadProgramDefinitions();
+    window.showAppToast?.("Configuración guardada sin cambiar las reglas actuales.","success",1200);
+  }
 
   function legacyModuleForBuiltin(item){
     if(item.id==="builtin-worship")return "alabanza";
@@ -13776,13 +14034,12 @@ const FLASH_GUIDE_DATA={
       const module=legacyModuleForBuiltin(item);
       const templateKey=templateKeyForBuiltin(item);
 
-      // It is not a real program for this team if that module has no saved services.
       if(!module||!legacyProgramModules.has(module))return false;
-
-      // If the team already has the new editable template, do not duplicate the old module.
       if(templateKey&&templateKeys.has(templateKey))return false;
-
       return true;
+    }).map(item=>{
+      const module=legacyModuleForBuiltin(item);
+      return {...item,name:legacyProgramName(module)};
     });
   }
 
@@ -13835,7 +14092,8 @@ const FLASH_GUIDE_DATA={
           </div>
           <div class="programCardMeta">${item.description}</div>
           <div class="programCardActions">
-            <button class="btn primary" type="button" data-open-builtin="${item.page}" data-name="${item.name}">Abrir</button>
+            <button class="btn primary" type="button" data-open-builtin="${item.page}" data-name="${item.name}">Editar</button>
+            ${teamAdmin()?`<button class="btn secondary" type="button" data-config-builtin="${item.page}">Configurar</button>`:""}
           </div>
         </article>
       `),
@@ -13853,8 +14111,8 @@ const FLASH_GUIDE_DATA={
               <strong>${escapeTeamHtml(summary)}</strong>
             </div>
             <div class="programCardActions">
-              <button class="btn primary" type="button" data-open-custom="${program.id}">Abrir</button>
-              ${teamAdmin()?`<button class="btn secondary" type="button" data-edit-custom="${program.id}">Editar</button>`:""}
+              <button class="btn primary" type="button" data-open-custom="${program.id}">Editar</button>
+              ${teamAdmin()?`<button class="btn secondary" type="button" data-edit-custom="${program.id}">Configurar</button>`:""}
             </div>
           </article>
         `;
@@ -13864,6 +14122,9 @@ const FLASH_GUIDE_DATA={
 
     programCards.querySelectorAll("[data-open-builtin]").forEach(btn=>{
       btn.addEventListener("click",()=>openBuiltin(btn.dataset.openBuiltin,btn.dataset.name));
+    });
+    programCards.querySelectorAll("[data-config-builtin]").forEach(btn=>{
+      btn.addEventListener("click",()=>openLegacyProgramConfig(btn.dataset.configBuiltin));
     });
     programCards.querySelectorAll("[data-open-custom]").forEach(btn=>{
       btn.addEventListener("click",()=>openCustomProgram(btn.dataset.openCustom));
@@ -13919,6 +14180,7 @@ const FLASH_GUIDE_DATA={
       customPrograms=[];
       customProgramColumns=[];
       customProgramFunctions=[];
+      legacyProgramConfigs=[];
       renderProgramHub();
       syncHomeProgramViewSelect();
       return;
@@ -13927,7 +14189,8 @@ const FLASH_GUIDE_DATA={
       {data:defs,error:defError},
       {data:cols,error:colError},
       {data:functionRows,error:functionError},
-      {data:legacyRows,error:legacyError}
+      {data:legacyRows,error:legacyError},
+      {data:legacyConfigRows,error:legacyConfigError}
     ]=await Promise.all([
       window.supabaseClient.from("program_definitions")
         .select("id,name,description,date_mode,weekdays,active,sort_order,created_at,template_key,capabilities")
@@ -13943,12 +14206,15 @@ const FLASH_GUIDE_DATA={
         .order("sort_order"),
       window.supabaseClient.from("services")
         .select("module")
-        .limit(1000)
+        .limit(1000),
+      window.supabaseClient.from("legacy_program_configs")
+        .select("id,team_id,module,display_name,column_labels")
     ]);
     if(defError)throw defError;
     if(colError)throw colError;
     if(functionError)throw functionError;
     if(legacyError)throw legacyError;
+    if(legacyConfigError)throw legacyConfigError;
     legacyProgramModules=new Set(
       (legacyRows||[])
         .map(row=>String(row.module||"").trim().toLowerCase())
@@ -13958,6 +14224,8 @@ const FLASH_GUIDE_DATA={
     customPrograms=defs||[];
     customProgramColumns=(cols||[]).map(c=>({...c,options:safeOptions(c.options)}));
     customProgramFunctions=(functionRows||[]).map(fn=>({...fn,capabilities:safeOptions(fn.capabilities)}));
+    legacyProgramConfigs=(legacyConfigRows||[]).map(row=>({...row,column_labels:safeOptions(row.column_labels)}));
+    applyLegacyProgramLabels();
     renderProgramHub();
     syncHomeProgramViewSelect();
     if(typeof renderWeek==="function")renderWeek();
@@ -13984,7 +14252,7 @@ const FLASH_GUIDE_DATA={
       window.supabaseClient.from("volunteers").select("id,name,active").eq("active",true).order("name"),
       window.supabaseClient.from("songs").select("id,name,artist,category,base_key,primary_singer_id,active").eq("active",true).order("name"),
       window.supabaseClient.from("program_volunteers")
-        .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,active,primary_role_key,secondary_role_keys,primary_function_id,secondary_function_ids")
+        .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,allow_over_max,active,primary_role_key,secondary_role_keys,primary_function_id,secondary_function_ids")
         .eq("program_id",program.id)
         .eq("active",true),
       window.supabaseClient.from("program_data_items")
@@ -14016,6 +14284,7 @@ const FLASH_GUIDE_DATA={
           min_per_month:Number(member.min_per_month)||0,
           max_per_month:member.max_per_month==null?null:Number(member.max_per_month),
           avoid_consecutive:member.avoid_consecutive!==false,
+          allow_over_max:member.allow_over_max===true,
           primary_role_key:member.primary_role_key||null,
           secondary_role_keys:Array.isArray(member.secondary_role_keys)?member.secondary_role_keys:[],
           primary_function_id:member.primary_function_id||null,
@@ -15150,7 +15419,7 @@ const FLASH_GUIDE_DATA={
 
     const start=isoDates[0];
     const endDate=dObj(isoDates[isoDates.length-1]);
-    endDate.setDate(endDate.getDate()+1);
+    endDate.setUTCDate(endDate.getUTCDate()+1);
     const end=homeIso(endDate);
 
     const customModels=models.filter(m=>m.kind==="custom");
@@ -15352,7 +15621,9 @@ const FLASH_GUIDE_DATA={
 
           return `<div class="homeProgramGroup">
             ${["PC","Camara","Diapositivas"].map(role=>{
-              const label=compactHomeRoleLabel("media",role==="Camara"?"Cámara":role);
+              const configKey=role==="PC"?"pc":role==="Camara"?"camera":"slides";
+              const defaultLabel=role==="Camara"?"Cámara":role;
+              const label=legacyLabel("multimedia",configKey,defaultLabel);
               return `<div class="homeProgramLine">
                 <span class="key">${escapeTeamHtml(label)}</span>
                 <span>${escapeTeamHtml(roleValues.get(role)||"—")}</span>
@@ -15468,7 +15739,11 @@ const FLASH_GUIDE_DATA={
         });
         return {
           date,
-          headers:["PC","Cámara","Diapositivas"],
+          headers:[
+            legacyLabel("multimedia","pc","PC"),
+            legacyLabel("multimedia","camera","Cámara"),
+            legacyLabel("multimedia","slides","Diapositivas")
+          ],
           cells:[
             escapeTeamHtml(roleValues.get("PC")||"—"),
             escapeTeamHtml(roleValues.get("Camara")||"—"),
@@ -16215,7 +16490,8 @@ const FLASH_GUIDE_DATA={
 
   function legacyMonthToPosterPayload(item,data){
     const template=legacyRenderTemplate(item);
-    const program={name:item.name,template_key:template};
+    const module=legacyRenderModule(item);
+    const program={name:legacyProgramName(module)||item.name,template_key:template};
     const columns=[];
     const entries=[];
     const values=[];
@@ -16235,9 +16511,9 @@ const FLASH_GUIDE_DATA={
 
     if(template==="media"){
       const specs=[
-        ["PC","PC"],
-        ["Cámara","Camara"],
-        ["Diapositivas","Diapositivas"]
+        [legacyLabel("multimedia","pc","PC"),"PC"],
+        [legacyLabel("multimedia","camera","Cámara"),"Camara"],
+        [legacyLabel("multimedia","slides","Diapositivas"),"Diapositivas"]
       ];
 
       specs.forEach(([name],index)=>{
@@ -16801,7 +17077,7 @@ const FLASH_GUIDE_DATA={
         .eq("active",true)
         .order("name"),
       window.supabaseClient.from("program_volunteers")
-        .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,active,primary_role_key,secondary_role_keys,primary_function_id,secondary_function_ids")
+        .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,allow_over_max,active,primary_role_key,secondary_role_keys,primary_function_id,secondary_function_ids")
     ]);
 
     if(volError)throw volError;
@@ -16863,6 +17139,7 @@ const FLASH_GUIDE_DATA={
           <div class="customVolunteerMemberRules">
             Mín. ${Number(member.min_per_month)||0} · Máx. ${escapeTeamHtml(max)}
             ${member.avoid_consecutive!==false?" · Evitar consecutivos":""}
+            ${member.allow_over_max===true?" · Puede superar máximo por escasez":""}
             ${(member.primary_function_id||member.primary_role_key)?`
               <div class="programVolunteerRoleLine">
                 ${(()=>{
@@ -16989,6 +17266,7 @@ const FLASH_GUIDE_DATA={
       programVolunteerMin.value=String(Number(editingMembership.min_per_month)||0);
       programVolunteerMax.value=editingMembership.max_per_month==null?"":String(editingMembership.max_per_month);
       programVolunteerAvoid.checked=editingMembership.avoid_consecutive!==false;
+      programVolunteerAllowOverMax.checked=editingMembership.allow_over_max===true;
     }else{
       programVolunteerExisting.add(new Option("Crear una persona nueva",""));
       directory.volunteers
@@ -17004,6 +17282,7 @@ const FLASH_GUIDE_DATA={
       programVolunteerMin.value="0";
       programVolunteerMax.value="";
       programVolunteerAvoid.checked=true;
+      programVolunteerAllowOverMax.checked=false;
     }
 
     populateProgramVolunteerRoleEditor(program,editingMembership,pendingVolunteerCell);
@@ -17094,6 +17373,7 @@ const FLASH_GUIDE_DATA={
       min_per_month:min,
       max_per_month:max,
       avoid_consecutive:programVolunteerAvoid.checked,
+      allow_over_max:programVolunteerAllowOverMax.checked,
       primary_function_id:programVolunteerPrimaryRole.value||null,
       secondary_function_ids:selectedSecondaryProgramRoles()
         .filter(id=>id!==programVolunteerPrimaryRole.value),
@@ -17340,6 +17620,7 @@ const FLASH_GUIDE_DATA={
           min:Number(v.min_per_month)||0,
           max:v.max_per_month==null?null:Number(v.max_per_month),
           avoid:v.avoid_consecutive!==false,
+          allowOverMax:v.allow_over_max===true,
           primaryRole:v.primary_role_key||null,
           secondaryRoles:Array.isArray(v.secondary_role_keys)?v.secondary_role_keys:[],
           primaryFunction:v.primary_function_id||null,
@@ -17465,28 +17746,42 @@ const FLASH_GUIDE_DATA={
               );
               if(eligible.length)availableChoices=eligible;
             }
+          }
 
+          // Evitar fechas consecutivas aplica a cualquier programación.
+          // Es una regla preferente: si no hay otra alternativa válida, se permite repetir.
+          if(columnFunctionHas(col,"avoid_consecutive",true)){
             const sortedEntries=[...customEntries].sort((a,b)=>a.service_date.localeCompare(b.service_date));
             const entryIndex=sortedEntries.findIndex(item=>item.id===entry.id);
             let previousEntryId=null;
+
             if(entryIndex>0){
               previousEntryId=sortedEntries[entryIndex-1].id;
-            }else if(bandHistoryEntries.length){
+            }else if(["band","youth-band"].includes(program.template_key||"")&&bandHistoryEntries.length){
               previousEntryId=bandHistoryEntries[bandHistoryEntries.length-1].id;
             }
 
-            if(previousEntryId&&columnFunctionHas(col,"avoid_consecutive",true)){
+            if(previousEntryId){
               const previousServiceIds=new Set();
+
               customValues
                 .filter(value=>value.entry_id===previousEntryId&&value.volunteer_id)
                 .forEach(value=>previousServiceIds.add(value.volunteer_id));
-              bandHistoryValues
-                .filter(value=>value.entry_id===previousEntryId&&value.volunteer_id)
-                .forEach(value=>previousServiceIds.add(value.volunteer_id));
+
+              if(["band","youth-band"].includes(program.template_key||"")){
+                bandHistoryValues
+                  .filter(value=>value.entry_id===previousEntryId&&value.volunteer_id)
+                  .forEach(value=>previousServiceIds.add(value.volunteer_id));
+              }
+
               payloads
                 .filter(value=>value.entry_id===previousEntryId&&value.volunteer_id)
                 .forEach(value=>previousServiceIds.add(value.volunteer_id));
-              const fresh=availableChoices.filter(choice=>!previousServiceIds.has(choice.id));
+
+              const fresh=availableChoices.filter(choice=>
+                choice.avoid===false||!previousServiceIds.has(choice.id)
+              );
+
               if(fresh.length)availableChoices=fresh;
             }
           }
@@ -17500,7 +17795,16 @@ const FLASH_GUIDE_DATA={
             const underMax=availableChoices.filter(choice=>
               choice.max==null||(volunteerCounts.get(choice.id)||0)<choice.max
             );
-            if(underMax.length)availableChoices=underMax;
+
+            if(underMax.length){
+              availableChoices=underMax;
+            }else{
+              // Si todos llegaron al máximo, solo permanecen quienes tengan
+              // permiso explícito para superarlo por escasez.
+              availableChoices=availableChoices.filter(choice=>
+                choice.max==null||choice.allowOverMax===true
+              );
+            }
           }
 
           const restRule=restRuleFor(col.id);
@@ -17673,6 +17977,21 @@ const FLASH_GUIDE_DATA={
 
 
   // Events
+  document.querySelectorAll(".legacyBackToPrograms").forEach(button=>{
+    button.addEventListener("click",()=>window.activateAppPanel("programs","Programación"));
+  });
+
+  document.getElementById("legacyProgramConfigCancel")?.addEventListener("click",closeLegacyProgramConfig);
+  legacyProgramConfigForm?.addEventListener("submit",async event=>{
+    event.preventDefault();
+    try{
+      await saveLegacyProgramConfig();
+    }catch(error){
+      console.error(error);
+      window.showAppToast?.(error.message||"No se pudo guardar la configuración.","error",2200);
+    }
+  });
+
   document.getElementById("homeProgramViewSelect")?.addEventListener("change",event=>{
     homeProgramView=event.target.value||"general";
     renderWeek();
@@ -17820,10 +18139,10 @@ const FLASH_GUIDE_DATA={
     }catch(error){
       console.error(error);
       const message=String(error?.message||"");
-      const schemaMissing=/create_program_structure_v84|program_functions|function_id|schema cache|does not exist/i.test(message);
+      const schemaMissing=/create_program_structure_v85|program_functions|function_id|schema cache|does not exist/i.test(message);
       window.showAppToast?.(
         schemaMissing
-          ?"Falta ejecutar el SQL V84 en Supabase antes de crear programaciones."
+          ?"Falta ejecutar el SQL V85 en Supabase antes de crear programaciones."
           :(message||"No se pudo guardar la programación."),
         "error",
         3600
