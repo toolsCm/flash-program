@@ -5857,9 +5857,148 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 @media(max-width:47.5rem){.programVolunteerSecondaryRoles{grid-template-columns:1fr}}
 </style>
 
+
+<style id="v83-functions-home">
+.homeProgramViewControl{
+  min-width:13rem;
+}
+.homeProgramViewControl label{
+  display:block;
+  margin-bottom:.25rem;
+}
+.homeProgramViewControl select{
+  min-height:2.75rem;
+}
+
+.programFunctionsEditor{
+  margin-top:1rem;
+  padding:1rem;
+  border:1px solid color-mix(in srgb,#7c3aed 50%,var(--line));
+  border-radius:.85rem;
+  background:linear-gradient(
+    180deg,
+    color-mix(in srgb,#7c3aed 10%,var(--panel)),
+    color-mix(in srgb,#7c3aed 4%,var(--panel))
+  );
+}
+.programFunctionsHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:.8rem;
+  margin-bottom:.75rem;
+}
+.programBuilderFunctions{
+  display:grid;
+  gap:.65rem;
+}
+.programFunctionRow{
+  display:grid;
+  grid-template-columns:minmax(9rem,1.1fr) minmax(8rem,.8fr) 5.5rem minmax(8.5rem,.8fr) auto;
+  gap:.55rem;
+  align-items:end;
+  padding:.75rem;
+  border:1px solid color-mix(in srgb,#7c3aed 42%,var(--line));
+  border-radius:.75rem;
+  background:var(--panel2);
+}
+.programFunctionFlags{
+  grid-column:1/-1;
+  display:flex;
+  flex-wrap:wrap;
+  gap:.45rem .9rem;
+  padding-top:.15rem;
+}
+.programFunctionFlags label{
+  display:flex;
+  align-items:center;
+  gap:.35rem;
+  font-size:.78rem;
+}
+.programFunctionFlags input{
+  width:1rem!important;
+  height:1rem!important;
+  min-height:0!important;
+}
+.programFunctionActions{
+  display:flex;
+  gap:.35rem;
+}
+.programFunctionActions .btn{
+  min-width:2.75rem;
+}
+.programColumnFunctionWrap{
+  display:block;
+}
+.programColumnSemanticWrap{
+  display:none!important;
+}
+
+.homeSpecificTable th,
+.homeSpecificTable td{
+  vertical-align:top;
+}
+.homeSpecificResponsibilities{
+  min-width:22rem;
+}
+.homeSpecificSongs{
+  min-width:19rem;
+}
+.homeSpecificStack{
+  display:grid;
+  gap:.35rem;
+}
+.homeSpecificLine{
+  display:grid;
+  grid-template-columns:8.5rem minmax(8rem,1fr);
+  gap:.45rem;
+  align-items:start;
+}
+.homeSpecificLine .key{
+  color:var(--muted);
+  font-weight:800;
+  font-size:.74rem;
+}
+.homeSpecificSong{
+  display:block;
+  margin:.15rem 0;
+}
+
+@media(max-width:60rem){
+  .programFunctionRow{
+    grid-template-columns:1fr 1fr;
+  }
+  .programFunctionActions{
+    grid-column:1/-1;
+  }
+}
+@media(max-width:47.5rem){
+  .homeProgramViewControl{
+    width:100%;
+  }
+  .homeProgramViewControl select{
+    width:100%;
+  }
+  .programFunctionsHead{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+  .programFunctionsHead .btn{
+    width:100%;
+  }
+  .programFunctionRow{
+    grid-template-columns:1fr;
+  }
+  .programFunctionActions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+}
+</style>
+
 </head>
 <!-- Flash Program V79 - Inicio correcto + selector de plantillas + render único -->
-<!-- Flash Program V82 - Semántica estable Banda + reglas completas + borrado seguro -->
+<!-- Flash Program V83 - Funciones editables + Inicio general/equipo -->
 <body class="readonly-mode">
 
 <div id="appLoadingScreen">
@@ -6182,10 +6321,18 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
         <div id="homeSubtitle" class="muted">Vista semanal. Aquí ves rápidamente a quién le corresponde servir.</div>
       </div>
       <div class="homeToolbar">
-        <div class="viewSwitch" role="group" aria-label="Cambiar vista">
+        <div class="viewSwitch" role="group" aria-label="Cambiar periodo">
           <button id="homeWeekViewBtn" class="viewBtn active" type="button">Semana</button>
           <button id="homeMonthViewBtn" class="viewBtn" type="button">Mes</button>
         </div>
+
+        <div class="homeProgramViewControl">
+          <label>Ver</label>
+          <select id="homeProgramViewSelect">
+            <option value="general">General</option>
+          </select>
+        </div>
+
         <div class="row homeMonthControls">
           <div><label>Año</label><input id="hy" type="number" value="2026"></div>
           <div><label>Mes</label><select id="hm"></select></div>
@@ -6941,11 +7088,24 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
           <div class="muted">Si no marcas ningún día, la programación funcionará solo con fechas añadidas manualmente.</div>
         </div>
 
+        <div class="programFunctionsEditor">
+          <div class="programFunctionsHead">
+            <div>
+              <h3>Funciones</h3>
+              <div class="muted">
+                Las columnas se conectan a una función. Puedes crear, renombrar o modificar funciones sin depender del nombre visible de la columna.
+              </div>
+            </div>
+            <button id="addProgramFunction" class="btn secondary" type="button">+ Añadir función</button>
+          </div>
+          <div id="programBuilderFunctions" class="programBuilderFunctions"></div>
+        </div>
+
         <div class="programColumnsEditor">
           <div class="programColumnsHead">
             <div>
               <h3>Columnas</h3>
-              <div class="muted">Puedes cambiar el nombre y la función de cada columna.</div>
+              <div class="muted">Cada columna tiene un tipo de dato y puede estar vinculada a una función.</div>
             </div>
             <button id="addProgramColumn" class="btn secondary" type="button">+ Añadir columna</button>
           </div>
@@ -8125,16 +8285,16 @@ function renderM(){mbody.innerHTML="";mmonth.sort((a,b)=>a.date.localeCompare(b.
 let homeViewMode="week";
 let homeSelectedWeek=null;
 let homeWeekContext="";
+let homeProgramView="general";
 
 function renderCal(){}
 
 function homeIso(date){
- return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+ return `${date.getUTCFullYear()}-${String(date.getUTCMonth()+1).padStart(2,"0")}-${String(date.getUTCDate()).padStart(2,"0")}`;
 }
 function homeWeekStartFor(Y,M,D=1){
- const date=new Date(Y,M,D);
- date.setHours(12,0,0,0);
- date.setDate(date.getDate()-date.getDay());
+ const date=new Date(Date.UTC(Y,M,D));
+ date.setUTCDate(date.getUTCDate()-date.getUTCDay());
  return homeIso(date);
 }
 function firstSundayOfMonth(Y,M){
@@ -8150,7 +8310,7 @@ function ensureHomeWeek(){
 }
 function renderHomeRows(dates){
  if(typeof window.renderUnifiedHomeRows==="function" && window.currentTeam){
-   window.renderUnifiedHomeRows(dates).catch(error=>{
+   window.renderUnifiedHomeRows(dates,homeProgramView).catch(error=>{
      console.error("Inicio dinámico:",error);
      week.innerHTML='<tr><td class="homeNoPrograms">No se pudo cargar Inicio.</td></tr>';
    });
@@ -8163,12 +8323,14 @@ function renderWeek(){
  const Y=+hy.value,M=+hm.value;
 
  if(homeViewMode==="month"){
-   homeSubtitle.textContent="Vista mensual. Cada programación del equipo aparece como una columna.";
+   homeSubtitle.textContent=homeProgramView==="general"
+     ?"Vista mensual general. Todas las programaciones aparecen juntas."
+     :"Vista mensual de la programación seleccionada.";
    homeWeekControls.style.display="flex";
    weekLabel.textContent=`${months[M]} ${Y}`;
 
    const monthDates=[];
-   const total=new Date(Y,M+1,0).getDate();
+   const total=new Date(Date.UTC(Y,M+1,0)).getUTCDate();
    for(let d=1;d<=total;d++){
      monthDates.push(`${Y}-${String(M+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`);
    }
@@ -8176,24 +8338,26 @@ function renderWeek(){
    return;
  }
 
- homeSubtitle.textContent="Vista semanal. Se muestran los siete días y todas las programaciones del equipo.";
+ homeSubtitle.textContent=homeProgramView==="general"
+   ?"Vista semanal general. Todas las programaciones aparecen juntas."
+   :"Vista semanal de la programación seleccionada.";
  homeWeekControls.style.display="flex";
  ensureHomeWeek();
 
  const start=dObj(homeSelectedWeek);
  const end=new Date(start);
- end.setDate(start.getDate()+6);
+ end.setUTCDate(start.getUTCDate()+6);
 
- const startMonth=months[start.getMonth()];
- const endMonth=months[end.getMonth()];
- weekLabel.innerHTML=start.getMonth()===end.getMonth()
-   ?`Semana del ${start.getDate()} al ${end.getDate()} de ${startMonth}`
-   :`Semana del ${start.getDate()} de ${startMonth}<br>al ${end.getDate()} de ${endMonth}`;
+ const startMonth=months[start.getUTCMonth()];
+ const endMonth=months[end.getUTCMonth()];
+ weekLabel.innerHTML=start.getUTCMonth()===end.getUTCMonth()
+   ?`Semana del ${start.getUTCDate()} al ${end.getUTCDate()} de ${startMonth}`
+   :`Semana del ${start.getUTCDate()} de ${startMonth}<br>al ${end.getUTCDate()} de ${endMonth}`;
 
  const weekDates=[];
  for(let i=0;i<7;i++){
    const d=new Date(start);
-   d.setDate(start.getDate()+i);
+   d.setUTCDate(start.getUTCDate()+i);
    weekDates.push(homeIso(d));
  }
  renderHomeRows(weekDates);
@@ -8224,13 +8388,12 @@ function moveHomeWeek(direction){
 
  ensureHomeWeek();
  const next=dObj(homeSelectedWeek);
- next.setDate(next.getDate()+(7*direction));
+ next.setUTCDate(next.getUTCDate()+(7*direction));
  homeSelectedWeek=homeIso(next);
 
- // El selector acompaña el mes del domingo que inicia la semana.
- hyEl.value=next.getFullYear();
- hmEl.value=next.getMonth();
- homeWeekContext=`${next.getFullYear()}-${next.getMonth()}`;
+ hyEl.value=next.getUTCFullYear();
+ hmEl.value=next.getUTCMonth();
+ homeWeekContext=`${next.getUTCFullYear()}-${next.getUTCMonth()}`;
 
  renderWeek();
 }
@@ -12844,6 +13007,7 @@ const FLASH_GUIDE_DATA={
 
   let customPrograms=[];
   let customProgramColumns=[];
+  let customProgramFunctions=[];
   let activeCustomProgramId=null;
   let customEntries=[];
   let customValues=[];
@@ -12865,6 +13029,7 @@ const FLASH_GUIDE_DATA={
   let editingProgramVolunteerMembershipId=null;
   let pendingVolunteerCell=null;
   let builderEditingProgramId=null;
+  let builderFunctionTempCounter=0;
   let editingProgramRuleId=null;
   let hasLegacyPrograms=false;
   let legacyProgramModules=new Set();
@@ -12905,6 +13070,7 @@ const FLASH_GUIDE_DATA={
   const builderTitle=document.getElementById("programBuilderTitle");
   const builderName=document.getElementById("programBuilderName");
   const builderDescription=document.getElementById("programBuilderDescription");
+  const builderFunctions=document.getElementById("programBuilderFunctions");
   const builderColumns=document.getElementById("programBuilderColumns");
   const weekdayChecks=[...document.querySelectorAll("#programWeekdayChecks input[type=checkbox]")];
   const deleteProgramBtn=document.getElementById("deleteCustomProgramBtn");
@@ -13174,6 +13340,60 @@ const FLASH_GUIDE_DATA={
     }
   }
 
+  function templateFunctionSpecs(templateKey){
+    if(["band","youth-band"].includes(templateKey)){
+      return [
+        {key:"lead",name:"Voz principal",source_type:"volunteer",emoji:"🎙️",render_group:"responsibles",group_in_render:true,capabilities:{legacy_key:"lead",lead_singer:true,rotation:true,availability:true,min_max:true,avoid_consecutive:true}},
+        {key:"chorus",name:"Coros",source_type:"volunteer",emoji:"🎤",render_group:"responsibles",group_in_render:true,capabilities:{legacy_key:"chorus",rotation:true,availability:true,min_max:true,avoid_consecutive:true}},
+        {key:"keys",name:"Teclados",source_type:"volunteer",emoji:"🎹",render_group:"responsibles",group_in_render:true,capabilities:{legacy_key:"keys",rotation:true,availability:true,min_max:true,avoid_consecutive:true}},
+        {key:"guitar",name:"Guitarras",source_type:"volunteer",emoji:"🎸",render_group:"responsibles",group_in_render:true,capabilities:{legacy_key:"guitar",rotation:true,availability:true,min_max:true,avoid_consecutive:true}},
+        {key:"bass",name:"Bajo",source_type:"volunteer",emoji:"🪕",render_group:"responsibles",group_in_render:true,capabilities:{legacy_key:"bass",rotation:true,availability:true,min_max:true,avoid_consecutive:true}},
+        {key:"drums",name:"Batería",source_type:"volunteer",emoji:"🥁",render_group:"responsibles",group_in_render:true,capabilities:{legacy_key:"drums",rotation:true,availability:true,min_max:true,avoid_consecutive:true}},
+        {key:"song",name:"Canciones",source_type:"song",emoji:"🎵",render_group:"songs",group_in_render:true,capabilities:{legacy_key:"song",rotation:true}}
+      ];
+    }
+    if(templateKey==="media"){
+      return [
+        {key:"pc",name:"PC",source_type:"volunteer",emoji:"💻",render_group:"columns",group_in_render:false,capabilities:{legacy_key:"pc",rotation:true,availability:true,min_max:true,avoid_consecutive:true}},
+        {key:"camera",name:"Cámara",source_type:"volunteer",emoji:"🎥",render_group:"columns",group_in_render:false,capabilities:{legacy_key:"camera",rotation:true,availability:true,min_max:true,avoid_consecutive:true}},
+        {key:"slides",name:"Diapositivas",source_type:"volunteer",emoji:"⏹️",render_group:"columns",group_in_render:false,capabilities:{legacy_key:"slides",rotation:true,availability:true,min_max:true,avoid_consecutive:true}}
+      ];
+    }
+    return [];
+  }
+
+  async function createFunctionsForTemplate(programId,templateKey){
+    const specs=templateFunctionSpecs(templateKey);
+    if(!specs.length)return new Map();
+
+    const payloads=specs.map((spec,index)=>({
+      team_id:window.currentTeam.id,
+      program_id:programId,
+      name:spec.name,
+      source_type:spec.source_type,
+      emoji:spec.emoji,
+      render_group:spec.render_group,
+      group_in_render:spec.group_in_render,
+      capabilities:spec.capabilities,
+      sort_order:index,
+      active:true,
+      updated_at:new Date().toISOString()
+    }));
+
+    const {data,error}=await window.supabaseClient
+      .from("program_functions")
+      .insert(payloads)
+      .select("id,name,capabilities");
+    if(error)throw error;
+
+    const byLegacyKey=new Map();
+    (data||[]).forEach(fn=>{
+      const caps=safeOptions(fn.capabilities);
+      if(caps.legacy_key)byLegacyKey.set(caps.legacy_key,fn.id);
+    });
+    return byLegacyKey;
+  }
+
   async function createProgramFromTemplate(templateKey,templateOptions={}){
     if(!teamAdmin()){
       window.showAppToast?.("Solo el Administrador puede crear programaciones.","error",1800);
@@ -13214,50 +13434,51 @@ const FLASH_GUIDE_DATA={
       .single();
     if(programError)throw programError;
 
+    const functionMap=await createFunctionsForTemplate(program.id,template.key);
+
     const resolvedColumns=(template.key==="band"||template.key==="youth-band")
       ?(()=>{
         const coros=Math.max(0, Number(templateOptions.coros ?? 2));
         const teclados=Math.max(0, Number(templateOptions.teclados ?? 1));
         const guitarras=Math.max(0, Number(templateOptions.guitarras ?? 2));
         const canciones=Math.max(1, Number(templateOptions.canciones ?? (template.key==="youth-band"?3:4)));
-        const list=[["Voz principal","volunteer",{semantic_role:"lead",semantic_slot:1}]];
-        for(let i=1;i<=coros;i++)list.push([`Coros ${i}`,"volunteer",{semantic_role:"chorus",semantic_slot:i}]);
+        const list=[["Voz principal","volunteer","lead",1]];
+        for(let i=1;i<=coros;i++)list.push([`Coros ${i}`,"volunteer","chorus",i]);
         if(teclados<=1){
-          if(teclados===1)list.push(["Piano","volunteer",{semantic_role:"keys",semantic_slot:1}]);
+          if(teclados===1)list.push(["Piano","volunteer","keys",1]);
         }else{
-          for(let i=1;i<=teclados;i++)list.push([`Teclado ${i}`,"volunteer",{semantic_role:"keys",semantic_slot:i}]);
+          for(let i=1;i<=teclados;i++)list.push([`Teclado ${i}`,"volunteer","keys",i]);
         }
-        for(let i=1;i<=guitarras;i++)list.push([`Guitarra ${i}`,"volunteer",{semantic_role:"guitar",semantic_slot:i}]);
-        list.push(
-          ["Bajo","volunteer",{semantic_role:"bass",semantic_slot:1}],
-          ["Batería","volunteer",{semantic_role:"drums",semantic_slot:1}]
-        );
-        for(let i=1;i<=canciones;i++)list.push([`Canción ${i}`,"song",{semantic_role:"song",semantic_slot:i}]);
+        for(let i=1;i<=guitarras;i++)list.push([`Guitarra ${i}`,"volunteer","guitar",i]);
+        list.push(["Bajo","volunteer","bass",1],["Batería","volunteer","drums",1]);
+        for(let i=1;i<=canciones;i++)list.push([`Canción ${i}`,"song","song",i]);
         return list;
       })()
-      :template.columns;
-
-    const columns=resolvedColumns.map(([name,field_type,sourceOptions],index)=>{
-      const inferredRole=sourceOptions?.semantic_role||
-        (template.key==="media"?inferSemanticRoleFromName(name,field_type):"");
-      return {
-        team_id:window.currentTeam.id,
-        program_id:program.id,
+      :template.columns.map(([name,field_type])=>[
         name,
         field_type,
-        sort_order:index,
-        required:false,
-        fill_enabled:true,
-        rebalance_enabled:true,
-        lockable:true,
-        options:{
-          ...(sourceOptions||{}),
-          ...(inferredRole?{semantic_role:inferredRole}:{}),
-          template_key:template.key
-        },
-        updated_at:new Date().toISOString()
-      };
-    });
+        template.key==="media"?inferSemanticRoleFromName(name,field_type):"",
+        1
+      ]);
+
+    const columns=resolvedColumns.map(([name,field_type,legacyKey,slot],index)=>({
+      team_id:window.currentTeam.id,
+      program_id:program.id,
+      name,
+      field_type,
+      function_id:legacyKey?functionMap.get(legacyKey)||null:null,
+      sort_order:index,
+      required:false,
+      fill_enabled:true,
+      rebalance_enabled:true,
+      lockable:true,
+      options:{
+        ...(legacyKey?{semantic_role:legacyKey}:{}),
+        ...(slot?{semantic_slot:slot}:{}),
+        template_key:template.key
+      },
+      updated_at:new Date().toISOString()
+    }));
 
     if(columns.length){
       const {error:columnError}=await window.supabaseClient.from("program_columns").insert(columns);
@@ -13292,6 +13513,44 @@ const FLASH_GUIDE_DATA={
     return ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"][Number(day)]||"";
   }
 
+
+  function functionsFor(programId){
+    return customProgramFunctions
+      .filter(fn=>fn.program_id===programId&&fn.active!==false)
+      .sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)||String(a.name).localeCompare(String(b.name),"es"));
+  }
+
+  function functionForColumn(column){
+    if(!column?.function_id)return null;
+    return customProgramFunctions.find(fn=>fn.id===column.function_id)||null;
+  }
+
+  function functionCapabilities(fn){
+    return safeOptions(fn?.capabilities);
+  }
+
+  function functionLabel(fn){
+    if(!fn)return "";
+    return `${fn.emoji||""} ${fn.name||""}`.trim();
+  }
+
+  function functionUses(fn,key,defaultValue=false){
+    const caps=functionCapabilities(fn);
+    return Object.prototype.hasOwnProperty.call(caps,key)?caps[key]===true:defaultValue;
+  }
+
+  function columnFunction(column){
+    return functionForColumn(column);
+  }
+
+  function columnFunctionId(column){
+    return column?.function_id||null;
+  }
+
+  function columnFunctionHas(column,key,defaultValue=false){
+    return functionUses(functionForColumn(column),key,defaultValue);
+  }
+
   function inferSemanticRoleFromName(name,fieldType="volunteer"){
     const clean=String(name||"").trim();
     if(fieldType==="song"||/^(canci[oó]n|song)(?:\s+\d+)?$/i.test(clean))return "song";
@@ -13309,8 +13568,15 @@ const FLASH_GUIDE_DATA={
 
   function columnSemanticRole(column){
     if(!column)return "";
+    const fn=functionForColumn(column);
+    const caps=functionCapabilities(fn);
     const options=safeOptions(column.options);
-    return String(options.semantic_role||inferSemanticRoleFromName(column.name,column.field_type)||"");
+    return String(
+      caps.legacy_key||
+      options.semantic_role||
+      inferSemanticRoleFromName(column.name,column.field_type)||
+      ""
+    );
   }
 
   function semanticRoleLabel(role){
@@ -13331,6 +13597,10 @@ const FLASH_GUIDE_DATA={
   function templateRoleLabel(template,columnOrName){
     const isColumn=columnOrName&&typeof columnOrName==="object";
     const clean=String(isColumn?columnOrName.name:columnOrName||"");
+    if(isColumn){
+      const fn=functionForColumn(columnOrName);
+      if(fn)return `${clean}${fn.emoji?` ${fn.emoji}`:""}`;
+    }
     const role=isColumn?columnSemanticRole(columnOrName):inferSemanticRoleFromName(clean);
     const emoji=semanticRoleEmoji(role);
     if(["band","youth-band","media"].includes(template)){
@@ -13348,6 +13618,10 @@ const FLASH_GUIDE_DATA={
 
   function groupedTemplateRoleLabel(columnOrName){
     const isColumn=columnOrName&&typeof columnOrName==="object";
+    if(isColumn){
+      const fn=functionForColumn(columnOrName);
+      if(fn)return functionLabel(fn);
+    }
     const role=isColumn?columnSemanticRole(columnOrName):inferSemanticRoleFromName(columnOrName);
     const label=semanticRoleLabel(role);
     const emoji=semanticRoleEmoji(role);
@@ -13357,6 +13631,10 @@ const FLASH_GUIDE_DATA={
   function compactHomeRoleLabel(template,columnOrName){
     const isColumn=columnOrName&&typeof columnOrName==="object";
     const clean=String(isColumn?columnOrName.name:columnOrName||"");
+    if(isColumn){
+      const fn=functionForColumn(columnOrName);
+      if(fn)return functionLabel(fn);
+    }
     const role=isColumn?columnSemanticRole(columnOrName):inferSemanticRoleFromName(clean);
     if(["band","youth-band"].includes(template))return templateRoleLabel(template,columnOrName);
     if(template==="media"){
@@ -13368,17 +13646,15 @@ const FLASH_GUIDE_DATA={
   }
 
   function bandRoleDefinitions(program){
-    if(!program||!["band","youth-band"].includes(program.template_key||""))return [];
-    const seen=new Set(),out=[];
-    columnsFor(program.id)
-      .filter(column=>column.field_type==="volunteer")
-      .forEach(column=>{
-        const key=columnSemanticRole(column);
-        if(!key||seen.has(key))return;
-        seen.add(key);
-        out.push({key,label:semanticRoleLabel(key),emoji:semanticRoleEmoji(key)});
-      });
-    return out;
+    if(!program)return [];
+    const usedIds=new Set(
+      columnsFor(program.id)
+        .filter(column=>column.field_type==="volunteer"&&column.function_id)
+        .map(column=>column.function_id)
+    );
+    return functionsFor(program.id)
+      .filter(fn=>fn.source_type==="volunteer"&&usedIds.has(fn.id))
+      .map(fn=>({key:fn.id,label:fn.name,emoji:fn.emoji||"",function:fn}));
   }
 
   function safeOptions(options){
@@ -13541,6 +13817,7 @@ const FLASH_GUIDE_DATA={
     renderProgramTemplates();
     updateEmptyTeamExperience();
     syncLegacyProgramSections();
+    syncHomeProgramViewSelect();
   }
 
   function renderMobileProgramList(){
@@ -13577,12 +13854,15 @@ const FLASH_GUIDE_DATA={
     if(!window.currentTeam||!window.supabaseClient){
       customPrograms=[];
       customProgramColumns=[];
+      customProgramFunctions=[];
       renderProgramHub();
+      syncHomeProgramViewSelect();
       return;
     }
     const [
       {data:defs,error:defError},
       {data:cols,error:colError},
+      {data:functionRows,error:functionError},
       {data:legacyRows,error:legacyError}
     ]=await Promise.all([
       window.supabaseClient.from("program_definitions")
@@ -13591,7 +13871,11 @@ const FLASH_GUIDE_DATA={
         .order("sort_order")
         .order("created_at"),
       window.supabaseClient.from("program_columns")
-        .select("id,program_id,name,field_type,sort_order,required,fill_enabled,rebalance_enabled,lockable,options")
+        .select("id,program_id,name,field_type,function_id,sort_order,required,fill_enabled,rebalance_enabled,lockable,options")
+        .order("sort_order"),
+      window.supabaseClient.from("program_functions")
+        .select("id,program_id,name,source_type,emoji,render_group,group_in_render,capabilities,sort_order,active")
+        .eq("active",true)
         .order("sort_order"),
       window.supabaseClient.from("services")
         .select("module")
@@ -13599,6 +13883,7 @@ const FLASH_GUIDE_DATA={
     ]);
     if(defError)throw defError;
     if(colError)throw colError;
+    if(functionError)throw functionError;
     if(legacyError)throw legacyError;
     legacyProgramModules=new Set(
       (legacyRows||[])
@@ -13608,7 +13893,9 @@ const FLASH_GUIDE_DATA={
     hasLegacyPrograms=legacyProgramModules.size>0;
     customPrograms=defs||[];
     customProgramColumns=(cols||[]).map(c=>({...c,options:safeOptions(c.options)}));
+    customProgramFunctions=(functionRows||[]).map(fn=>({...fn,capabilities:safeOptions(fn.capabilities)}));
     renderProgramHub();
+    syncHomeProgramViewSelect();
     if(typeof renderWeek==="function")renderWeek();
   }
   window.loadProgramDefinitions=loadProgramDefinitions;
@@ -13633,7 +13920,7 @@ const FLASH_GUIDE_DATA={
       window.supabaseClient.from("volunteers").select("id,name,active").eq("active",true).order("name"),
       window.supabaseClient.from("songs").select("id,name,artist,category,base_key,primary_singer_id,active").eq("active",true).order("name"),
       window.supabaseClient.from("program_volunteers")
-        .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,active,primary_role_key,secondary_role_keys")
+        .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,active,primary_role_key,secondary_role_keys,primary_function_id,secondary_function_ids")
         .eq("program_id",program.id)
         .eq("active",true),
       window.supabaseClient.from("program_data_items")
@@ -13666,7 +13953,9 @@ const FLASH_GUIDE_DATA={
           max_per_month:member.max_per_month==null?null:Number(member.max_per_month),
           avoid_consecutive:member.avoid_consecutive!==false,
           primary_role_key:member.primary_role_key||null,
-          secondary_role_keys:Array.isArray(member.secondary_role_keys)?member.secondary_role_keys:[]
+          secondary_role_keys:Array.isArray(member.secondary_role_keys)?member.secondary_role_keys:[],
+          primary_function_id:member.primary_function_id||null,
+          secondary_function_ids:Array.isArray(member.secondary_function_ids)?member.secondary_function_ids:[]
         };
       })
       .filter(Boolean);
@@ -13871,7 +14160,9 @@ const FLASH_GUIDE_DATA={
 
   function leadColumnForProgram(programId){
     return columnsFor(programId).find(column=>
-      column.field_type==="volunteer"&&columnSemanticRole(column)==="lead"
+      column.field_type==="volunteer"&&columnFunctionHas(column,"lead_singer",false)
+    )||columnsFor(programId).find(column=>
+      column.field_type==="volunteer"&&(columnFunctionHas(column,"lead_singer",false)||columnSemanticRole(column)==="lead")
     )||null;
   }
 
@@ -14123,6 +14414,141 @@ const FLASH_GUIDE_DATA={
   }
   window.openCustomProgram=openCustomProgram;
 
+
+  function functionSourceOptions(selected="volunteer"){
+    return [
+      ["volunteer","Voluntario"],
+      ["song","Canción"],
+      ["catalog","Lista propia"],
+      ["text","Texto"],
+      ["number","Número"],
+      ["list","Lista de opciones"],
+      ["any","Cualquier tipo"]
+    ].map(([value,label])=>`<option value="${value}" ${value===selected?"selected":""}>${label}</option>`).join("");
+  }
+
+  function renderGroupOptions(selected="responsibles"){
+    return [
+      ["responsibles","Responsables"],
+      ["songs","Canciones"],
+      ["columns","Columna propia"]
+    ].map(([value,label])=>`<option value="${value}" ${value===selected?"selected":""}>${label}</option>`).join("");
+  }
+
+  function builderFunctionRows(){
+    return [...(builderFunctions?.querySelectorAll(".programFunctionRow")||[])];
+  }
+
+  function addBuilderFunction(data={}){
+    if(!builderFunctions)return null;
+    const key=data.id||data._temp_id||`tmp-fn-${++builderFunctionTempCounter}`;
+    const caps=safeOptions(data.capabilities);
+    const row=document.createElement("div");
+    row.className="programFunctionRow";
+    row.dataset.functionRef=key;
+    row.dataset.functionId=data.id||"";
+    row.innerHTML=`
+      <div>
+        <label>Nombre de la función</label>
+        <input class="programFunctionName" maxlength="60" required value="${escapeTeamHtml(data.name||"Nueva función")}" placeholder="Ej. Guitarras">
+      </div>
+      <div>
+        <label>Tipo compatible</label>
+        <select class="programFunctionSource">${functionSourceOptions(data.source_type||"volunteer")}</select>
+      </div>
+      <div>
+        <label>Emoji</label>
+        <input class="programFunctionEmoji" maxlength="8" value="${escapeTeamHtml(data.emoji||"")}" placeholder="🎸">
+      </div>
+      <div>
+        <label>Mostrar en render</label>
+        <select class="programFunctionRenderGroup">${renderGroupOptions(data.render_group||"responsibles")}</select>
+      </div>
+      <div class="programFunctionActions">
+        <button type="button" class="btn secondary moveFunctionUp" title="Subir">↑</button>
+        <button type="button" class="btn secondary moveFunctionDown" title="Bajar">↓</button>
+        <button type="button" class="btn danger removeProgramFunction" title="Eliminar">×</button>
+      </div>
+      <div class="programFunctionFlags">
+        <label><input class="programFunctionGroup" type="checkbox" ${data.group_in_render!==false?"checked":""}> Agrupar columnas en render</label>
+        <label><input class="programFunctionLead" type="checkbox" ${caps.lead_singer?"checked":""}> Es voz principal</label>
+        <label><input class="programFunctionRotation" type="checkbox" ${caps.rotation!==false?"checked":""}> Rotación</label>
+        <label><input class="programFunctionAvailability" type="checkbox" ${caps.availability!==false?"checked":""}> Disponibilidad</label>
+        <label><input class="programFunctionMinMax" type="checkbox" ${caps.min_max!==false?"checked":""}> Mín./Máx.</label>
+        <label><input class="programFunctionAvoid" type="checkbox" ${caps.avoid_consecutive!==false?"checked":""}> Evitar consecutivos</label>
+      </div>
+    `;
+
+    row.querySelector(".removeProgramFunction").addEventListener("click",()=>{
+      row.remove();
+      syncBuilderFunctionSelectors();
+    });
+    row.querySelector(".moveFunctionUp").addEventListener("click",()=>{
+      if(row.previousElementSibling)builderFunctions.insertBefore(row,row.previousElementSibling);
+      syncBuilderFunctionSelectors();
+    });
+    row.querySelector(".moveFunctionDown").addEventListener("click",()=>{
+      if(row.nextElementSibling)builderFunctions.insertBefore(row.nextElementSibling,row);
+      syncBuilderFunctionSelectors();
+    });
+    row.querySelector(".programFunctionName").addEventListener("input",syncBuilderFunctionSelectors);
+    row.querySelector(".programFunctionSource").addEventListener("change",syncBuilderFunctionSelectors);
+    builderFunctions.appendChild(row);
+    return key;
+  }
+
+  function builderFunctionOptionsFor(fieldType,selectedRef=""){
+    const options=[`<option value="">Sin función asociada</option>`];
+    builderFunctionRows().forEach(row=>{
+      const source=row.querySelector(".programFunctionSource")?.value||"any";
+      if(source!=="any"&&source!==fieldType)return;
+      const ref=row.dataset.functionRef;
+      const name=row.querySelector(".programFunctionName")?.value.trim()||"Función";
+      options.push(`<option value="${escapeTeamHtml(ref)}" ${ref===selectedRef?"selected":""}>${escapeTeamHtml(name)}</option>`);
+    });
+    return options.join("");
+  }
+
+  function syncBuilderFunctionSelectors(){
+    [...(builderColumns?.querySelectorAll(".programColumnRow")||[])].forEach(row=>{
+      const select=row.querySelector(".programColumnFunction");
+      const type=row.querySelector(".programColumnType")?.value||"volunteer";
+      if(!select)return;
+      const current=select.value||row.dataset.functionRef||"";
+      select.innerHTML=builderFunctionOptionsFor(type,current);
+      if([...select.options].some(option=>option.value===current))select.value=current;
+      row.dataset.functionRef=select.value||"";
+    });
+  }
+
+  function collectBuilderFunctions(){
+    return builderFunctionRows().map((row,index)=>{
+      const oldFn=row.dataset.functionId
+        ?customProgramFunctions.find(fn=>fn.id===row.dataset.functionId)
+        :null;
+      const oldCaps=safeOptions(oldFn?.capabilities);
+      return {
+        ref:row.dataset.functionRef,
+        id:row.dataset.functionId||null,
+        name:row.querySelector(".programFunctionName").value.trim(),
+        source_type:row.querySelector(".programFunctionSource").value,
+        emoji:row.querySelector(".programFunctionEmoji").value.trim(),
+        render_group:row.querySelector(".programFunctionRenderGroup").value,
+        group_in_render:row.querySelector(".programFunctionGroup").checked,
+        sort_order:index,
+        active:true,
+        capabilities:{
+          ...oldCaps,
+          lead_singer:row.querySelector(".programFunctionLead").checked,
+          rotation:row.querySelector(".programFunctionRotation").checked,
+          availability:row.querySelector(".programFunctionAvailability").checked,
+          min_max:row.querySelector(".programFunctionMinMax").checked,
+          avoid_consecutive:row.querySelector(".programFunctionAvoid").checked
+        }
+      };
+    });
+  }
+
   function fieldTypeOptions(selected){
     return [
       ["volunteer","Voluntario"],
@@ -14162,29 +14588,26 @@ const FLASH_GUIDE_DATA={
     row.className="programColumnRow";
     row.dataset.columnId=data.id||"";
     row.dataset.type=data.field_type||"volunteer";
+    row.dataset.functionRef=data.function_id||data._function_ref||"";
     const options=safeOptions(data.options);
     row.dataset.baseOptions=JSON.stringify(options||{});
-    const templateKey=builderProgramTemplateKey();
-    const inferredSemantic=options.semantic_role||inferSemanticRoleFromName(data.name,data.field_type||"volunteer");
-    const showSemantic=["band","youth-band","media"].includes(templateKey)&&["volunteer","song"].includes(data.field_type||"volunteer");
-    row.dataset.showSemantic=showSemantic?"1":"0";
+
     row.innerHTML=`
       <div>
-        <label>Nombre</label>
+        <label>Nombre de la columna</label>
         <input class="programColumnName" value="${escapeTeamHtml(data.name||"Responsable")}" required maxlength="60">
       </div>
       <div>
-        <label>Función</label>
+        <label>Tipo de dato</label>
         <select class="programColumnType">${fieldTypeOptions(data.field_type||"volunteer")}</select>
+      </div>
+      <div class="programColumnFunctionWrap">
+        <label>Función asociada</label>
+        <select class="programColumnFunction">${builderFunctionOptionsFor(data.field_type||"volunteer",row.dataset.functionRef)}</select>
       </div>
       <div class="programColumnOptions">
         <label>Opciones (separadas por |)</label>
         <input class="programColumnChoices" value="${escapeTeamHtml((options.choices||[]).join(" | "))}" placeholder="Opción A | Opción B">
-      </div>
-      <div class="programColumnSemanticWrap">
-        <label>Función interna de la plantilla</label>
-        <select class="programColumnSemantic">${semanticOptionsForTemplate(templateKey,data.field_type||"volunteer",inferredSemantic)}</select>
-        <div class="muted">El nombre visible puede cambiar. Esta función interna mantiene las reglas, el render y la lógica automática.</div>
       </div>
       <div class="programColumnActions">
         <button type="button" class="btn secondary moveColumnUp" title="Subir">↑</button>
@@ -14200,19 +14623,19 @@ const FLASH_GUIDE_DATA={
     `;
 
     const type=row.querySelector(".programColumnType");
-    const semantic=row.querySelector(".programColumnSemantic");
-    const syncSemantic=()=>{
+    const fnSelect=row.querySelector(".programColumnFunction");
+
+    const syncFunction=()=>{
       row.dataset.type=type.value;
-      const key=builderProgramTemplateKey();
-      const show=["band","youth-band","media"].includes(key)&&["volunteer","song"].includes(type.value);
-      row.dataset.showSemantic=show?"1":"0";
-      if(semantic){
-        const current=semantic.value||inferSemanticRoleFromName(row.querySelector(".programColumnName")?.value,type.value);
-        semantic.innerHTML=semanticOptionsForTemplate(key,type.value,current);
-      }
+      const current=fnSelect.value||row.dataset.functionRef||"";
+      fnSelect.innerHTML=builderFunctionOptionsFor(type.value,current);
+      if([...fnSelect.options].some(option=>option.value===current))fnSelect.value=current;
+      row.dataset.functionRef=fnSelect.value||"";
     };
-    type.addEventListener("change",syncSemantic);
-    syncSemantic();
+    type.addEventListener("change",syncFunction);
+    fnSelect.addEventListener("change",()=>{row.dataset.functionRef=fnSelect.value||""});
+    syncFunction();
+
     row.querySelector(".removeProgramColumn").addEventListener("click",()=>{
       if(builderColumns.children.length<=1){
         window.showAppToast?.("La programación debe tener al menos una columna.","info",1400);
@@ -14224,14 +14647,23 @@ const FLASH_GUIDE_DATA={
       if(row.previousElementSibling)builderColumns.insertBefore(row,row.previousElementSibling);
     });
     row.querySelector(".moveColumnDown").addEventListener("click",()=>{
-      if(row.nextElementSibling)builderColumns.insertBefore(row.nextElementSibling,row);
+      if(row.nextElementSibling)builderColumns.insertBefore(row,row.nextElementSibling,row);
     });
     builderColumns.appendChild(row);
   }
 
   function resetBuilder(){
+    builderFunctions.innerHTML="";
     builderColumns.innerHTML="";
-    addBuilderColumn({name:"Responsable",field_type:"volunteer"});
+    const fnRef=addBuilderFunction({
+      name:"Responsables",
+      source_type:"volunteer",
+      emoji:"",
+      render_group:"responsibles",
+      group_in_render:true,
+      capabilities:{rotation:true,availability:true,min_max:true,avoid_consecutive:true}
+    });
+    addBuilderColumn({name:"Responsable",field_type:"volunteer",_function_ref:fnRef});
     weekdayChecks.forEach(cb=>cb.checked=false);
   }
 
@@ -14259,6 +14691,7 @@ const FLASH_GUIDE_DATA={
       return;
     }
     builderEditingProgramId=programId;
+    builderFunctions.innerHTML="";
     builderColumns.innerHTML="";
 
     if(programId){
@@ -14269,7 +14702,9 @@ const FLASH_GUIDE_DATA={
       builderDescription.value=program.description||"";
       const days=new Set((program.weekdays||[]).map(Number));
       weekdayChecks.forEach(cb=>cb.checked=days.has(Number(cb.value)));
+      functionsFor(programId).forEach(addBuilderFunction);
       columnsFor(programId).forEach(addBuilderColumn);
+      syncBuilderFunctionSelectors();
       deleteProgramBtn.style.display="inline-flex";
     }else{
       builderTitle.textContent="Crear programación";
@@ -14298,16 +14733,9 @@ const FLASH_GUIDE_DATA={
       const baseOptions=(()=>{
         try{return JSON.parse(row.dataset.baseOptions||"{}")}catch(_){return {}}
       })();
-      const semanticRole=row.querySelector(".programColumnSemantic")?.value||"";
-      const options={
-        ...baseOptions,
-        ...(type==="list"?{choices}:{}),
-        ...(["band","youth-band","media"].includes(builderProgramTemplateKey())&&["volunteer","song"].includes(type)
-          ?{semantic_role:semanticRole}
-          :{})
-      };
       return {
         id:row.dataset.columnId||null,
+        function_ref:row.querySelector(".programColumnFunction")?.value||"",
         name:row.querySelector(".programColumnName").value.trim(),
         field_type:type,
         sort_order:index,
@@ -14315,7 +14743,10 @@ const FLASH_GUIDE_DATA={
         fill_enabled:row.querySelector(".programColumnFill").checked,
         rebalance_enabled:row.querySelector(".programColumnRebalance").checked,
         lockable:row.querySelector(".programColumnLock").checked,
-        options
+        options:{
+          ...baseOptions,
+          ...(type==="list"?{choices}:{})
+        }
       };
     });
   }
@@ -14323,6 +14754,10 @@ const FLASH_GUIDE_DATA={
   async function saveProgramBuilder(){
     const name=builderName.value.trim();
     if(!name)throw new Error("Escribe un nombre para la programación.");
+
+    const functionDefs=collectBuilderFunctions();
+    if(functionDefs.some(fn=>!fn.name))throw new Error("Todas las funciones necesitan un nombre.");
+
     const cols=collectBuilderColumns();
     if(!cols.length)throw new Error("Añade al menos una columna.");
     if(cols.some(c=>!c.name))throw new Error("Todas las columnas necesitan un nombre.");
@@ -14356,22 +14791,60 @@ const FLASH_GUIDE_DATA={
         .select("id").single();
       if(error)throw error;
       programId=data.id;
-
-      await insertDefaultProgramRules(
-        programId,
-        customPrograms.find(p=>p.id===programId)?.template_key||"custom"
-      );
+      await insertDefaultProgramRules(programId,"custom");
     }
 
+    // 1. Guardar funciones antes de columnas.
+    const oldFunctionIds=new Set(functionsFor(programId).map(fn=>fn.id));
+    const keptFunctionIds=new Set();
+    const functionRefToId=new Map();
+
+    for(const fn of functionDefs){
+      const payload={
+        team_id:window.currentTeam.id,
+        program_id:programId,
+        name:fn.name,
+        source_type:fn.source_type,
+        emoji:fn.emoji||null,
+        render_group:fn.render_group,
+        group_in_render:fn.group_in_render,
+        capabilities:fn.capabilities,
+        sort_order:fn.sort_order,
+        active:true,
+        updated_at:new Date().toISOString()
+      };
+
+      let realId=fn.id;
+      if(fn.id){
+        const {error}=await window.supabaseClient
+          .from("program_functions").update(payload).eq("id",fn.id);
+        if(error)throw error;
+      }else{
+        const {data,error}=await window.supabaseClient
+          .from("program_functions").insert(payload).select("id").single();
+        if(error)throw error;
+        realId=data.id;
+      }
+
+      keptFunctionIds.add(realId);
+      functionRefToId.set(fn.ref,realId);
+    }
+
+    // 2. Guardar columnas enlazadas a las funciones reales.
     const existingIds=new Set(columnsFor(programId).map(c=>c.id));
     const keptIds=new Set();
 
     for(const column of cols){
+      const functionId=column.function_ref
+        ?(functionRefToId.get(column.function_ref)||column.function_ref)
+        :null;
+
       const payload={
         team_id:window.currentTeam.id,
         program_id:programId,
         name:column.name,
         field_type:column.field_type,
+        function_id:functionId,
         sort_order:column.sort_order,
         required:column.required,
         fill_enabled:column.fill_enabled,
@@ -14380,6 +14853,7 @@ const FLASH_GUIDE_DATA={
         options:column.options,
         updated_at:new Date().toISOString()
       };
+
       if(column.id){
         keptIds.add(column.id);
         const {error}=await window.supabaseClient
@@ -14417,8 +14891,7 @@ const FLASH_GUIDE_DATA={
             }
           ];
           const {error:ruleError}=await window.supabaseClient
-            .from("program_rules")
-            .insert(rules);
+            .from("program_rules").insert(rules);
           if(ruleError)throw ruleError;
         }
       }
@@ -14431,113 +14904,21 @@ const FLASH_GUIDE_DATA={
       }
     }
 
+    // 3. Eliminar funciones que el usuario quitó. Las columnas ya fueron actualizadas.
+    for(const oldFunctionId of oldFunctionIds){
+      if(!keptFunctionIds.has(oldFunctionId)){
+        const {error}=await window.supabaseClient
+          .from("program_functions").delete().eq("id",oldFunctionId);
+        if(error)throw error;
+      }
+    }
+
     await loadProgramDefinitions();
     closeProgramBuilder();
     volunteerTeamProgramId=programId;
     renderVolunteerProgramSelector();
     window.showAppToast?.("Programación guardada.","success",1200);
     await openCustomProgram(programId);
-  }
-
-  function closeDeleteProgramModeModal(){
-    deleteProgramModeModal?.classList.remove("open");
-    deleteProgramModeModal?.setAttribute("aria-hidden","true");
-    pendingDeleteProgramId=null;
-  }
-
-  async function deleteProgramDefinitionOnly(programId){
-    const {error}=await window.supabaseClient
-      .from("program_definitions").delete().eq("id",programId);
-    if(error)throw error;
-  }
-
-  async function deleteProgramWithExclusiveVolunteers(programId){
-    const {data:memberships,error:memberError}=await window.supabaseClient
-      .from("program_volunteers").select("volunteer_id").eq("program_id",programId);
-    if(memberError)throw memberError;
-
-    const volunteerIds=[...new Set((memberships||[]).map(row=>row.volunteer_id).filter(Boolean))];
-    const protectedIds=new Set();
-
-    if(volunteerIds.length){
-      const [
-        {data:otherMemberships,error:e1},
-        {data:legacyRoles,error:e2},
-        {data:assignments,error:e3},
-        {data:primarySongs,error:e4},
-        {data:toneLinks,error:e5}
-      ]=await Promise.all([
-        window.supabaseClient.from("program_volunteers")
-          .select("volunteer_id").in("volunteer_id",volunteerIds).neq("program_id",programId),
-        window.supabaseClient.from("volunteer_roles")
-          .select("volunteer_id").in("volunteer_id",volunteerIds),
-        window.supabaseClient.from("assignments")
-          .select("volunteer_id").in("volunteer_id",volunteerIds),
-        window.supabaseClient.from("songs")
-          .select("primary_singer_id").in("primary_singer_id",volunteerIds),
-        window.supabaseClient.from("song_singer_keys")
-          .select("volunteer_id").in("volunteer_id",volunteerIds)
-      ]);
-
-      for(const error of [e1,e2,e3,e4,e5])if(error)throw error;
-      (otherMemberships||[]).forEach(row=>protectedIds.add(row.volunteer_id));
-      (legacyRoles||[]).forEach(row=>protectedIds.add(row.volunteer_id));
-      (assignments||[]).forEach(row=>protectedIds.add(row.volunteer_id));
-      (primarySongs||[]).forEach(row=>row.primary_singer_id&&protectedIds.add(row.primary_singer_id));
-      (toneLinks||[]).forEach(row=>protectedIds.add(row.volunteer_id));
-    }
-
-    await deleteProgramDefinitionOnly(programId);
-
-    let deletedCount=0;
-    for(const volunteerId of volunteerIds){
-      if(protectedIds.has(volunteerId))continue;
-      const {error}=await window.supabaseClient.from("volunteers").delete().eq("id",volunteerId);
-      if(!error)deletedCount++;
-      else console.warn("Voluntario conservado por referencia:",volunteerId,error.message);
-    }
-    return {deletedCount,preservedCount:volunteerIds.length-deletedCount};
-  }
-
-  async function finalizeProgramDeletion(mode){
-    const programId=pendingDeleteProgramId;
-    const program=customPrograms.find(p=>p.id===programId);
-    if(!programId||!program)return;
-
-    deleteProgramKeepVolunteers.disabled=true;
-    deleteProgramWithVolunteers.disabled=true;
-    try{
-      let result={deletedCount:0,preservedCount:0};
-      if(mode==="with-volunteers"){
-        result=await deleteProgramWithExclusiveVolunteers(programId);
-      }else{
-        await deleteProgramDefinitionOnly(programId);
-      }
-
-      activeCustomProgramId=null;
-      closeDeleteProgramModeModal();
-      closeProgramBuilder();
-      await loadProgramDefinitions();
-      window.activateAppPanel("programs","Programación");
-
-      if(mode==="with-volunteers"){
-        window.showAppToast?.(
-          `Programación eliminada. ${result.deletedCount} voluntario(s) exclusivo(s) eliminado(s) y ${result.preservedCount} conservado(s) por seguridad.`,
-          "success",2800
-        );
-      }else{
-        window.showAppToast?.(
-          "Programación eliminada. Los voluntarios se conservaron y aparecerán como personas existentes al añadirlos a otra programación.",
-          "success",2600
-        );
-      }
-    }catch(error){
-      console.error(error);
-      window.showAppToast?.(error.message||"No se pudo eliminar la programación.","error",2400);
-    }finally{
-      deleteProgramKeepVolunteers.disabled=false;
-      deleteProgramWithVolunteers.disabled=false;
-    }
   }
 
   async function deleteCurrentProgram(){
@@ -14555,6 +14936,27 @@ const FLASH_GUIDE_DATA={
     return customPrograms.find(p=>p.id===id)||null;
   }
 
+
+
+  function syncHomeProgramViewSelect(){
+    const select=document.getElementById("homeProgramViewSelect");
+    if(!select)return;
+    const current=select.value||homeProgramView||"general";
+    const models=getHomeProgramModels();
+    select.innerHTML='<option value="general">General</option>';
+    models.forEach(model=>select.add(new Option(model.name,model.id)));
+    if([...select.options].some(option=>option.value===current)){
+      select.value=current;
+      homeProgramView=current;
+    }else{
+      select.value="general";
+      homeProgramView="general";
+    }
+  }
+
+  function homeModelById(id){
+    return getHomeProgramModels().find(model=>model.id===id)||null;
+  }
 
   function getHomeProgramModels(){
     const models=[...customPrograms.map(program=>({
@@ -14637,7 +15039,7 @@ const FLASH_GUIDE_DATA={
     return "";
   }
 
-  window.renderUnifiedHomeRows=async function(dates){
+  window.renderUnifiedHomeRows=async function(dates,scopeId="general"){
     const tbody=document.getElementById("week");
     const head=document.getElementById("homeProgramsHead");
     if(!tbody||!head)return;
@@ -14899,6 +15301,158 @@ const FLASH_GUIDE_DATA={
         </div>`;
       }).join('<div style="height:.45rem"></div>');
     }
+
+
+    function customSpecificRow(model,date){
+      const entry=customEntryByProgramDate.get(`${model.id}|${date}`);
+      if(!entry)return null;
+      const cols=columnsFor(model.id);
+      const valueMap=new Map(
+        (customValuesByEntry.get(entry.id)||[]).map(v=>[v.column_id,v])
+      );
+      const template=model.template_key||"custom";
+
+      if(["band","youth-band"].includes(template)){
+        const volunteerCols=cols.filter(c=>c.field_type==="volunteer");
+        const songCols=cols.filter(c=>c.field_type==="song");
+
+        const grouped=new Map();
+        volunteerCols.forEach(column=>{
+          const fn=functionForColumn(column);
+          const key=fn?.id||column.id;
+          if(!grouped.has(key)){
+            grouped.set(key,{fn,column,values:[]});
+          }
+          const text=valueText(column,valueMap.get(column.id));
+          if(text&&text!=="—")grouped.get(key).values.push(text);
+        });
+
+        const responsibilities=[...grouped.values()]
+          .sort((a,b)=>(a.fn?.sort_order??999)-(b.fn?.sort_order??999))
+          .map(group=>`
+            <div class="homeSpecificLine">
+              <span class="key">${escapeTeamHtml(group.fn?functionLabel(group.fn):templateRoleLabel(template,group.column))}</span>
+              <span>${escapeTeamHtml(group.values.join(" - ")||"—")}</span>
+            </div>`).join("");
+
+        const songs=songCols.map((column,index)=>`
+          <span class="homeSpecificSong">${index+1}. ${escapeTeamHtml(valueText(column,valueMap.get(column.id)))}</span>`
+        ).join("");
+
+        return {
+          date,
+          cells:[
+            `<div class="homeSpecificStack">${responsibilities}</div>`,
+            `<div class="homeSpecificStack">${songs}</div>`
+          ],
+          headers:["RESPONSABLES","CANCIONES"]
+        };
+      }
+
+      const cells=cols.map(column=>escapeTeamHtml(valueText(column,valueMap.get(column.id))));
+      return {
+        date,
+        cells,
+        headers:cols.map(column=>functionForColumn(column)?.name||column.name)
+      };
+    }
+
+    function legacySpecificRow(model,date){
+      const module=
+        model.kind==="legacy-band"?"alabanza":
+        model.kind==="legacy-youth"?"jovenes":
+        model.kind==="legacy-media"?"multimedia":"";
+      if(!module)return null;
+
+      const services=legacyServicesByModuleDate.get(`${module}|${date}`)||[];
+      if(!services.length)return null;
+
+      const service=services[0];
+      const assignments=assignmentsByService.get(service.id)||[];
+
+      if(module==="multimedia"){
+        const roleValues=new Map();
+        assignments.forEach(a=>{
+          const role=roleMap.get(a.role_id);
+          const person=volunteerMap.get(a.volunteer_id);
+          if(!role||!person)return;
+          roleValues.set(uiRoleName("multimedia",role.name),person);
+        });
+        return {
+          date,
+          headers:["PC","Cámara","Diapositivas"],
+          cells:[
+            escapeTeamHtml(roleValues.get("PC")||"—"),
+            escapeTeamHtml(roleValues.get("Camara")||"—"),
+            escapeTeamHtml(roleValues.get("Diapositivas")||"—")
+          ]
+        };
+      }
+
+      const groups={};
+      assignments.forEach(a=>{
+        const role=roleMap.get(a.role_id);
+        const person=volunteerMap.get(a.volunteer_id);
+        if(!role||!person)return;
+        const ui=uiRoleName(module,role.name);
+        (groups[ui]??=[]).push(person);
+      });
+
+      const roleNames=["Voz principal","Coros","Piano","Guitarra","Bajo","Batería"];
+      const responsibilities=roleNames.map(role=>`
+        <div class="homeSpecificLine">
+          <span class="key">${escapeTeamHtml(compactHomeRoleLabel(module==="jovenes"?"youth-band":"band",role))}</span>
+          <span>${escapeTeamHtml((groups[role]||[]).join(" - ")||"—")}</span>
+        </div>`).join("");
+
+      const songs=(songsByService.get(service.id)||[]).map((link,index)=>{
+        const song=songMap.get(link.song_id);
+        return `<span class="homeSpecificSong">${index+1}. ${escapeTeamHtml(song?.name||"—")}${link.song_key?` (${escapeTeamHtml(link.song_key)})`:""}</span>`;
+      }).join("");
+
+      return {
+        date,
+        headers:["RESPONSABLES","CANCIONES"],
+        cells:[
+          `<div class="homeSpecificStack">${responsibilities}</div>`,
+          `<div class="homeSpecificStack">${songs}</div>`
+        ]
+      };
+    }
+
+    if(scopeId!=="general"){
+      const model=models.find(item=>item.id===scopeId);
+      if(!model){
+        tbody.innerHTML=`<tr><td class="homeNoPrograms">No se encontró la programación seleccionada.</td></tr>`;
+        return;
+      }
+
+      const specificRows=isoDates
+        .map(date=>model.kind==="custom"?customSpecificRow(model,date):legacySpecificRow(model,date))
+        .filter(Boolean);
+
+      const headers=specificRows[0]?.headers||(
+        model.kind==="custom"
+          ?columnsFor(model.id).map(column=>functionForColumn(column)?.name||column.name)
+          :[]
+      );
+
+      head.innerHTML=`<th>FECHA</th>${headers.map(header=>`<th>${escapeTeamHtml(header)}</th>`).join("")}`;
+
+      tbody.innerHTML=specificRows.map(row=>{
+        const p=parts(row.date);
+        return `
+          <tr>
+            <td class="dateCol"><strong>${p.D}</strong><br><span class="muted">${months[p.M-1]}</span></td>
+            ${row.cells.map((cell,index)=>`<td class="${headers[index]==="RESPONSABLES"?"homeSpecificResponsibilities":headers[index]==="CANCIONES"?"homeSpecificSongs":""}">${cell||"—"}</td>`).join("")}
+          </tr>`;
+      }).join("")||`<tr><td colspan="${headers.length+1}" class="homeNoPrograms">No hay programación en este periodo.</td></tr>`;
+
+      document.getElementById("homeProgramsTable")?.classList.add("homeSpecificTable");
+      return;
+    }
+
+    document.getElementById("homeProgramsTable")?.classList.remove("homeSpecificTable");
 
     const rows=[];
     isoDates.forEach(date=>{
@@ -15335,7 +15889,9 @@ const FLASH_GUIDE_DATA={
         {kind:"date",name:"FECHA"},
         ...columns.map(c=>({
           kind:"column",
-          name:template==="media"?templateRoleLabel("media",c.name):c.name,
+          name:template==="media"
+            ?(functionForColumn(c)?functionLabel(functionForColumn(c)):templateRoleLabel("media",c))
+            :c.name,
           column:c
         }))
       ];
@@ -15485,16 +16041,32 @@ const FLASH_GUIDE_DATA={
         }else if(displayCol.kind==="responsibilities"){
           const grouped=new Map();
           volunteerCols.forEach(c=>{
-            const key=normalizeTemplateRoleKey(c);
+            const fn=functionForColumn(c);
+            const key=fn?.id||`column:${c.id}`;
             const value=entry.id==="__empty__"?"":textFor(c,entry.id);
-            if(!grouped.has(key))grouped.set(key,[]);
-            if(value)grouped.get(key).push(value);
+            if(!grouped.has(key)){
+              grouped.set(key,{
+                function:fn,
+                column:c,
+                values:[]
+              });
+            }
+            if(value)grouped.get(key).values.push(value);
           });
-          const order=["Voz principal","Coros","Teclados","Guitarras","Bajo","Batería"];
-          const lines=order.filter(key=>grouped.has(key)).map(key=>({
-            label:groupedTemplateRoleLabel(key),
-            value:(grouped.get(key)||[]).join(" - ")||"—"
-          }));
+
+          const lines=[...grouped.values()]
+            .sort((a,b)=>{
+              const ao=a.function?.sort_order??999;
+              const bo=b.function?.sort_order??999;
+              return ao-bo;
+            })
+            .map(group=>({
+              label:group.function
+                ?functionLabel(group.function)
+                :templateRoleLabel(template,group.column),
+              value:group.values.join(" - ")||"—"
+            }));
+
           drawStack(lines,x,y,widths[i],rowH,190);
         }else if(displayCol.kind==="songs"){
           const lines=songCols.map((c,index)=>({
@@ -16141,7 +16713,7 @@ const FLASH_GUIDE_DATA={
         .eq("active",true)
         .order("name"),
       window.supabaseClient.from("program_volunteers")
-        .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,active,primary_role_key,secondary_role_keys")
+        .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,active,primary_role_key,secondary_role_keys,primary_function_id,secondary_function_ids")
     ]);
 
     if(volError)throw volError;
@@ -16203,12 +16775,23 @@ const FLASH_GUIDE_DATA={
           <div class="customVolunteerMemberRules">
             Mín. ${Number(member.min_per_month)||0} · Máx. ${escapeTeamHtml(max)}
             ${member.avoid_consecutive!==false?" · Evitar consecutivos":""}
-            ${member.primary_role_key?`
+            ${(member.primary_function_id||member.primary_role_key)?`
               <div class="programVolunteerRoleLine">
-                Principal: ${escapeTeamHtml(`${semanticRoleEmoji(member.primary_role_key)} ${semanticRoleLabel(member.primary_role_key)}`.trim())}
-                ${(member.secondary_role_keys||[]).length
-                  ?` · También: ${escapeTeamHtml(member.secondary_role_keys.map(role=>semanticRoleLabel(role)).join(", "))}`
-                  :""}
+                ${(()=>{
+                  const primaryFn=member.primary_function_id
+                    ?customProgramFunctions.find(fn=>fn.id===member.primary_function_id)
+                    :null;
+                  const secondaryFns=(member.secondary_function_ids||[])
+                    .map(id=>customProgramFunctions.find(fn=>fn.id===id))
+                    .filter(Boolean);
+                  const primaryLabel=primaryFn
+                    ?functionLabel(primaryFn)
+                    :`${semanticRoleEmoji(member.primary_role_key)} ${semanticRoleLabel(member.primary_role_key)}`.trim();
+                  const secondaryLabels=secondaryFns.length
+                    ?secondaryFns.map(functionLabel)
+                    :(member.secondary_role_keys||[]).map(role=>semanticRoleLabel(role));
+                  return `Principal: ${escapeTeamHtml(primaryLabel)}${secondaryLabels.length?` · También: ${escapeTeamHtml(secondaryLabels.join(", "))}`:""}`;
+                })()}
               </div>
             `:""}
           </div>
@@ -16255,8 +16838,8 @@ const FLASH_GUIDE_DATA={
       return;
     }
 
-    const pendingRole=pendingCell?.column?columnSemanticRole(pendingCell.column):"";
-    const selectedPrimary=membership?.primary_role_key||pendingRole||roles[0]?.key||"";
+    const pendingFunctionId=pendingCell?.column?.function_id||"";
+    const selectedPrimary=membership?.primary_function_id||pendingFunctionId||roles[0]?.key||"";
 
     programVolunteerPrimaryRole.innerHTML="";
     roles.forEach(role=>{
@@ -16266,7 +16849,11 @@ const FLASH_GUIDE_DATA={
       ?selectedPrimary
       :(roles[0]?.key||"");
 
-    const secondary=new Set(Array.isArray(membership?.secondary_role_keys)?membership.secondary_role_keys:[]);
+    const secondary=new Set(
+      Array.isArray(membership?.secondary_function_ids)
+        ?membership.secondary_function_ids
+        :[]
+    );
     programVolunteerSecondaryRoles.innerHTML=roles.map(role=>`
       <label>
         <input type="checkbox" value="${role.key}" ${secondary.has(role.key)?"checked":""}>
@@ -16419,12 +17006,17 @@ const FLASH_GUIDE_DATA={
       min_per_month:min,
       max_per_month:max,
       avoid_consecutive:programVolunteerAvoid.checked,
-      primary_role_key:["band","youth-band"].includes(program.template_key||"")
-        ?(programVolunteerPrimaryRole.value||null)
-        :null,
-      secondary_role_keys:["band","youth-band"].includes(program.template_key||"")
-        ?selectedSecondaryProgramRoles().filter(role=>role!==programVolunteerPrimaryRole.value)
-        :[],
+      primary_function_id:programVolunteerPrimaryRole.value||null,
+      secondary_function_ids:selectedSecondaryProgramRoles()
+        .filter(id=>id!==programVolunteerPrimaryRole.value),
+      primary_role_key:(()=>{
+        const fn=customProgramFunctions.find(item=>item.id===programVolunteerPrimaryRole.value);
+        return functionCapabilities(fn).legacy_key||null;
+      })(),
+      secondary_role_keys:selectedSecondaryProgramRoles()
+        .filter(id=>id!==programVolunteerPrimaryRole.value)
+        .map(id=>functionCapabilities(customProgramFunctions.find(item=>item.id===id)).legacy_key)
+        .filter(Boolean),
       active:true,
       updated_at:new Date().toISOString()
     };
@@ -16661,7 +17253,9 @@ const FLASH_GUIDE_DATA={
           max:v.max_per_month==null?null:Number(v.max_per_month),
           avoid:v.avoid_consecutive!==false,
           primaryRole:v.primary_role_key||null,
-          secondaryRoles:Array.isArray(v.secondary_role_keys)?v.secondary_role_keys:[]
+          secondaryRoles:Array.isArray(v.secondary_role_keys)?v.secondary_role_keys:[],
+          primaryFunction:v.primary_function_id||null,
+          secondaryFunctions:Array.isArray(v.secondary_function_ids)?v.secondary_function_ids:[]
         })):
         col.field_type==="song"?customRefSongs.map(s=>({
           id:s.id,label:s.name,category:s.category||"Media",
@@ -16763,13 +17357,21 @@ const FLASH_GUIDE_DATA={
         }
 
         if(col.field_type==="volunteer"){
-          availableChoices=availableChoices.filter(choice=>
-            !unavailableSet.has(`${choice.id}|${entry.service_date}`)
-          );
+          if(columnFunctionHas(col,"availability",true)){
+            availableChoices=availableChoices.filter(choice=>
+              !unavailableSet.has(`${choice.id}|${entry.service_date}`)
+            );
+          }
 
           if(["band","youth-band"].includes(program.template_key||"")){
+            const functionId=col.function_id||null;
             const roleKey=columnSemanticRole(col);
-            if(roleKey){
+            if(functionId){
+              const eligible=availableChoices.filter(choice=>
+                choice.primaryFunction===functionId||choice.secondaryFunctions.includes(functionId)
+              );
+              if(eligible.length)availableChoices=eligible;
+            }else if(roleKey){
               const eligible=availableChoices.filter(choice=>
                 choice.primaryRole===roleKey||choice.secondaryRoles.includes(roleKey)
               );
@@ -16785,7 +17387,7 @@ const FLASH_GUIDE_DATA={
               previousEntryId=bandHistoryEntries[bandHistoryEntries.length-1].id;
             }
 
-            if(previousEntryId){
+            if(previousEntryId&&columnFunctionHas(col,"avoid_consecutive",true)){
               const previousServiceIds=new Set();
               customValues
                 .filter(value=>value.entry_id===previousEntryId&&value.volunteer_id)
@@ -16806,10 +17408,12 @@ const FLASH_GUIDE_DATA={
             if(notDuplicated.length)availableChoices=notDuplicated;
           }
 
-          const underMax=availableChoices.filter(choice=>
-            choice.max==null||(volunteerCounts.get(choice.id)||0)<choice.max
-          );
-          if(underMax.length)availableChoices=underMax;
+          if(columnFunctionHas(col,"min_max",true)){
+            const underMax=availableChoices.filter(choice=>
+              choice.max==null||(volunteerCounts.get(choice.id)||0)<choice.max
+            );
+            if(underMax.length)availableChoices=underMax;
+          }
 
           const restRule=restRuleFor(col.id);
           if(restRule){
@@ -16841,16 +17445,23 @@ const FLASH_GUIDE_DATA={
           if(col.field_type==="volunteer"){
             const ac=volunteerCounts.get(a.id)||0;
             const bc=volunteerCounts.get(b.id)||0;
+            const functionId=col.function_id||null;
             const roleKey=columnSemanticRole(col);
-            if(["band","youth-band"].includes(program.template_key||"")&&roleKey){
+            if(functionId){
+              const ap=a.primaryFunction===functionId?0:1;
+              const bp=b.primaryFunction===functionId?0:1;
+              if(ap!==bp)return ap-bp;
+            }else if(["band","youth-band"].includes(program.template_key||"")&&roleKey){
               const ap=a.primaryRole===roleKey?0:1;
               const bp=b.primaryRole===roleKey?0:1;
               if(ap!==bp)return ap-bp;
             }
-            if(hasRule("balance_assignments",col.id)){
-              const aNeeds=ac<a.min?0:1;
-              const bNeeds=bc<b.min?0:1;
-              if(aNeeds!==bNeeds)return aNeeds-bNeeds;
+            if(hasRule("balance_assignments",col.id)&&columnFunctionHas(col,"rotation",true)){
+              if(columnFunctionHas(col,"min_max",true)){
+                const aNeeds=ac<a.min?0:1;
+                const bNeeds=bc<b.min?0:1;
+                if(aNeeds!==bNeeds)return aNeeds-bNeeds;
+              }
               if(ac!==bc)return ac-bc;
             }
             if(hasRule("avoid_consecutive",col.id)){
@@ -16974,6 +17585,11 @@ const FLASH_GUIDE_DATA={
 
 
   // Events
+  document.getElementById("homeProgramViewSelect")?.addEventListener("change",event=>{
+    homeProgramView=event.target.value||"general";
+    renderWeek();
+  });
+
   homeGoTemplates?.addEventListener("click",()=>{
     window.activateAppPanel("programs","Programación");
     setTimeout(()=>programTemplateOnboarding?.scrollIntoView({behavior:"smooth",block:"start"}),50);
@@ -17097,6 +17713,16 @@ const FLASH_GUIDE_DATA={
   });
   document.getElementById("backToPrograms")?.addEventListener("click",()=>window.activateAppPanel("programs","Programación"));
   editStructureBtn?.addEventListener("click",()=>openProgramBuilder(activeCustomProgramId));
+  document.getElementById("addProgramFunction")?.addEventListener("click",()=>{
+    addBuilderFunction({
+      name:"Nueva función",
+      source_type:"volunteer",
+      render_group:"responsibles",
+      group_in_render:true,
+      capabilities:{rotation:true,availability:true,min_max:true,avoid_consecutive:true}
+    });
+    syncBuilderFunctionSelectors();
+  });
   document.getElementById("addProgramColumn")?.addEventListener("click",()=>addBuilderColumn({name:"Nueva columna",field_type:"volunteer"}));
   document.getElementById("programBuilderCancel")?.addEventListener("click",closeProgramBuilder);
   builderForm?.addEventListener("submit",async e=>{
