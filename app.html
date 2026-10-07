@@ -5998,7 +5998,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 
 </head>
 <!-- Flash Program V79 - Inicio correcto + selector de plantillas + render único -->
-<!-- Flash Program V83 - Funciones editables + Inicio general/equipo -->
+<!-- Flash Program V84 - Creación atómica de programaciones -->
 <body class="readonly-mode">
 
 <div id="appLoadingScreen">
@@ -13394,6 +13394,68 @@ const FLASH_GUIDE_DATA={
     return byLegacyKey;
   }
 
+
+  async function createProgramStructureV84({
+    name,
+    description=null,
+    weekdays=[],
+    templateKey="custom",
+    capabilities={},
+    functions=[],
+    columns=[]
+  }){
+    const payloadFunctions=functions.map((fn,index)=>({
+      ref:fn.ref||fn.key||`fn-${index}`,
+      name:fn.name,
+      source_type:fn.source_type||"volunteer",
+      emoji:fn.emoji||null,
+      render_group:fn.render_group||"responsibles",
+      group_in_render:fn.group_in_render!==false,
+      capabilities:safeOptions(fn.capabilities),
+      sort_order:Number.isFinite(fn.sort_order)?fn.sort_order:index
+    }));
+
+    const payloadColumns=columns.map((column,index)=>({
+      name:column.name,
+      field_type:column.field_type||"volunteer",
+      function_ref:column.function_ref||column.function_key||null,
+      sort_order:Number.isFinite(column.sort_order)?column.sort_order:index,
+      required:column.required===true,
+      fill_enabled:column.fill_enabled!==false,
+      rebalance_enabled:column.rebalance_enabled!==false,
+      lockable:column.lockable!==false,
+      options:safeOptions(column.options)
+    }));
+
+    const {data,error}=await window.supabaseClient.rpc(
+      "create_program_structure_v84",
+      {
+        p_name:name,
+        p_description:description,
+        p_weekdays:weekdays,
+        p_template_key:templateKey,
+        p_capabilities:capabilities,
+        p_functions:payloadFunctions,
+        p_columns:payloadColumns
+      }
+    );
+
+    if(error){
+      const msg=String(error.message||error);
+      if(/create_program_structure_v84|function .* does not exist|schema cache/i.test(msg)){
+        throw new Error("Falta ejecutar el SQL V84 en Supabase antes de crear programaciones.");
+      }
+      throw error;
+    }
+
+    const programId=typeof data==="string"
+      ?data
+      :(Array.isArray(data)?data[0]:data?.id||data);
+
+    if(!programId)throw new Error("Supabase no devolvió el ID de la programación creada.");
+    return programId;
+  }
+
   async function createProgramFromTemplate(templateKey,templateOptions={}){
     if(!teamAdmin()){
       window.showAppToast?.("Solo el Administrador puede crear programaciones.","error",1800);
@@ -13409,32 +13471,21 @@ const FLASH_GUIDE_DATA={
       return;
     }
 
-    const {data:program,error:programError}=await window.supabaseClient
-      .from("program_definitions")
-      .insert({
-        team_id:window.currentTeam.id,
-        name:nextAvailableProgramName(template.name),
-        description:`Creada desde la plantilla ${template.name}`,
-        date_mode:template.weekdays.length?"mixed":"manual",
-        weekdays:template.weekdays,
-        template_key:template.key,
-        capabilities:{
-          volunteers:true,
-          availability:true,
-          rotation:true,
-          rules:true,
-          history:true,
-          render:true,
-          songs:["band","youth-band"].includes(template.key)
-        },
-        active:true,
-        updated_at:new Date().toISOString()
-      })
-      .select("id")
-      .single();
-    if(programError)throw programError;
+    const functionSpecs=templateFunctionSpecs(template.key);
+    const functionRefByLegacyKey=new Map(
+      functionSpecs.map(spec=>[spec.key,`template-fn-${spec.key}`])
+    );
 
-    const functionMap=await createFunctionsForTemplate(program.id,template.key);
+    const functions=functionSpecs.map((spec,index)=>({
+      ref:functionRefByLegacyKey.get(spec.key),
+      name:spec.name,
+      source_type:spec.source_type,
+      emoji:spec.emoji,
+      render_group:spec.render_group,
+      group_in_render:spec.group_in_render,
+      capabilities:spec.capabilities,
+      sort_order:index
+    }));
 
     const resolvedColumns=(template.key==="band"||template.key==="youth-band")
       ?(()=>{
@@ -13442,15 +13493,19 @@ const FLASH_GUIDE_DATA={
         const teclados=Math.max(0, Number(templateOptions.teclados ?? 1));
         const guitarras=Math.max(0, Number(templateOptions.guitarras ?? 2));
         const canciones=Math.max(1, Number(templateOptions.canciones ?? (template.key==="youth-band"?3:4)));
+
         const list=[["Voz principal","volunteer","lead",1]];
         for(let i=1;i<=coros;i++)list.push([`Coros ${i}`,"volunteer","chorus",i]);
+
         if(teclados<=1){
           if(teclados===1)list.push(["Piano","volunteer","keys",1]);
         }else{
           for(let i=1;i<=teclados;i++)list.push([`Teclado ${i}`,"volunteer","keys",i]);
         }
+
         for(let i=1;i<=guitarras;i++)list.push([`Guitarra ${i}`,"volunteer","guitar",i]);
         list.push(["Bajo","volunteer","bass",1],["Batería","volunteer","drums",1]);
+
         for(let i=1;i<=canciones;i++)list.push([`Canción ${i}`,"song","song",i]);
         return list;
       })()
@@ -13462,11 +13517,9 @@ const FLASH_GUIDE_DATA={
       ]);
 
     const columns=resolvedColumns.map(([name,field_type,legacyKey,slot],index)=>({
-      team_id:window.currentTeam.id,
-      program_id:program.id,
       name,
       field_type,
-      function_id:legacyKey?functionMap.get(legacyKey)||null:null,
+      function_ref:legacyKey?functionRefByLegacyKey.get(legacyKey)||null:null,
       sort_order:index,
       required:false,
       fill_enabled:true,
@@ -13476,20 +13529,31 @@ const FLASH_GUIDE_DATA={
         ...(legacyKey?{semantic_role:legacyKey}:{}),
         ...(slot?{semantic_slot:slot}:{}),
         template_key:template.key
-      },
-      updated_at:new Date().toISOString()
+      }
     }));
 
-    if(columns.length){
-      const {error:columnError}=await window.supabaseClient.from("program_columns").insert(columns);
-      if(columnError)throw columnError;
-    }
+    const programId=await createProgramStructureV84({
+      name:nextAvailableProgramName(template.name),
+      description:`Creada desde la plantilla ${template.name}`,
+      weekdays:template.weekdays||[],
+      templateKey:template.key,
+      capabilities:{
+        volunteers:true,
+        availability:true,
+        rotation:true,
+        rules:true,
+        history:true,
+        render:true,
+        songs:["band","youth-band"].includes(template.key)
+      },
+      functions,
+      columns
+    });
 
-    await insertDefaultProgramRules(program.id,template.key);
     await loadProgramDefinitions();
     updateEmptyTeamExperience();
-    window.showAppToast?.(`Programación creada desde ${template.name}.`, "success", 1300);
-    await openCustomProgram(program.id);
+    window.showAppToast?.(`Programación creada desde ${template.name}.`,"success",1300);
+    await openCustomProgram(programId);
   }
 
   function teamAdmin(){
@@ -14780,136 +14844,160 @@ const FLASH_GUIDE_DATA={
     };
 
     let programId=builderEditingProgramId;
-    if(programId){
+
+    if(!programId){
+      programId=await createProgramStructureV84({
+        name:definition.name,
+        description:definition.description,
+        weekdays:definition.weekdays,
+        templateKey:"custom",
+        capabilities:definition.capabilities,
+        functions:functionDefs.map(fn=>({
+          ref:fn.ref,
+          name:fn.name,
+          source_type:fn.source_type,
+          emoji:fn.emoji,
+          render_group:fn.render_group,
+          group_in_render:fn.group_in_render,
+          capabilities:fn.capabilities,
+          sort_order:fn.sort_order
+        })),
+        columns:cols.map(column=>({
+          name:column.name,
+          field_type:column.field_type,
+          function_ref:column.function_ref||null,
+          sort_order:column.sort_order,
+          required:column.required,
+          fill_enabled:column.fill_enabled,
+          rebalance_enabled:column.rebalance_enabled,
+          lockable:column.lockable,
+          options:column.options
+        }))
+      });
+
+    }else{
       const {error}=await window.supabaseClient
         .from("program_definitions").update(definition).eq("id",programId);
       if(error)throw error;
-    }else{
-      const {data,error}=await window.supabaseClient
-        .from("program_definitions")
-        .insert(definition)
-        .select("id").single();
-      if(error)throw error;
-      programId=data.id;
-      await insertDefaultProgramRules(programId,"custom");
-    }
 
-    // 1. Guardar funciones antes de columnas.
-    const oldFunctionIds=new Set(functionsFor(programId).map(fn=>fn.id));
-    const keptFunctionIds=new Set();
-    const functionRefToId=new Map();
+      // 1. Guardar funciones antes de columnas.
+      const oldFunctionIds=new Set(functionsFor(programId).map(fn=>fn.id));
+      const keptFunctionIds=new Set();
+      const functionRefToId=new Map();
 
-    for(const fn of functionDefs){
-      const payload={
-        team_id:window.currentTeam.id,
-        program_id:programId,
-        name:fn.name,
-        source_type:fn.source_type,
-        emoji:fn.emoji||null,
-        render_group:fn.render_group,
-        group_in_render:fn.group_in_render,
-        capabilities:fn.capabilities,
-        sort_order:fn.sort_order,
-        active:true,
-        updated_at:new Date().toISOString()
-      };
+      for(const fn of functionDefs){
+        const payload={
+          team_id:window.currentTeam.id,
+          program_id:programId,
+          name:fn.name,
+          source_type:fn.source_type,
+          emoji:fn.emoji||null,
+          render_group:fn.render_group,
+          group_in_render:fn.group_in_render,
+          capabilities:fn.capabilities,
+          sort_order:fn.sort_order,
+          active:true,
+          updated_at:new Date().toISOString()
+        };
 
-      let realId=fn.id;
-      if(fn.id){
-        const {error}=await window.supabaseClient
-          .from("program_functions").update(payload).eq("id",fn.id);
-        if(error)throw error;
-      }else{
-        const {data,error}=await window.supabaseClient
-          .from("program_functions").insert(payload).select("id").single();
-        if(error)throw error;
-        realId=data.id;
+        let realId=fn.id;
+        if(fn.id){
+          const {error}=await window.supabaseClient
+            .from("program_functions").update(payload).eq("id",fn.id);
+          if(error)throw error;
+        }else{
+          const {data,error}=await window.supabaseClient
+            .from("program_functions").insert(payload).select("id").single();
+          if(error)throw error;
+          realId=data.id;
+        }
+
+        keptFunctionIds.add(realId);
+        functionRefToId.set(fn.ref,realId);
       }
 
-      keptFunctionIds.add(realId);
-      functionRefToId.set(fn.ref,realId);
-    }
+      // 2. Guardar columnas enlazadas a las funciones reales.
+      const existingIds=new Set(columnsFor(programId).map(c=>c.id));
+      const keptIds=new Set();
 
-    // 2. Guardar columnas enlazadas a las funciones reales.
-    const existingIds=new Set(columnsFor(programId).map(c=>c.id));
-    const keptIds=new Set();
+      for(const column of cols){
+        const functionId=column.function_ref
+          ?(functionRefToId.get(column.function_ref)||column.function_ref)
+          :null;
 
-    for(const column of cols){
-      const functionId=column.function_ref
-        ?(functionRefToId.get(column.function_ref)||column.function_ref)
-        :null;
+        const payload={
+          team_id:window.currentTeam.id,
+          program_id:programId,
+          name:column.name,
+          field_type:column.field_type,
+          function_id:functionId,
+          sort_order:column.sort_order,
+          required:column.required,
+          fill_enabled:column.fill_enabled,
+          rebalance_enabled:column.rebalance_enabled,
+          lockable:column.lockable,
+          options:column.options,
+          updated_at:new Date().toISOString()
+        };
 
-      const payload={
-        team_id:window.currentTeam.id,
-        program_id:programId,
-        name:column.name,
-        field_type:column.field_type,
-        function_id:functionId,
-        sort_order:column.sort_order,
-        required:column.required,
-        fill_enabled:column.fill_enabled,
-        rebalance_enabled:column.rebalance_enabled,
-        lockable:column.lockable,
-        options:column.options,
-        updated_at:new Date().toISOString()
-      };
+        if(column.id){
+          keptIds.add(column.id);
+          const {error}=await window.supabaseClient
+            .from("program_columns").update(payload).eq("id",column.id);
+          if(error)throw error;
+        }else{
+          const {data,error}=await window.supabaseClient
+            .from("program_columns").insert(payload).select("id").single();
+          if(error)throw error;
+          keptIds.add(data.id);
 
-      if(column.id){
-        keptIds.add(column.id);
-        const {error}=await window.supabaseClient
-          .from("program_columns").update(payload).eq("id",column.id);
-        if(error)throw error;
-      }else{
-        const {data,error}=await window.supabaseClient
-          .from("program_columns").insert(payload).select("id").single();
-        if(error)throw error;
-        keptIds.add(data.id);
-
-        if(column.field_type==="catalog"){
-          const rules=[
-            {
-              team_id:window.currentTeam.id,
-              program_id:programId,
-              column_id:data.id,
-              name:`Balancear ${column.name}`,
-              rule_type:"balance_catalog_items",
-              enabled:true,
-              config:{},
-              sort_order:20,
-              updated_at:new Date().toISOString()
-            },
-            {
-              team_id:window.currentTeam.id,
-              program_id:programId,
-              column_id:data.id,
-              name:`Evitar repetir ${column.name} consecutivamente`,
-              rule_type:"avoid_catalog_consecutive",
-              enabled:true,
-              config:{},
-              sort_order:21,
-              updated_at:new Date().toISOString()
-            }
-          ];
-          const {error:ruleError}=await window.supabaseClient
-            .from("program_rules").insert(rules);
-          if(ruleError)throw ruleError;
+          if(column.field_type==="catalog"){
+            const rules=[
+              {
+                team_id:window.currentTeam.id,
+                program_id:programId,
+                column_id:data.id,
+                name:`Balancear ${column.name}`,
+                rule_type:"balance_catalog_items",
+                enabled:true,
+                config:{},
+                sort_order:20,
+                updated_at:new Date().toISOString()
+              },
+              {
+                team_id:window.currentTeam.id,
+                program_id:programId,
+                column_id:data.id,
+                name:`Evitar repetir ${column.name} consecutivamente`,
+                rule_type:"avoid_catalog_consecutive",
+                enabled:true,
+                config:{},
+                sort_order:21,
+                updated_at:new Date().toISOString()
+              }
+            ];
+            const {error:ruleError}=await window.supabaseClient
+              .from("program_rules").insert(rules);
+            if(ruleError)throw ruleError;
+          }
         }
       }
-    }
 
-    for(const oldId of existingIds){
-      if(!keptIds.has(oldId)){
-        const {error}=await window.supabaseClient.from("program_columns").delete().eq("id",oldId);
-        if(error)throw error;
+      for(const oldId of existingIds){
+        if(!keptIds.has(oldId)){
+          const {error}=await window.supabaseClient
+            .from("program_columns").delete().eq("id",oldId);
+          if(error)throw error;
+        }
       }
-    }
 
-    // 3. Eliminar funciones que el usuario quitó. Las columnas ya fueron actualizadas.
-    for(const oldFunctionId of oldFunctionIds){
-      if(!keptFunctionIds.has(oldFunctionId)){
-        const {error}=await window.supabaseClient
-          .from("program_functions").delete().eq("id",oldFunctionId);
-        if(error)throw error;
+      // 3. Eliminar funciones que el usuario quitó.
+      for(const oldFunctionId of oldFunctionIds){
+        if(!keptFunctionIds.has(oldFunctionId)){
+          const {error}=await window.supabaseClient
+            .from("program_functions").delete().eq("id",oldFunctionId);
+          if(error)throw error;
+        }
       }
     }
 
@@ -17732,13 +17820,13 @@ const FLASH_GUIDE_DATA={
     }catch(error){
       console.error(error);
       const message=String(error?.message||"");
-      const schemaMissing=/template_key|capabilities|schema cache|column .* does not exist/i.test(message);
+      const schemaMissing=/create_program_structure_v84|program_functions|function_id|schema cache|does not exist/i.test(message);
       window.showAppToast?.(
         schemaMissing
-          ?"Falta ejecutar el SQL V73 en Supabase antes de guardar programaciones."
+          ?"Falta ejecutar el SQL V84 en Supabase antes de crear programaciones."
           :(message||"No se pudo guardar la programación."),
         "error",
-        3200
+        3600
       );
     }
   });
