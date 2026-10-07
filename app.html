@@ -5744,8 +5744,91 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 .bandTemplateOptionsCard{width:min(34rem,94vw)!important}
 .bandTemplateOptionsCard input{width:100%}
 </style>
+
+<style id="v81-program-own-data">
+.programDataManager{
+  margin-top:1rem;
+  padding-top:1rem;
+  border-top:1px solid var(--line);
+}
+.programDataManagerHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:.8rem;
+}
+.programDataLists{
+  display:grid;
+  gap:.7rem;
+  margin-top:.75rem;
+}
+.programDataList{
+  border:1px solid var(--line);
+  border-radius:.8rem;
+  overflow:hidden;
+  background:var(--panel2);
+}
+.programDataList>summary{
+  min-height:3.2rem;
+  padding:.7rem .85rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.7rem;
+  list-style:none;
+  cursor:pointer;
+  font-weight:900;
+}
+.programDataList>summary::-webkit-details-marker{display:none}
+.programDataListBody{
+  padding:.75rem;
+  border-top:1px solid var(--line);
+}
+.programDataItems{
+  display:grid;
+  gap:.45rem;
+  margin-top:.65rem;
+}
+.programDataItem{
+  display:grid;
+  grid-template-columns:minmax(10rem,1fr) auto;
+  align-items:center;
+  gap:.6rem;
+  padding:.6rem .7rem;
+  border:1px solid var(--line);
+  border-radius:.65rem;
+  background:var(--panel);
+}
+.programDataItem.inactive{opacity:.62}
+.programDataItemActions{
+  display:flex;
+  gap:.35rem;
+}
+.programDataItemModalCard{
+  width:min(32rem,94vw)!important;
+}
+.programDataItemBody{
+  display:grid;
+  gap:.8rem;
+  padding-top:.8rem;
+}
+.programDataItemBody input[type="text"]{
+  width:100%;
+}
+@media(max-width:47.5rem){
+  .programDataItem{
+    grid-template-columns:1fr;
+  }
+  .programDataItemActions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+}
+</style>
+
 </head>
 <!-- Flash Program V79 - Inicio correcto + selector de plantillas + render único -->
+<!-- Flash Program V81 - Voluntarios aislados + listas propias -->
 <body class="readonly-mode">
 
 <div id="appLoadingScreen">
@@ -6153,6 +6236,16 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
         <thead id="customProgramHeadRow"></thead>
         <tbody id="customProgramBody"></tbody>
       </table>
+    </div>
+
+    <div id="customProgramDataManager" class="programDataManager" style="display:none">
+      <div class="programDataManagerHead">
+        <div>
+          <h3 id="customProgramDataTitle">Datos propios</h3>
+          <div class="muted">Estas listas pertenecen únicamente a esta programación. No modifican Voluntarios ni Canciones.</div>
+        </div>
+      </div>
+      <div id="customProgramDataLists" class="programDataLists"></div>
     </div>
   </div>
 </section>
@@ -6863,6 +6956,34 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 </div>
 
 
+
+<div id="programDataItemModal" class="modalBackdrop" aria-hidden="true">
+  <div class="modalCard programDataItemModalCard">
+    <form id="programDataItemForm">
+      <div class="modalHeader">
+        <div>
+          <h2 id="programDataItemTitle">Añadir dato</h2>
+          <div id="programDataItemMeta" class="muted"></div>
+        </div>
+      </div>
+      <div class="programDataItemBody">
+        <div>
+          <label>Nombre</label>
+          <input id="programDataItemLabel" maxlength="120" placeholder="Escribe el dato">
+        </div>
+        <label class="programRuleEnabled">
+          <input id="programDataItemActive" type="checkbox" checked>
+          Activo
+        </label>
+      </div>
+      <div class="modalActions">
+        <button id="programDataItemCancel" class="btn secondary" type="button">Cancelar</button>
+        <button class="btn primary" type="submit">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div id="programRuleModal" class="modalBackdrop" aria-hidden="true">
   <div class="modalCard programRuleModalCard">
     <form id="programRuleForm">
@@ -6887,6 +7008,8 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
             <option value="avoid_consecutive">Evitar fechas consecutivas</option>
             <option value="minimum_rest_days">Días mínimos de descanso</option>
             <option value="song_category_pattern">Mezcla Rápida / Media / Lenta</option>
+            <option value="balance_catalog_items">Balancear datos de lista propia</option>
+            <option value="avoid_catalog_consecutive">Evitar repetir dato consecutivamente</option>
           </select>
         </div>
 
@@ -9223,10 +9346,10 @@ async function applySavedMonth(module,Y,M,{silent=false}={}){
  return applyConfirmedMonth(module,Y,M,{silent});
 }
 
-const FLASH_PROGRAM_LOADING_ONCE_KEY="flash-program-loading-once";
+const FLASH_PROGRAM_LOADING_ONCE_KEY="flash-program-loading-once-v2";
 function shouldShowAppLoading(){
  const isMobile=window.matchMedia("(max-width: 768px)").matches;
- const seen=sessionStorage.getItem(FLASH_PROGRAM_LOADING_ONCE_KEY)==="1";
+ const seen=localStorage.getItem(FLASH_PROGRAM_LOADING_ONCE_KEY)==="1";
  return isMobile || !seen;
 }
 function setAppLoading(show,text="Estamos cargando la página."){
@@ -9237,7 +9360,9 @@ function setAppLoading(show,text="Estamos cargando la página."){
  if(show){
    if(shouldShowAppLoading()){
      screen.style.display="flex";
-     sessionStorage.setItem(FLASH_PROGRAM_LOADING_ONCE_KEY,"1");
+     if(!window.matchMedia("(max-width: 768px)").matches){
+       localStorage.setItem(FLASH_PROGRAM_LOADING_ONCE_KEY,"1");
+     }
    }
  }else{
    screen.style.display="none";
@@ -12659,7 +12784,12 @@ const FLASH_GUIDE_DATA={
   let customAllProgramMemberships=[];
   let customColumnLocks=[];
   let customProgramRules=[];
+  let customDataItems=[];
   let volunteerTeamProgramId=null;
+  let programVolunteerTargetProgramId=null;
+  let programDataTargetColumnId=null;
+  let editingProgramDataItemId=null;
+  let pendingProgramDataCell=null;
   let pendingBandTemplateKey=null;
   let editingProgramVolunteerMembershipId=null;
   let pendingVolunteerCell=null;
@@ -12726,6 +12856,16 @@ const FLASH_GUIDE_DATA={
   const customVolunteerAccordions=document.getElementById("customVolunteerAccordions");
   const customAvailabilityAccordions=document.getElementById("customAvailabilityAccordions");
   const customProgramColumnLocks=document.getElementById("customProgramColumnLocks");
+  const customProgramDataManager=document.getElementById("customProgramDataManager");
+  const customProgramDataTitle=document.getElementById("customProgramDataTitle");
+  const customProgramDataLists=document.getElementById("customProgramDataLists");
+
+  const programDataItemModal=document.getElementById("programDataItemModal");
+  const programDataItemForm=document.getElementById("programDataItemForm");
+  const programDataItemTitle=document.getElementById("programDataItemTitle");
+  const programDataItemMeta=document.getElementById("programDataItemMeta");
+  const programDataItemLabel=document.getElementById("programDataItemLabel");
+  const programDataItemActive=document.getElementById("programDataItemActive");
 
   const customHistoryProgram=document.getElementById("customHistoryProgram");
   const customHistoryPeriod=document.getElementById("customHistoryPeriod");
@@ -13054,7 +13194,7 @@ const FLASH_GUIDE_DATA={
       .sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
   }
   function typeLabel(type){
-    return {volunteer:"Voluntario",text:"Texto libre",list:"Lista de opciones",song:"Canción",number:"Número"}[type]||type;
+    return {volunteer:"Voluntario",text:"Texto libre",list:"Lista de opciones",song:"Canción",catalog:"Lista propia",number:"Número"}[type]||type;
   }
   function dayLabel(day){
     return ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"][Number(day)]||"";
@@ -13350,25 +13490,33 @@ const FLASH_GUIDE_DATA={
       customRefVolunteers=[];
       customRefSongs=[];
       customProgramVolunteerRows=[];
+      customDataItems=[];
       return;
     }
 
     const [
       {data:vols,error:volError},
       {data:songRows,error:songError},
-      {data:memberships,error:membershipError}
+      {data:memberships,error:membershipError},
+      {data:dataItems,error:dataItemsError}
     ]=await Promise.all([
       window.supabaseClient.from("volunteers").select("id,name,active").eq("active",true).order("name"),
       window.supabaseClient.from("songs").select("id,name,artist,category,active").eq("active",true).order("name"),
       window.supabaseClient.from("program_volunteers")
         .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,active")
         .eq("program_id",program.id)
-        .eq("active",true)
+        .eq("active",true),
+      window.supabaseClient.from("program_data_items")
+        .select("id,program_id,column_id,label,active,sort_order,metadata")
+        .eq("program_id",program.id)
+        .order("sort_order")
+        .order("label")
     ]);
 
     if(volError)throw volError;
     if(songError)throw songError;
     if(membershipError)throw membershipError;
+    if(dataItemsError)throw dataItemsError;
 
     customAllTeamVolunteers=vols||[];
     customProgramVolunteerRows=memberships||[];
@@ -13389,6 +13537,7 @@ const FLASH_GUIDE_DATA={
       .filter(Boolean);
 
     customRefSongs=songRows||[];
+    customDataItems=dataItems||[];
   }
 
   function daysInMonth(year,monthZero){
@@ -13486,6 +13635,7 @@ const FLASH_GUIDE_DATA={
 
     renderCustomProgramTable();
     renderCustomColumnLocks();
+    renderCustomProgramDataManager();
     customStatus.textContent=customEntries.length
       ? `${customEntries.length} fecha${customEntries.length===1?"":"s"} · ${columnsFor(program.id).length} columna${columnsFor(program.id).length===1?"":"s"}`
       : "No hay fechas para este mes. Usa “Añadir servicio” o edita los días de la programación.";
@@ -13521,6 +13671,21 @@ const FLASH_GUIDE_DATA={
       const choices=Array.isArray(safeOptions(column.options).choices)?safeOptions(column.options).choices:[];
       choices.forEach(choice=>control.add(new Option(choice,choice)));
       control.value=current?.option_value||"";
+    }else if(type==="catalog"){
+      control=document.createElement("select");
+      control.add(new Option("— seleccionar —",""));
+      const items=customDataItems.filter(item=>item.column_id===column.id&&item.active!==false);
+      items.forEach(item=>control.add(new Option(item.label,item.id)));
+      const currentId=current?.option_value||"";
+      if(currentId&&!items.some(item=>item.id===currentId)){
+        const inactive=customDataItems.find(item=>item.id===currentId);
+        if(inactive)control.add(new Option(`${inactive.label} · inactivo`,inactive.id));
+      }
+      control.add(new Option(
+        items.length?"＋ Añadir otro dato…":"＋ Añadir dato…",
+        "__add_program_data__"
+      ));
+      control.value=currentId;
     }else if(type==="number"){
       control=document.createElement("input");
       control.type="number";
@@ -13537,6 +13702,13 @@ const FLASH_GUIDE_DATA={
       if(column.field_type==="volunteer"&&control.value==="__add_program_volunteer__"){
         control.value=current?.volunteer_id||"";
         await openProgramVolunteerModal(activeCustomProgramId,{
+          pendingCell:{entry,column,locked:false}
+        });
+        return;
+      }
+      if(column.field_type==="catalog"&&control.value==="__add_program_data__"){
+        control.value=current?.option_value||"";
+        await openProgramDataItemModal(column.id,{
           pendingCell:{entry,column,locked:false}
         });
         return;
@@ -13571,7 +13743,7 @@ const FLASH_GUIDE_DATA={
     if(column.field_type==="volunteer")payload.volunteer_id=value||null;
     else if(column.field_type==="song")payload.song_id=value||null;
     else if(column.field_type==="number")payload.number_value=value===""?null:Number(value);
-    else if(column.field_type==="list")payload.option_value=value||null;
+    else if(column.field_type==="list"||column.field_type==="catalog")payload.option_value=value||null;
     else payload.text_value=value||null;
 
     const {error}=await window.supabaseClient
@@ -13740,6 +13912,7 @@ const FLASH_GUIDE_DATA={
       ["text","Texto libre"],
       ["list","Lista de opciones"],
       ["song","Canción"],
+      ["catalog","Lista propia (datos de esta programación)"],
       ["number","Número"]
     ].map(([value,label])=>`<option value="${value}" ${value===selected?"selected":""}>${label}</option>`).join("");
   }
@@ -13944,6 +14117,37 @@ const FLASH_GUIDE_DATA={
           .from("program_columns").insert(payload).select("id").single();
         if(error)throw error;
         keptIds.add(data.id);
+
+        if(column.field_type==="catalog"){
+          const rules=[
+            {
+              team_id:window.currentTeam.id,
+              program_id:programId,
+              column_id:data.id,
+              name:`Balancear ${column.name}`,
+              rule_type:"balance_catalog_items",
+              enabled:true,
+              config:{},
+              sort_order:20,
+              updated_at:new Date().toISOString()
+            },
+            {
+              team_id:window.currentTeam.id,
+              program_id:programId,
+              column_id:data.id,
+              name:`Evitar repetir ${column.name} consecutivamente`,
+              rule_type:"avoid_catalog_consecutive",
+              enabled:true,
+              config:{},
+              sort_order:21,
+              updated_at:new Date().toISOString()
+            }
+          ];
+          const {error:ruleError}=await window.supabaseClient
+            .from("program_rules")
+            .insert(rules);
+          if(ruleError)throw ruleError;
+        }
       }
     }
 
@@ -14111,7 +14315,8 @@ const FLASH_GUIDE_DATA={
       legacyServiceResult,
       volunteerResult,
       songResult,
-      roleResult
+      roleResult,
+      dataItemsResult
     ]=await Promise.all([
       customIds.length
         ?window.supabaseClient.from("program_entries")
@@ -14135,10 +14340,15 @@ const FLASH_GUIDE_DATA={
       window.supabaseClient.from("songs").select("id,name,artist"),
       legacyModules.length
         ?window.supabaseClient.from("roles").select("id,name,module,sort_order")
+        :emptyResult,
+      customIds.length
+        ?window.supabaseClient.from("program_data_items")
+          .select("id,label,column_id,program_id")
+          .in("program_id",customIds)
         :emptyResult
     ]);
 
-    for(const result of [customEntryResult,legacyServiceResult,volunteerResult,songResult,roleResult]){
+    for(const result of [customEntryResult,legacyServiceResult,volunteerResult,songResult,roleResult,dataItemsResult]){
       if(result.error)throw result.error;
     }
 
@@ -14179,6 +14389,7 @@ const FLASH_GUIDE_DATA={
     const volunteerMap=new Map(volunteers.map(v=>[v.id,v.name]));
     const songMap=new Map(songRows.map(s=>[s.id,s]));
     const roleMap=new Map(rolesRows.map(r=>[r.id,r]));
+    const dataItemMap=new Map((dataItemsResult?.data||[]).map(item=>[item.id,item.label]));
 
     const customEntryByProgramDate=new Map(
       customEntries.map(e=>[`${e.program_id}|${e.service_date}`,e])
@@ -14215,6 +14426,7 @@ const FLASH_GUIDE_DATA={
       if(column.field_type==="volunteer")return volunteerMap.get(value.volunteer_id)||"—";
       if(column.field_type==="song")return songMap.get(value.song_id)?.name||"—";
       if(column.field_type==="number")return value.number_value??"—";
+      if(column.field_type==="catalog")return dataItemMap.get(value.option_value)||"—";
       if(column.field_type==="list")return value.option_value||"—";
       return value.text_value||"—";
     }
@@ -14732,7 +14944,7 @@ const FLASH_GUIDE_DATA={
     `;
   }
 
-  function drawCustomProgramPoster(program,columns,entries,values,volunteersMap,songsMap){
+  function drawCustomProgramPoster(program,columns,entries,values,volunteersMap,songsMap,dataItemMap=new Map()){
     const canvas=document.getElementById("poster");
     if(!canvas)return;
     const ctx=canvas.getContext("2d");
@@ -14847,6 +15059,7 @@ const FLASH_GUIDE_DATA={
       if(column.field_type==="volunteer")return volunteersMap.get(val.volunteer_id)||"";
       if(column.field_type==="song")return songsMap.get(val.song_id)||"";
       if(column.field_type==="number")return val.number_value??"";
+      if(column.field_type==="catalog")return dataItemMap.get(val.option_value)||"";
       if(column.field_type==="list")return val.option_value||"";
       return val.text_value||"";
     }
@@ -15124,7 +15337,8 @@ const FLASH_GUIDE_DATA={
     const [
       {data:entries,error:e1},
       {data:vols,error:e2},
-      {data:songsRows,error:e3}
+      {data:songsRows,error:e3},
+      {data:dataItems,error:e4}
     ]=await Promise.all([
       window.supabaseClient.from("program_entries")
         .select("id,service_date,status")
@@ -15133,12 +15347,16 @@ const FLASH_GUIDE_DATA={
         .lt("service_date",range.end)
         .order("service_date"),
       window.supabaseClient.from("volunteers").select("id,name"),
-      window.supabaseClient.from("songs").select("id,name")
+      window.supabaseClient.from("songs").select("id,name"),
+      window.supabaseClient.from("program_data_items")
+        .select("id,label")
+        .eq("program_id",selectedId)
     ]);
 
     if(e1)throw e1;
     if(e2)throw e2;
     if(e3)throw e3;
+    if(e4)throw e4;
 
     if(!(entries||[]).length){
       throw new Error(`No hay programación de ${program.name} en este mes.`);
@@ -15161,7 +15379,8 @@ const FLASH_GUIDE_DATA={
       entries||[],
       values,
       new Map((vols||[]).map(v=>[v.id,v.name])),
-      new Map((songsRows||[]).map(s=>[s.id,s.name]))
+      new Map((songsRows||[]).map(s=>[s.id,s.name])),
+      new Map((dataItems||[]).map(item=>[item.id,item.label]))
     );
 
     imgType="custom";
@@ -15182,7 +15401,9 @@ const FLASH_GUIDE_DATA={
       unique_same_date:"No repetir en la misma fecha",
       avoid_consecutive:"Evitar fechas consecutivas",
       minimum_rest_days:"Días mínimos de descanso",
-      song_category_pattern:"Mezcla Rápida / Media / Lenta"
+      song_category_pattern:"Mezcla Rápida / Media / Lenta",
+      balance_catalog_items:"Balancear datos de lista propia",
+      avoid_catalog_consecutive:"Evitar repetir dato consecutivamente"
     }[type]||type;
   }
 
@@ -15214,7 +15435,9 @@ const FLASH_GUIDE_DATA={
                 ?` · ${escapeTeamHtml(column.name)}`
                 :(rule.rule_type==="song_category_pattern"
                   ?" · columnas de canciones"
-                  :" · todas las columnas de voluntarios")}
+                  :(["balance_catalog_items","avoid_catalog_consecutive"].includes(rule.rule_type)
+                    ?" · listas propias"
+                    :" · todas las columnas de voluntarios"))}
               ${rule.rule_type==="minimum_rest_days"?` · ${Number(config.days)||7} días`:""}
               ${rule.rule_type==="song_category_pattern"
                 ?` · ${(config.patterns||[]).map(p=>p.join(" + ")).join(" / ")}`
@@ -15253,9 +15476,14 @@ const FLASH_GUIDE_DATA={
 
     const syncRuleEditor=()=>{
       const songRule=programRuleType.value==="song_category_pattern";
-      programRuleColumn.innerHTML=`<option value="">${songRule?"Todas las columnas de canciones":"Todas las columnas de voluntarios"}</option>`;
+      const catalogRule=["balance_catalog_items","avoid_catalog_consecutive"].includes(programRuleType.value);
+      const targetType=songRule?"song":(catalogRule?"catalog":"volunteer");
+      const allLabel=songRule
+        ?"Todas las columnas de canciones"
+        :(catalogRule?"Todas las listas propias":"Todas las columnas de voluntarios");
+      programRuleColumn.innerHTML=`<option value="">${allLabel}</option>`;
       columnsFor(programId)
-        .filter(c=>c.field_type===(songRule?"song":"volunteer"))
+        .filter(c=>c.field_type===targetType)
         .forEach(c=>programRuleColumn.add(new Option(c.name,c.id)));
 
       if(rule?.column_id&&[...programRuleColumn.options].some(o=>o.value===rule.column_id)){
@@ -15332,6 +15560,169 @@ const FLASH_GUIDE_DATA={
     }
     await renderProgramSettings();
     if(activeCustomProgramId===programId)await loadActiveCustomProgram();
+  }
+
+
+  function catalogColumnsFor(programId){
+    return columnsFor(programId).filter(column=>column.field_type==="catalog");
+  }
+
+  function renderCustomProgramDataManager(){
+    if(!customProgramDataManager||!customProgramDataLists)return;
+    const program=activeProgram();
+    if(!program){
+      customProgramDataManager.style.display="none";
+      return;
+    }
+
+    const columns=catalogColumnsFor(program.id);
+    customProgramDataManager.style.display=columns.length?"block":"none";
+    if(!columns.length){
+      customProgramDataLists.innerHTML="";
+      return;
+    }
+
+    customProgramDataTitle.textContent=`Datos propios de ${program.name}`;
+    customProgramDataLists.innerHTML=columns.map(column=>{
+      const items=customDataItems
+        .filter(item=>item.column_id===column.id)
+        .sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)||a.label.localeCompare(b.label,"es"));
+
+      return `
+        <details class="programDataList" open>
+          <summary>
+            <span>${escapeTeamHtml(column.name)}</span>
+            <span class="muted">${items.filter(item=>item.active!==false).length} activos</span>
+          </summary>
+          <div class="programDataListBody">
+            ${teamEditor()?`<button class="btn primary" type="button" data-add-program-data="${column.id}">+ Añadir dato</button>`:""}
+            <div class="programDataItems">
+              ${items.map(item=>`
+                <div class="programDataItem ${item.active===false?"inactive":""}">
+                  <div>
+                    <strong>${escapeTeamHtml(item.label)}</strong>
+                    <span class="customVolunteerStatusBadge ${item.active===false?"inactive":"active"}">${item.active===false?"Inactivo":"Activo"}</span>
+                  </div>
+                  ${teamEditor()?`
+                    <div class="programDataItemActions">
+                      <button class="btn secondary" type="button" data-edit-program-data="${item.id}" data-column-id="${column.id}">Editar</button>
+                      <button class="btn secondary" type="button" data-toggle-program-data="${item.id}" data-next-active="${item.active===false?"true":"false"}">${item.active===false?"Activar":"Inactivar"}</button>
+                    </div>
+                  `:""}
+                </div>
+              `).join("")||`<div class="muted">Todavía no hay datos en esta lista.</div>`}
+            </div>
+          </div>
+        </details>
+      `;
+    }).join("");
+
+    customProgramDataLists.querySelectorAll("[data-add-program-data]").forEach(button=>{
+      button.addEventListener("click",()=>openProgramDataItemModal(button.dataset.addProgramData));
+    });
+
+    customProgramDataLists.querySelectorAll("[data-edit-program-data]").forEach(button=>{
+      button.addEventListener("click",()=>openProgramDataItemModal(
+        button.dataset.columnId,
+        {itemId:button.dataset.editProgramData}
+      ));
+    });
+
+    customProgramDataLists.querySelectorAll("[data-toggle-program-data]").forEach(button=>{
+      button.addEventListener("click",async()=>{
+        const next=button.dataset.nextActive==="true";
+        const {error}=await window.supabaseClient
+          .from("program_data_items")
+          .update({active:next,updated_at:new Date().toISOString()})
+          .eq("id",button.dataset.toggleProgramData);
+        if(error){
+          window.showAppToast?.("No se pudo cambiar el estado del dato.","error",1800);
+          return;
+        }
+        await loadActiveCustomProgram();
+      });
+    });
+  }
+
+  async function openProgramDataItemModal(columnId,opts={}){
+    const program=activeProgram();
+    const column=columnsFor(program?.id).find(c=>c.id===columnId);
+    if(!program||!column||column.field_type!=="catalog")return;
+
+    programDataTargetColumnId=columnId;
+    editingProgramDataItemId=opts.itemId||null;
+    pendingProgramDataCell=opts.pendingCell||null;
+
+    const item=editingProgramDataItemId
+      ? customDataItems.find(row=>row.id===editingProgramDataItemId)
+      : null;
+
+    programDataItemTitle.textContent=item?"Editar dato":"Añadir dato";
+    programDataItemMeta.textContent=`${program.name} · ${column.name}`;
+    programDataItemLabel.value=item?.label||"";
+    programDataItemActive.checked=item?.active!==false;
+
+    programDataItemModal.classList.add("open");
+    programDataItemModal.setAttribute("aria-hidden","false");
+    setTimeout(()=>programDataItemLabel.focus(),0);
+  }
+
+  function closeProgramDataItemModal(){
+    programDataItemModal?.classList.remove("open");
+    programDataItemModal?.setAttribute("aria-hidden","true");
+    programDataTargetColumnId=null;
+    editingProgramDataItemId=null;
+    pendingProgramDataCell=null;
+  }
+
+  async function saveProgramDataItem(){
+    const program=activeProgram();
+    const columnId=programDataTargetColumnId;
+    if(!program||!columnId)throw new Error("No se encontró la lista de datos.");
+
+    const label=programDataItemLabel.value.trim();
+    if(!label)throw new Error("Escribe un nombre.");
+
+    const payload={
+      team_id:window.currentTeam.id,
+      program_id:program.id,
+      column_id:columnId,
+      label,
+      active:programDataItemActive.checked,
+      updated_at:new Date().toISOString()
+    };
+
+    let itemId=editingProgramDataItemId;
+    if(itemId){
+      const {error}=await window.supabaseClient
+        .from("program_data_items")
+        .update(payload)
+        .eq("id",itemId);
+      if(error)throw error;
+    }else{
+      const {data,error}=await window.supabaseClient
+        .from("program_data_items")
+        .insert(payload)
+        .select("id")
+        .single();
+      if(error)throw error;
+      itemId=data.id;
+    }
+
+    const pending=pendingProgramDataCell;
+    closeProgramDataItemModal();
+
+    if(pending){
+      await saveCustomCell(
+        pending.entry,
+        pending.column,
+        itemId,
+        pending.locked
+      );
+    }
+
+    await loadActiveCustomProgram();
+    window.showAppToast?.("Dato guardado en esta programación.","success",1100);
   }
 
   function selectedVolunteerProgram(){
@@ -15469,7 +15860,7 @@ const FLASH_GUIDE_DATA={
           window.showAppToast?.("No se pudo cambiar el estado.","error",1800);
           return;
         }
-        await refreshCustomVolunteerTeam(programId,listContainer);
+        await refreshProgramVolunteerViews(programId);
         if(activeCustomProgramId===programId)await loadActiveCustomProgram();
       });
     });
@@ -15484,6 +15875,7 @@ const FLASH_GUIDE_DATA={
     const program=customPrograms.find(p=>p.id===programId);
     if(!program)return;
 
+    programVolunteerTargetProgramId=programId;
     pendingVolunteerCell=opts.pendingCell||null;
     editingProgramVolunteerMembershipId=opts.membershipId||null;
 
@@ -15545,6 +15937,7 @@ const FLASH_GUIDE_DATA={
     programVolunteerModal.setAttribute("aria-hidden","true");
     pendingVolunteerCell=null;
     editingProgramVolunteerMembershipId=null;
+    programVolunteerTargetProgramId=null;
   }
 
   async function resolveVolunteerIdForMembership(){
@@ -15576,8 +15969,23 @@ const FLASH_GUIDE_DATA={
     return created.id;
   }
 
+
+  async function refreshProgramVolunteerViews(programId){
+    const containers=[
+      ...document.querySelectorAll(`[data-custom-volunteer-list="${programId}"]`)
+    ];
+    if(customVolunteerProgramSelect?.value===programId&&customVolunteerProgramList){
+      containers.push(customVolunteerProgramList);
+    }
+    const unique=[...new Set(containers)];
+    if(!unique.length)return;
+    await Promise.all(unique.map(container=>
+      refreshCustomVolunteerTeam(programId,container).catch(error=>console.error(error))
+    ));
+  }
+
   async function saveProgramVolunteerMembership(){
-    const programId=volunteerTeamProgramId||activeCustomProgramId;
+    const programId=programVolunteerTargetProgramId||activeCustomProgramId;
     const program=customPrograms.find(p=>p.id===programId);
     if(!program)throw new Error("No se encontró la programación.");
 
@@ -15613,9 +16021,9 @@ const FLASH_GUIDE_DATA={
     }
 
     closeProgramVolunteerModal();
-    await refreshCustomVolunteerTeam(programId);
+    await refreshProgramVolunteerViews(programId);
     if(activeCustomProgramId===programId)await loadActiveCustomProgram();
-    window.showAppToast?.("Voluntario añadido al equipo de la programación.","success",1300);
+    window.showAppToast?.("Voluntario añadido únicamente a esta programación.","success",1300);
   }
 
   async function removeProgramVolunteer(programId,membershipId){
@@ -15662,7 +16070,7 @@ const FLASH_GUIDE_DATA={
     if(column.field_type==="volunteer")return !!row.volunteer_id;
     if(column.field_type==="song")return !!row.song_id;
     if(column.field_type==="number")return row.number_value!==null&&row.number_value!==undefined;
-    if(column.field_type==="list")return !!row.option_value;
+    if(column.field_type==="list"||column.field_type==="catalog")return !!row.option_value;
     return !!String(row.text_value||"").trim();
   }
 
@@ -15777,7 +16185,7 @@ const FLASH_GUIDE_DATA={
         const row=valueMap.get(`${entry.id}|${col.id}`);
         if(row){
           const key=col.field_type==="song"?row.song_id:
-                    col.field_type==="list"?row.option_value:null;
+                    (col.field_type==="list"||col.field_type==="catalog")?row.option_value:null;
           if(key)counts.set(`${col.id}|${key}`,(counts.get(`${col.id}|${key}`)||0)+1);
         }
       });
@@ -15793,6 +16201,9 @@ const FLASH_GUIDE_DATA={
         })):
         col.field_type==="song"?customRefSongs.map(s=>({id:s.id,label:s.name,category:s.category||"Media"})):
         col.field_type==="list"?(safeOptions(col.options).choices||[]).map(x=>({id:x,label:x})):
+        col.field_type==="catalog"?customDataItems
+          .filter(item=>item.column_id===col.id&&item.active!==false)
+          .map(item=>({id:item.id,label:item.label})):
         [];
 
       if(!choices.length)continue;
@@ -15804,7 +16215,7 @@ const FLASH_GUIDE_DATA={
         if(!rebalance&&hasValue(current,col)){
           previous=col.field_type==="volunteer"?current.volunteer_id:
                    col.field_type==="song"?current.song_id:
-                   col.field_type==="list"?current.option_value:null;
+                   (col.field_type==="list"||col.field_type==="catalog")?current.option_value:null;
           continue;
         }
 
@@ -15902,6 +16313,14 @@ const FLASH_GUIDE_DATA={
               const bConsecutive=b.avoid&&b.id===previous?1:0;
               if(aConsecutive!==bConsecutive)return aConsecutive-bConsecutive;
             }
+          }else if(col.field_type==="catalog"){
+            const ac=counts.get(`${col.id}|${a.id}`)||0;
+            const bc=counts.get(`${col.id}|${b.id}`)||0;
+            if(hasRule("balance_catalog_items",col.id)&&ac!==bc)return ac-bc;
+            if(hasRule("avoid_catalog_consecutive",col.id)){
+              if(a.id===previous)return 1;
+              if(b.id===previous)return -1;
+            }
           }else{
             const ac=counts.get(`${col.id}|${a.id}`)||0;
             const bc=counts.get(`${col.id}|${b.id}`)||0;
@@ -15928,7 +16347,7 @@ const FLASH_GUIDE_DATA={
         };
         if(col.field_type==="volunteer")payload.volunteer_id=pick.id;
         else if(col.field_type==="song")payload.song_id=pick.id;
-        else if(col.field_type==="list")payload.option_value=pick.id;
+        else if(col.field_type==="list"||col.field_type==="catalog")payload.option_value=pick.id;
         else continue;
 
         payloads.push(payload);
@@ -16085,6 +16504,17 @@ const FLASH_GUIDE_DATA={
       window.showAppToast?.(error?.message||"No se pudo crear la programación.","error",2200);
     }finally{
       bandTemplateOptionsCreate.disabled=false;
+    }
+  });
+
+  document.getElementById("programDataItemCancel")?.addEventListener("click",closeProgramDataItemModal);
+  programDataItemForm?.addEventListener("submit",async event=>{
+    event.preventDefault();
+    try{
+      await saveProgramDataItem();
+    }catch(error){
+      console.error(error);
+      window.showAppToast?.(error.message||"No se pudo guardar el dato.","error",2000);
     }
   });
 
