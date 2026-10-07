@@ -6093,7 +6093,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 
 </head>
 <!-- Flash Program V79 - Inicio correcto + selector de plantillas + render único -->
-<!-- Flash Program V85 - permisos equipo + maximo estricto + inicio movil + configurar legacy -->
+<!-- Flash Program V86 - fix crear programaciones + desde cero sin recarga -->
 <body class="readonly-mode">
 
 <div id="appLoadingScreen">
@@ -13381,39 +13381,16 @@ const FLASH_GUIDE_DATA={
   function renderTemplateChooser(){
     if(!templateChooserList)return;
     templateChooserList.innerHTML=PROGRAM_TEMPLATES.map(template=>`
-      <button class="programTemplateChoice" type="button" data-template-choice="${template.key}">
+      <button
+        class="programTemplateChoice"
+        type="button"
+        data-template-choice="${template.key}"
+      >
         <strong>${escapeTeamHtml(template.name)}</strong>
         <span class="muted">${escapeTeamHtml(template.description)}</span>
         <span class="programTemplateChoiceBadge">${template.key==="blank"?"Desde cero":"Plantilla"}</span>
       </button>
     `).join("");
-
-    templateChooserList.querySelectorAll("[data-template-choice]").forEach(button=>{
-      button.addEventListener("click",async()=>{
-        const key=button.dataset.templateChoice;
-        closeProgramTemplateChooser();
-
-        if(key==="blank"){
-          openProgramBuilder(null);
-          return;
-        }
-
-        if(key==="band"||key==="youth-band"){
-          openBandTemplateOptions(key);
-          return;
-        }
-
-        button.disabled=true;
-        try{
-          await createProgramFromTemplate(key);
-        }catch(error){
-          console.error(error);
-          window.showAppToast?.(error?.message||"No se pudo crear la programación.","error",2200);
-        }finally{
-          button.disabled=false;
-        }
-      });
-    });
   }
 
   function openProgramTemplateChooser(){
@@ -13538,7 +13515,7 @@ const FLASH_GUIDE_DATA={
   }
 
 
-  async function createProgramStructureV84({
+  async function createProgramStructureV86({
     name,
     description=null,
     weekdays=[],
@@ -13547,56 +13524,66 @@ const FLASH_GUIDE_DATA={
     functions=[],
     columns=[]
   }){
-    const payloadFunctions=functions.map((fn,index)=>({
-      ref:fn.ref||fn.key||`fn-${index}`,
-      name:fn.name,
-      source_type:fn.source_type||"volunteer",
-      emoji:fn.emoji||null,
-      render_group:fn.render_group||"responsibles",
-      group_in_render:fn.group_in_render!==false,
-      capabilities:safeOptions(fn.capabilities),
-      sort_order:Number.isFinite(fn.sort_order)?fn.sort_order:index
-    }));
+    if(!window.currentTeam?.id){
+      throw new Error("No se encontró el equipo actual.");
+    }
+    if(!teamAdmin()){
+      throw new Error("Solo el Administrador puede crear programaciones.");
+    }
 
-    const payloadColumns=columns.map((column,index)=>({
-      name:column.name,
-      field_type:column.field_type||"volunteer",
-      function_ref:column.function_ref||column.function_key||null,
-      sort_order:Number.isFinite(column.sort_order)?column.sort_order:index,
-      required:column.required===true,
-      fill_enabled:column.fill_enabled!==false,
-      rebalance_enabled:column.rebalance_enabled!==false,
-      lockable:column.lockable!==false,
-      options:safeOptions(column.options)
-    }));
+    const payload={
+      name,
+      description,
+      weekdays,
+      template_key:templateKey,
+      capabilities,
+      functions:functions.map((fn,index)=>({
+        ref:fn.ref||fn.key||`fn-${index}`,
+        name:fn.name,
+        source_type:fn.source_type||"volunteer",
+        emoji:fn.emoji||null,
+        render_group:fn.render_group||"responsibles",
+        group_in_render:fn.group_in_render!==false,
+        capabilities:safeOptions(fn.capabilities),
+        sort_order:Number.isFinite(fn.sort_order)?fn.sort_order:index
+      })),
+      columns:columns.map((column,index)=>({
+        name:column.name,
+        field_type:column.field_type||"volunteer",
+        function_ref:column.function_ref||column.function_key||null,
+        sort_order:Number.isFinite(column.sort_order)?column.sort_order:index,
+        required:column.required===true,
+        fill_enabled:column.fill_enabled!==false,
+        rebalance_enabled:column.rebalance_enabled!==false,
+        lockable:column.lockable!==false,
+        options:safeOptions(column.options)
+      }))
+    };
 
     const {data,error}=await window.supabaseClient.rpc(
-      "create_program_structure_v85",
+      "create_program_structure_v86",
       {
         p_team_id:window.currentTeam.id,
-        p_name:name,
-        p_description:description,
-        p_weekdays:weekdays,
-        p_template_key:templateKey,
-        p_capabilities:capabilities,
-        p_functions:payloadFunctions,
-        p_columns:payloadColumns
+        p_payload:payload
       }
     );
 
     if(error){
       const msg=String(error.message||error);
-      if(/create_program_structure_v85|function .* does not exist|schema cache/i.test(msg)){
-        throw new Error("Falta ejecutar el SQL V85 en Supabase antes de crear programaciones.");
+      if(/create_program_structure_v86|function .* does not exist|schema cache/i.test(msg)){
+        throw new Error("Falta ejecutar el SQL V86 en Supabase antes de crear programaciones.");
       }
-      throw error;
+      throw new Error(msg||"No se pudo crear la programación.");
     }
 
     const programId=typeof data==="string"
       ?data
       :(Array.isArray(data)?data[0]:data?.id||data);
 
-    if(!programId)throw new Error("Supabase no devolvió el ID de la programación creada.");
+    if(!programId){
+      throw new Error("Supabase no devolvió el ID de la programación creada.");
+    }
+
     return programId;
   }
 
@@ -13676,7 +13663,7 @@ const FLASH_GUIDE_DATA={
       }
     }));
 
-    const programId=await createProgramStructureV84({
+    const programId=await createProgramStructureV86({
       name:nextAvailableProgramName(template.name),
       description:`Creada desde la plantilla ${template.name}`,
       weekdays:template.weekdays||[],
@@ -13698,6 +13685,7 @@ const FLASH_GUIDE_DATA={
     updateEmptyTeamExperience();
     window.showAppToast?.(`Programación creada desde ${template.name}.`,"success",1300);
     await openCustomProgram(programId);
+    return programId;
   }
 
   function teamAdmin(){
@@ -15014,6 +15002,7 @@ const FLASH_GUIDE_DATA={
 
   function openProgramBuilder(programId=null){
     closeProgramCreationOverlays();
+    closeProgramTemplateChooser();
     if(!teamAdmin()){
       window.showAppToast?.("Solo el Administrador puede cambiar la estructura de una programación.","error",1800);
       return;
@@ -15115,7 +15104,7 @@ const FLASH_GUIDE_DATA={
     let programId=builderEditingProgramId;
 
     if(!programId){
-      programId=await createProgramStructureV84({
+      programId=await createProgramStructureV86({
         name:definition.name,
         description:definition.description,
         weekdays:definition.weekdays,
@@ -18001,8 +17990,8 @@ const FLASH_GUIDE_DATA={
     window.activateAppPanel("programs","Programación");
     setTimeout(()=>programTemplateOnboarding?.scrollIntoView({behavior:"smooth",block:"start"}),50);
   });
-  homeCreateBlankProgram?.addEventListener("click",()=>{
-    window.activateAppPanel("programs","Programación");
+  homeCreateBlankProgram?.addEventListener("click",event=>{
+    event.preventDefault();
     closeProgramCreationOverlays();
     openProgramBuilder(null);
   });
@@ -18075,6 +18064,60 @@ const FLASH_GUIDE_DATA={
   deleteProgramWithVolunteers?.addEventListener("click",()=>finalizeProgramDeletion("with-volunteers"));
 
   templateChooserCancel?.addEventListener("click",closeProgramTemplateChooser);
+
+  // Un solo controlador para las plantillas.
+  // Captura el clic y evita cualquier submit/navegación accidental.
+  templateChooserList?.addEventListener("click",async event=>{
+    const button=event.target.closest("[data-template-choice]");
+    if(!button)return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const key=button.dataset.templateChoice;
+    if(!key)return;
+
+    if(key==="blank"){
+      closeProgramTemplateChooser();
+      requestAnimationFrame(()=>{
+        try{
+          openProgramBuilder(null);
+        }catch(error){
+          console.error("Error abriendo constructor desde cero:",error);
+          window.showAppToast?.(
+            error?.message||"No se pudo abrir el constructor.",
+            "error",
+            2600
+          );
+        }
+      });
+      return;
+    }
+
+    if(key==="band"||key==="youth-band"){
+      closeProgramTemplateChooser();
+      requestAnimationFrame(()=>openBandTemplateOptions(key));
+      return;
+    }
+
+    button.disabled=true;
+    try{
+      closeProgramTemplateChooser();
+      const programId=await createProgramFromTemplate(key);
+      if(programId){
+        window.showAppToast?.("Programación creada.","success",1200);
+      }
+    }catch(error){
+      console.error(error);
+      window.showAppToast?.(
+        error?.message||"No se pudo crear la programación.",
+        "error",
+        3200
+      );
+    }finally{
+      button.disabled=false;
+    }
+  });
   bandTemplateOptionsCancel?.addEventListener("click",closeBandTemplateOptions);
   bandTemplateOptionsCreate?.addEventListener("click",async()=>{
     const key=pendingBandTemplateKey;
@@ -18114,10 +18157,6 @@ const FLASH_GUIDE_DATA={
     }
   });
 
-  createBtn?.addEventListener("click",()=>{
-    closeProgramCreationOverlays();
-    openProgramTemplateChooser();
-  });
   document.getElementById("backToPrograms")?.addEventListener("click",()=>window.activateAppPanel("programs","Programación"));
   editStructureBtn?.addEventListener("click",()=>openProgramBuilder(activeCustomProgramId));
   document.getElementById("addProgramFunction")?.addEventListener("click",()=>{
@@ -18132,6 +18171,13 @@ const FLASH_GUIDE_DATA={
   });
   document.getElementById("addProgramColumn")?.addEventListener("click",()=>addBuilderColumn({name:"Nueva columna",field_type:"volunteer"}));
   document.getElementById("programBuilderCancel")?.addEventListener("click",closeProgramBuilder);
+  // Protección adicional: este formulario nunca debe recargar/navegar la página.
+  document.addEventListener("submit",event=>{
+    if(event.target?.id==="programBuilderForm"){
+      event.preventDefault();
+    }
+  },true);
+
   builderForm?.addEventListener("submit",async e=>{
     e.preventDefault();
     try{
@@ -18139,10 +18185,10 @@ const FLASH_GUIDE_DATA={
     }catch(error){
       console.error(error);
       const message=String(error?.message||"");
-      const schemaMissing=/create_program_structure_v85|program_functions|function_id|schema cache|does not exist/i.test(message);
+      const schemaMissing=/create_program_structure_v86|program_functions|function_id|schema cache|does not exist/i.test(message);
       window.showAppToast?.(
         schemaMissing
-          ?"Falta ejecutar el SQL V85 en Supabase antes de crear programaciones."
+          ?"Falta ejecutar el SQL V86 en Supabase antes de crear programaciones."
           :(message||"No se pudo guardar la programación."),
         "error",
         3600
@@ -18168,9 +18214,10 @@ const FLASH_GUIDE_DATA={
     const target=event.target.closest("#createCustomProgramBtn,.mobileCreateProgram");
     if(!target)return;
     event.preventDefault();
+    event.stopPropagation();
     closeProgramCreationOverlays();
     openProgramTemplateChooser();
-  });
+  },true);
 
   // Dynamic mobile program menu handles custom items too.
   document.getElementById("mobileProgramBtn")?.addEventListener("click",()=>renderMobileProgramList());
@@ -18203,22 +18250,6 @@ const FLASH_GUIDE_DATA={
 </script>
 
 
-<script id="v75-create-program-emergency-handler">
-(()=>{
-  document.addEventListener("click",event=>{
-    const button=event.target.closest("#createCustomProgramBtn,.mobileCreateProgram");
-    if(!button)return;
-
-    if(typeof window.openProgramTemplateChooser==="function"){
-      event.preventDefault();
-      window.openProgramTemplateChooser();
-    }else if(typeof window.openProgramBuilder==="function"){
-      event.preventDefault();
-      window.openProgramBuilder(null);
-    }
-  },true);
-})();
-</script>
 
 </body>
 </html>
