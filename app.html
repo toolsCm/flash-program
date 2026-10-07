@@ -6093,7 +6093,7 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 
 </head>
 <!-- Flash Program V79 - Inicio correcto + selector de plantillas + render único -->
-<!-- Flash Program V86 - fix crear programaciones + desde cero sin recarga -->
+<!-- Flash Program V87 - fix boton crear programacion -->
 <body class="readonly-mode">
 
 <div id="appLoadingScreen">
@@ -15277,6 +15277,91 @@ const FLASH_GUIDE_DATA={
     deleteProgramModeModal.setAttribute("aria-hidden","false");
   }
 
+  function closeDeleteProgramModeModal(){
+    deleteProgramModeModal?.classList.remove("open");
+    deleteProgramModeModal?.setAttribute("aria-hidden","true");
+    pendingDeleteProgramId=null;
+  }
+
+  async function finalizeProgramDeletion(mode="keep-volunteers"){
+    const programId=pendingDeleteProgramId;
+    if(!programId)return;
+
+    const program=customPrograms.find(p=>p.id===programId);
+    if(!program)return;
+
+    deleteProgramKeepVolunteers && (deleteProgramKeepVolunteers.disabled=true);
+    deleteProgramWithVolunteers && (deleteProgramWithVolunteers.disabled=true);
+
+    try{
+      let volunteerIds=[];
+
+      if(mode==="with-volunteers"){
+        const {data,error}=await window.supabaseClient
+          .from("program_volunteers")
+          .select("volunteer_id")
+          .eq("program_id",programId);
+
+        if(error)throw error;
+        volunteerIds=[...new Set((data||[]).map(row=>row.volunteer_id).filter(Boolean))];
+      }
+
+      // Eliminar la programación. Las tablas hijas usan cascada.
+      const {error:deleteError}=await window.supabaseClient
+        .from("program_definitions")
+        .delete()
+        .eq("id",programId);
+
+      if(deleteError)throw deleteError;
+
+      // Si el usuario pidió eliminar voluntarios exclusivos, solo se intenta
+      // borrar a quienes ya no pertenecen a otra programación.
+      if(mode==="with-volunteers"&&volunteerIds.length){
+        for(const volunteerId of volunteerIds){
+          const {data:remaining,error:remainingError}=await window.supabaseClient
+            .from("program_volunteers")
+            .select("id")
+            .eq("volunteer_id",volunteerId)
+            .limit(1);
+
+          if(remainingError){
+            console.warn("No se pudo verificar voluntario exclusivo:",remainingError);
+            continue;
+          }
+
+          if((remaining||[]).length)continue;
+
+          // Si existen referencias históricas u otras dependencias,
+          // Supabase rechazará el borrado y el voluntario se conserva.
+          const {error:volunteerDeleteError}=await window.supabaseClient
+            .from("volunteers")
+            .delete()
+            .eq("id",volunteerId);
+
+          if(volunteerDeleteError){
+            console.warn("Voluntario conservado por referencias existentes:",volunteerDeleteError);
+          }
+        }
+      }
+
+      closeDeleteProgramModeModal();
+      closeProgramBuilder();
+      activeCustomProgramId=null;
+      await loadProgramDefinitions();
+      window.activateAppPanel("programs","Programación");
+      window.showAppToast?.(
+        mode==="with-volunteers"
+          ?"Programación eliminada. Los voluntarios con otras referencias fueron conservados."
+          :"Programación eliminada. Los voluntarios fueron conservados.",
+        "success",
+        1800
+      );
+    }finally{
+      if(deleteProgramKeepVolunteers)deleteProgramKeepVolunteers.disabled=false;
+      if(deleteProgramWithVolunteers)deleteProgramWithVolunteers.disabled=false;
+    }
+  }
+
 
   function customProgramById(id){
     return customPrograms.find(p=>p.id===id)||null;
@@ -17966,6 +18051,21 @@ const FLASH_GUIDE_DATA={
 
 
   // Events
+
+  // CRÍTICO: registrar la creación primero.
+  // Así, aunque otro módulo secundario tenga un error, Crear programación
+  // permanece operativo.
+  const openCreateProgramChooserFromEvent=event=>{
+    const target=event.target.closest("#createCustomProgramBtn,.mobileCreateProgram");
+    if(!target)return;
+    event.preventDefault();
+    event.stopPropagation();
+    closeProgramCreationOverlays();
+    openProgramTemplateChooser();
+  };
+
+  document.addEventListener("click",openCreateProgramChooserFromEvent,true);
+
   document.querySelectorAll(".legacyBackToPrograms").forEach(button=>{
     button.addEventListener("click",()=>window.activateAppPanel("programs","Programación"));
   });
@@ -18207,17 +18307,6 @@ const FLASH_GUIDE_DATA={
   document.getElementById("customProgramRebalance")?.addEventListener("click",()=>autoFillCustomProgram(true).catch(console.error));
   document.getElementById("customProgramAddService")?.addEventListener("click",()=>addCustomService().catch(console.error));
   document.getElementById("customProgramConfirm")?.addEventListener("click",()=>confirmCustomProgram().catch(console.error));
-
-  // Respaldo: cualquier botón de creación que sea regenerado dinámicamente
-  // sigue abriendo el constructor.
-  document.addEventListener("click",event=>{
-    const target=event.target.closest("#createCustomProgramBtn,.mobileCreateProgram");
-    if(!target)return;
-    event.preventDefault();
-    event.stopPropagation();
-    closeProgramCreationOverlays();
-    openProgramTemplateChooser();
-  },true);
 
   // Dynamic mobile program menu handles custom items too.
   document.getElementById("mobileProgramBtn")?.addEventListener("click",()=>renderMobileProgramList());
