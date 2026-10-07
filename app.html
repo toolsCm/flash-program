@@ -5826,9 +5826,40 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 }
 </style>
 
+
+<style id="v82-stable-band-engine">
+.programColumnSemanticWrap{display:none}
+.programColumnRow[data-show-semantic="1"] .programColumnSemanticWrap{display:block}
+.programColumnSemanticWrap .muted{margin-top:.3rem;font-size:.72rem}
+.programVolunteerBandRoles{
+  display:grid;grid-template-columns:1fr;gap:.75rem;padding:.75rem;
+  border:1px solid var(--line);border-radius:.7rem;background:var(--panel2)
+}
+.programVolunteerSecondaryRoles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem}
+.programVolunteerSecondaryRoles label{
+  min-height:2.4rem;display:flex!important;align-items:center;gap:.45rem;margin:0!important;
+  padding:.45rem .55rem;border:1px solid var(--line);border-radius:.55rem;background:var(--panel)
+}
+.programVolunteerSecondaryRoles input{width:1rem!important;height:1rem!important;min-height:0!important}
+.programVolunteerRoleLine{margin-top:.3rem;font-size:.76rem;color:var(--muted)}
+.deleteProgramModeCard{width:min(38rem,94vw)!important}
+.deleteProgramModeBody{display:grid;gap:.65rem;padding:.9rem 1.05rem}
+.deleteProgramChoice{
+  width:100%;text-align:left;display:grid;gap:.3rem;padding:.9rem;border:1px solid var(--line);
+  border-radius:.75rem;background:var(--panel2);color:inherit;cursor:pointer
+}
+.deleteProgramChoice:hover,.deleteProgramChoice:focus-visible{
+  outline:none;border-color:color-mix(in srgb,var(--accent) 65%,var(--line))
+}
+.deleteProgramChoice strong{font-size:.95rem}
+.deleteProgramChoice span{font-size:.78rem;color:var(--muted);line-height:1.4}
+.deleteProgramChoice.dangerChoice{border-color:color-mix(in srgb,#ef4444 45%,var(--line))}
+@media(max-width:47.5rem){.programVolunteerSecondaryRoles{grid-template-columns:1fr}}
+</style>
+
 </head>
 <!-- Flash Program V79 - Inicio correcto + selector de plantillas + render único -->
-<!-- Flash Program V81 - Voluntarios aislados + listas propias -->
+<!-- Flash Program V82 - Semántica estable Banda + reglas completas + borrado seguro -->
 <body class="readonly-mode">
 
 <div id="appLoadingScreen">
@@ -6793,6 +6824,34 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 </div>
 
 
+
+<div id="deleteProgramModeModal" class="modalBackdrop" aria-hidden="true">
+  <div class="modalCard deleteProgramModeCard" role="dialog" aria-modal="true" aria-labelledby="deleteProgramModeTitle">
+    <div class="modalHeader">
+      <div>
+        <h2 id="deleteProgramModeTitle">Eliminar programación</h2>
+        <div id="deleteProgramModeMeta" class="muted"></div>
+      </div>
+    </div>
+
+    <div class="deleteProgramModeBody">
+      <button id="deleteProgramKeepVolunteers" class="deleteProgramChoice" type="button">
+        <strong>Eliminar solo la programación</strong>
+        <span>Conserva los voluntarios en la base general para reutilizarlos después en otra programación.</span>
+      </button>
+
+      <button id="deleteProgramWithVolunteers" class="deleteProgramChoice dangerChoice" type="button">
+        <strong>Eliminar programación y voluntarios exclusivos</strong>
+        <span>También intenta eliminar a quienes solo pertenecen a esta programación. Si alguien está usado en otra programación, canciones o historial, se conserva por seguridad.</span>
+      </button>
+    </div>
+
+    <div class="modalActions">
+      <button id="deleteProgramModeCancel" class="btn secondary" type="button">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <div id="bandTemplateOptionsModal" class="modalBackdrop" aria-hidden="true">
   <div class="modalCard bandTemplateOptionsCard" role="dialog" aria-modal="true" aria-labelledby="bandTemplateOptionsTitle">
     <div class="modalHeader">
@@ -6929,6 +6988,17 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
         <div id="programVolunteerNewNameWrap">
           <label>Nombre del voluntario</label>
           <input id="programVolunteerNewName" maxlength="90" placeholder="Nombre completo">
+        </div>
+
+        <div id="programVolunteerBandRoles" class="programVolunteerBandRoles" style="display:none">
+          <div>
+            <label>Función principal</label>
+            <select id="programVolunteerPrimaryRole"></select>
+          </div>
+          <div>
+            <label>También puede servir en</label>
+            <div id="programVolunteerSecondaryRoles" class="programVolunteerSecondaryRoles"></div>
+          </div>
         </div>
 
         <div class="programVolunteerRules">
@@ -12790,6 +12860,7 @@ const FLASH_GUIDE_DATA={
   let programDataTargetColumnId=null;
   let editingProgramDataItemId=null;
   let pendingProgramDataCell=null;
+  let pendingDeleteProgramId=null;
   let pendingBandTemplateKey=null;
   let editingProgramVolunteerMembershipId=null;
   let pendingVolunteerCell=null;
@@ -12853,6 +12924,16 @@ const FLASH_GUIDE_DATA={
   const programVolunteerMin=document.getElementById("programVolunteerMin");
   const programVolunteerMax=document.getElementById("programVolunteerMax");
   const programVolunteerAvoid=document.getElementById("programVolunteerAvoid");
+  const programVolunteerBandRoles=document.getElementById("programVolunteerBandRoles");
+  const programVolunteerPrimaryRole=document.getElementById("programVolunteerPrimaryRole");
+  const programVolunteerSecondaryRoles=document.getElementById("programVolunteerSecondaryRoles");
+
+  const deleteProgramModeModal=document.getElementById("deleteProgramModeModal");
+  const deleteProgramModeMeta=document.getElementById("deleteProgramModeMeta");
+  const deleteProgramKeepVolunteers=document.getElementById("deleteProgramKeepVolunteers");
+  const deleteProgramWithVolunteers=document.getElementById("deleteProgramWithVolunteers");
+  const deleteProgramModeCancel=document.getElementById("deleteProgramModeCancel");
+
   const customVolunteerAccordions=document.getElementById("customVolunteerAccordions");
   const customAvailabilityAccordions=document.getElementById("customAvailabilityAccordions");
   const customProgramColumnLocks=document.getElementById("customProgramColumnLocks");
@@ -13139,33 +13220,44 @@ const FLASH_GUIDE_DATA={
         const teclados=Math.max(0, Number(templateOptions.teclados ?? 1));
         const guitarras=Math.max(0, Number(templateOptions.guitarras ?? 2));
         const canciones=Math.max(1, Number(templateOptions.canciones ?? (template.key==="youth-band"?3:4)));
-        const list=[["Voz principal","volunteer"]];
-        for(let i=1;i<=coros;i++)list.push([`Coros ${i}`,"volunteer"]);
+        const list=[["Voz principal","volunteer",{semantic_role:"lead",semantic_slot:1}]];
+        for(let i=1;i<=coros;i++)list.push([`Coros ${i}`,"volunteer",{semantic_role:"chorus",semantic_slot:i}]);
         if(teclados<=1){
-          if(teclados===1)list.push(["Piano","volunteer"]);
+          if(teclados===1)list.push(["Piano","volunteer",{semantic_role:"keys",semantic_slot:1}]);
         }else{
-          for(let i=1;i<=teclados;i++)list.push([`Teclado ${i}`,"volunteer"]);
+          for(let i=1;i<=teclados;i++)list.push([`Teclado ${i}`,"volunteer",{semantic_role:"keys",semantic_slot:i}]);
         }
-        for(let i=1;i<=guitarras;i++)list.push([`Guitarra ${i}`,"volunteer"]);
-        list.push(["Bajo","volunteer"],["Batería","volunteer"]);
-        for(let i=1;i<=canciones;i++)list.push([`Canción ${i}`,"song"]);
+        for(let i=1;i<=guitarras;i++)list.push([`Guitarra ${i}`,"volunteer",{semantic_role:"guitar",semantic_slot:i}]);
+        list.push(
+          ["Bajo","volunteer",{semantic_role:"bass",semantic_slot:1}],
+          ["Batería","volunteer",{semantic_role:"drums",semantic_slot:1}]
+        );
+        for(let i=1;i<=canciones;i++)list.push([`Canción ${i}`,"song",{semantic_role:"song",semantic_slot:i}]);
         return list;
       })()
       :template.columns;
 
-    const columns=resolvedColumns.map(([name,field_type],index)=>({
-      team_id:window.currentTeam.id,
-      program_id:program.id,
-      name,
-      field_type,
-      sort_order:index,
-      required:false,
-      fill_enabled:true,
-      rebalance_enabled:true,
-      lockable:true,
-      options:{},
-      updated_at:new Date().toISOString()
-    }));
+    const columns=resolvedColumns.map(([name,field_type,sourceOptions],index)=>{
+      const inferredRole=sourceOptions?.semantic_role||
+        (template.key==="media"?inferSemanticRoleFromName(name,field_type):"");
+      return {
+        team_id:window.currentTeam.id,
+        program_id:program.id,
+        name,
+        field_type,
+        sort_order:index,
+        required:false,
+        fill_enabled:true,
+        rebalance_enabled:true,
+        lockable:true,
+        options:{
+          ...(sourceOptions||{}),
+          ...(inferredRole?{semantic_role:inferredRole}:{}),
+          template_key:template.key
+        },
+        updated_at:new Date().toISOString()
+      };
+    });
 
     if(columns.length){
       const {error:columnError}=await window.supabaseClient.from("program_columns").insert(columns);
@@ -13200,56 +13292,93 @@ const FLASH_GUIDE_DATA={
     return ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"][Number(day)]||"";
   }
 
-  function templateRoleLabel(template,name){
-    const clean=String(name||"");
-    if(["band","youth-band"].includes(template)){
-      if(/^Voz principal$/i.test(clean))return `${clean} 🎙️`;
-      if(/^Coros(?:\s+\d+)?$/i.test(clean))return `${clean} 🎤`;
-      if(/^(Piano|Teclado(?:s)?(?:\s+\d+)?)$/i.test(clean))return `${clean} 🎹`;
-      if(/^Guitarra(?:\s+\d+)?$/i.test(clean))return `${clean} 🎸`;
-      if(/^Bajo$/i.test(clean))return `${clean} 🪕`;
-      if(/^Bater[ií]a$/i.test(clean))return `${clean} 🥁`;
-    }
-    if(template==="media"){
-      if(/^PC$/i.test(clean))return `${clean} 💻`;
-      if(/^C[aá]mara$/i.test(clean))return `${clean} 🎥`;
-      if(/^Diapositivas$/i.test(clean))return `⏹️ Diapositivas`;
-    }
-    return clean;
-  }
-
-  function normalizeTemplateRoleKey(name){
+  function inferSemanticRoleFromName(name,fieldType="volunteer"){
     const clean=String(name||"").trim();
-    if(/^Voz principal$/i.test(clean))return "Voz principal";
-    if(/^Coros?(?:\s+\d+)?$/i.test(clean))return "Coros";
-    if(/^(Piano|Teclado(?:s)?(?:\s+\d+)?)$/i.test(clean))return "Teclados";
-    if(/^Guitarra(?:\s+\d+)?$/i.test(clean))return "Guitarras";
-    if(/^Bajo$/i.test(clean))return "Bajo";
-    if(/^Bater[ií]a$/i.test(clean))return "Batería";
-    return clean;
+    if(fieldType==="song"||/^(canci[oó]n|song)(?:\s+\d+)?$/i.test(clean))return "song";
+    if(/^voz principal$/i.test(clean)||/^lead(?:\s+voice|\s+vocal)?$/i.test(clean))return "lead";
+    if(/^(coro|coros|chorus|backing vocals?)(?:\s+\d+)?$/i.test(clean))return "chorus";
+    if(/^(piano|teclado|teclados|keyboard|keyboards|keys)(?:\s+\d+)?$/i.test(clean))return "keys";
+    if(/^(guitarra|guitar|guitars)(?:\s+\d+)?$/i.test(clean))return "guitar";
+    if(/^(bajo|bass)$/i.test(clean))return "bass";
+    if(/^(bater[ií]a|drums?|drummer)$/i.test(clean))return "drums";
+    if(/^pc$/i.test(clean))return "pc";
+    if(/^(c[aá]mara|camera)$/i.test(clean))return "camera";
+    if(/^(diapositivas|slides?)$/i.test(clean))return "slides";
+    return "";
   }
 
-  function groupedTemplateRoleLabel(name){
-    const key=normalizeTemplateRoleKey(name);
+  function columnSemanticRole(column){
+    if(!column)return "";
+    const options=safeOptions(column.options);
+    return String(options.semantic_role||inferSemanticRoleFromName(column.name,column.field_type)||"");
+  }
+
+  function semanticRoleLabel(role){
     return {
-      "Voz principal":"Voz principal 🎙️",
-      "Coros":"Coros 🎤",
-      "Teclados":"Teclados 🎹",
-      "Guitarras":"Guitarras 🎸",
-      "Bajo":"Bajo 🪕",
-      "Batería":"Batería 🥁"
-    }[key]||name;
+      lead:"Voz principal",chorus:"Coros",keys:"Teclados",guitar:"Guitarras",
+      bass:"Bajo",drums:"Batería",song:"Canciones",
+      pc:"PC",camera:"Cámara",slides:"Diapositivas"
+    }[role]||role||"Otro";
   }
 
-  function compactHomeRoleLabel(template,name){
-    const clean=String(name||"");
-    if(["band","youth-band"].includes(template))return templateRoleLabel(template,clean);
-    if(template==="media"){
-      if(/^PC$/i.test(clean))return "💻 PC";
-      if(/^C[aá]mara$/i.test(clean))return "🎥 Cámara";
-      if(/^Diapositivas$/i.test(clean))return "⏹️ Diapost.";
+  function semanticRoleEmoji(role){
+    return {
+      lead:"🎙️",chorus:"🎤",keys:"🎹",guitar:"🎸",bass:"🪕",drums:"🥁",
+      song:"🎵",pc:"💻",camera:"🎥",slides:"⏹️"
+    }[role]||"";
+  }
+
+  function templateRoleLabel(template,columnOrName){
+    const isColumn=columnOrName&&typeof columnOrName==="object";
+    const clean=String(isColumn?columnOrName.name:columnOrName||"");
+    const role=isColumn?columnSemanticRole(columnOrName):inferSemanticRoleFromName(clean);
+    const emoji=semanticRoleEmoji(role);
+    if(["band","youth-band","media"].includes(template)){
+      if(template==="media"&&role==="slides")return `⏹️ ${clean}`;
+      return emoji?`${clean} ${emoji}`:clean;
     }
     return clean;
+  }
+
+  function normalizeTemplateRoleKey(columnOrName){
+    const isColumn=columnOrName&&typeof columnOrName==="object";
+    const role=isColumn?columnSemanticRole(columnOrName):inferSemanticRoleFromName(columnOrName);
+    return semanticRoleLabel(role)||String(isColumn?columnOrName.name:columnOrName||"").trim();
+  }
+
+  function groupedTemplateRoleLabel(columnOrName){
+    const isColumn=columnOrName&&typeof columnOrName==="object";
+    const role=isColumn?columnSemanticRole(columnOrName):inferSemanticRoleFromName(columnOrName);
+    const label=semanticRoleLabel(role);
+    const emoji=semanticRoleEmoji(role);
+    return emoji?`${label} ${emoji}`:label;
+  }
+
+  function compactHomeRoleLabel(template,columnOrName){
+    const isColumn=columnOrName&&typeof columnOrName==="object";
+    const clean=String(isColumn?columnOrName.name:columnOrName||"");
+    const role=isColumn?columnSemanticRole(columnOrName):inferSemanticRoleFromName(clean);
+    if(["band","youth-band"].includes(template))return templateRoleLabel(template,columnOrName);
+    if(template==="media"){
+      if(role==="pc")return "💻 PC";
+      if(role==="camera")return "🎥 Cámara";
+      if(role==="slides")return "⏹️ Diapost.";
+    }
+    return clean;
+  }
+
+  function bandRoleDefinitions(program){
+    if(!program||!["band","youth-band"].includes(program.template_key||""))return [];
+    const seen=new Set(),out=[];
+    columnsFor(program.id)
+      .filter(column=>column.field_type==="volunteer")
+      .forEach(column=>{
+        const key=columnSemanticRole(column);
+        if(!key||seen.has(key))return;
+        seen.add(key);
+        out.push({key,label:semanticRoleLabel(key),emoji:semanticRoleEmoji(key)});
+      });
+    return out;
   }
 
   function safeOptions(options){
@@ -13498,25 +13627,29 @@ const FLASH_GUIDE_DATA={
       {data:vols,error:volError},
       {data:songRows,error:songError},
       {data:memberships,error:membershipError},
-      {data:dataItems,error:dataItemsError}
+      {data:dataItems,error:dataItemsError},
+      {data:songKeyRows,error:songKeyError}
     ]=await Promise.all([
       window.supabaseClient.from("volunteers").select("id,name,active").eq("active",true).order("name"),
-      window.supabaseClient.from("songs").select("id,name,artist,category,active").eq("active",true).order("name"),
+      window.supabaseClient.from("songs").select("id,name,artist,category,base_key,primary_singer_id,active").eq("active",true).order("name"),
       window.supabaseClient.from("program_volunteers")
-        .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,active")
+        .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,active,primary_role_key,secondary_role_keys")
         .eq("program_id",program.id)
         .eq("active",true),
       window.supabaseClient.from("program_data_items")
         .select("id,program_id,column_id,label,active,sort_order,metadata")
         .eq("program_id",program.id)
         .order("sort_order")
-        .order("label")
+        .order("label"),
+      window.supabaseClient.from("song_singer_keys")
+        .select("song_id,volunteer_id,song_key")
     ]);
 
     if(volError)throw volError;
     if(songError)throw songError;
     if(membershipError)throw membershipError;
     if(dataItemsError)throw dataItemsError;
+    if(songKeyError)throw songKeyError;
 
     customAllTeamVolunteers=vols||[];
     customProgramVolunteerRows=memberships||[];
@@ -13531,12 +13664,22 @@ const FLASH_GUIDE_DATA={
           membership_id:member.id,
           min_per_month:Number(member.min_per_month)||0,
           max_per_month:member.max_per_month==null?null:Number(member.max_per_month),
-          avoid_consecutive:member.avoid_consecutive!==false
+          avoid_consecutive:member.avoid_consecutive!==false,
+          primary_role_key:member.primary_role_key||null,
+          secondary_role_keys:Array.isArray(member.secondary_role_keys)?member.secondary_role_keys:[]
         };
       })
       .filter(Boolean);
 
-    customRefSongs=songRows||[];
+    const toneMap=new Map();
+    (songKeyRows||[]).forEach(row=>{
+      if(!toneMap.has(row.song_id))toneMap.set(row.song_id,{});
+      toneMap.get(row.song_id)[row.volunteer_id]=row.song_key;
+    });
+    customRefSongs=(songRows||[]).map(song=>({
+      ...song,
+      tones:toneMap.get(song.id)||{}
+    }));
     customDataItems=dataItems||[];
   }
 
@@ -13726,6 +13869,66 @@ const FLASH_GUIDE_DATA={
     return wrap;
   }
 
+  function leadColumnForProgram(programId){
+    return columnsFor(programId).find(column=>
+      column.field_type==="volunteer"&&columnSemanticRole(column)==="lead"
+    )||null;
+  }
+
+  function leadVolunteerIdForEntry(entryId,pendingPayloads=[]){
+    const program=activeProgram();
+    if(!program)return null;
+    const leadColumn=leadColumnForProgram(program.id);
+    if(!leadColumn)return null;
+
+    const pending=[...pendingPayloads].reverse().find(payload=>
+      payload.entry_id===entryId&&payload.column_id===leadColumn.id
+    );
+    if(pending)return pending.volunteer_id||null;
+
+    return customValues.find(value=>
+      value.entry_id===entryId&&value.column_id===leadColumn.id
+    )?.volunteer_id||null;
+  }
+
+  function songToneForVolunteer(song,volunteerId){
+    if(!song)return "";
+    if(volunteerId&&song.tones?.[volunteerId])return song.tones[volunteerId];
+    return song.base_key||"";
+  }
+
+  async function refreshEntrySongTones(entryId,leadVolunteerId){
+    const program=activeProgram();
+    if(!program||!["band","youth-band"].includes(program.template_key||""))return;
+    const songColumnIds=new Set(
+      columnsFor(program.id).filter(c=>c.field_type==="song").map(c=>c.id)
+    );
+    const rows=customValues.filter(value=>
+      value.entry_id===entryId&&songColumnIds.has(value.column_id)&&value.song_id
+    );
+    if(!rows.length)return;
+
+    const payloads=rows.map(row=>{
+      const song=customRefSongs.find(s=>s.id===row.song_id);
+      return {
+        team_id:window.currentTeam.id,
+        entry_id:row.entry_id,
+        column_id:row.column_id,
+        volunteer_id:null,
+        song_id:row.song_id,
+        text_value:songToneForVolunteer(song,leadVolunteerId),
+        number_value:null,
+        option_value:null,
+        locked:!!row.locked,
+        updated_at:new Date().toISOString()
+      };
+    });
+    const {error}=await window.supabaseClient
+      .from("program_values")
+      .upsert(payloads,{onConflict:"entry_id,column_id"});
+    if(error)throw error;
+  }
+
   async function saveCustomCell(entry,column,value,locked){
     const payload={
       team_id:window.currentTeam.id,
@@ -13741,7 +13944,11 @@ const FLASH_GUIDE_DATA={
     };
 
     if(column.field_type==="volunteer")payload.volunteer_id=value||null;
-    else if(column.field_type==="song")payload.song_id=value||null;
+    else if(column.field_type==="song"){
+      payload.song_id=value||null;
+      const song=customRefSongs.find(item=>item.id===value);
+      payload.text_value=value?songToneForVolunteer(song,leadVolunteerIdForEntry(entry.id)):"";
+    }
     else if(column.field_type==="number")payload.number_value=value===""?null:Number(value);
     else if(column.field_type==="list"||column.field_type==="catalog")payload.option_value=value||null;
     else payload.text_value=value||null;
@@ -13750,6 +13957,16 @@ const FLASH_GUIDE_DATA={
       .from("program_values")
       .upsert(payload,{onConflict:"entry_id,column_id"});
     if(error)throw error;
+
+    const program=activeProgram();
+    if(
+      program &&
+      ["band","youth-band"].includes(program.template_key||"") &&
+      column.field_type==="volunteer" &&
+      columnSemanticRole(column)==="lead"
+    ){
+      await refreshEntrySongTones(entry.id,value||null);
+    }
   }
 
   function renderCustomProgramTable(){
@@ -13794,7 +14011,7 @@ const FLASH_GUIDE_DATA={
 
           const roleTd=document.createElement("td");
           roleTd.className="templateRoleCell";
-          roleTd.textContent=column?templateRoleLabel(template,column.name):"—";
+          roleTd.textContent=column?templateRoleLabel(template,column):"—";
           tr.appendChild(roleTd);
 
           const personTd=document.createElement("td");
@@ -13847,7 +14064,7 @@ const FLASH_GUIDE_DATA={
       customHead.innerHTML=`
         <tr>
           <th>FECHA</th>
-          ${cols.map(c=>`<th>${escapeTeamHtml(templateRoleLabel(template,c.name))}</th>`).join("")}
+          ${cols.map(c=>`<th>${escapeTeamHtml(templateRoleLabel(template,c))}</th>`).join("")}
         </tr>`;
 
       customEntries.forEach(entry=>{
@@ -13917,12 +14134,40 @@ const FLASH_GUIDE_DATA={
     ].map(([value,label])=>`<option value="${value}" ${value===selected?"selected":""}>${label}</option>`).join("");
   }
 
+  function builderProgramTemplateKey(){
+    if(!builderEditingProgramId)return "custom";
+    return customPrograms.find(p=>p.id===builderEditingProgramId)?.template_key||"custom";
+  }
+
+  function semanticOptionsForTemplate(templateKey,fieldType,selected=""){
+    let roles=[];
+    if(["band","youth-band"].includes(templateKey)){
+      roles=fieldType==="song"
+        ?[["song","Canciones"]]
+        :[
+          ["lead","Voz principal"],["chorus","Coros"],["keys","Teclados"],
+          ["guitar","Guitarras"],["bass","Bajo"],["drums","Batería"],
+          ["","Otro / sin regla especial"]
+        ];
+    }else if(templateKey==="media"){
+      roles=[["pc","PC"],["camera","Cámara"],["slides","Diapositivas"],["","Otro / sin regla especial"]];
+    }
+    return roles.map(([value,label])=>
+      `<option value="${value}" ${value===selected?"selected":""}>${label}</option>`
+    ).join("");
+  }
+
   function addBuilderColumn(data={}){
     const row=document.createElement("div");
     row.className="programColumnRow";
     row.dataset.columnId=data.id||"";
     row.dataset.type=data.field_type||"volunteer";
     const options=safeOptions(data.options);
+    row.dataset.baseOptions=JSON.stringify(options||{});
+    const templateKey=builderProgramTemplateKey();
+    const inferredSemantic=options.semantic_role||inferSemanticRoleFromName(data.name,data.field_type||"volunteer");
+    const showSemantic=["band","youth-band","media"].includes(templateKey)&&["volunteer","song"].includes(data.field_type||"volunteer");
+    row.dataset.showSemantic=showSemantic?"1":"0";
     row.innerHTML=`
       <div>
         <label>Nombre</label>
@@ -13935,6 +14180,11 @@ const FLASH_GUIDE_DATA={
       <div class="programColumnOptions">
         <label>Opciones (separadas por |)</label>
         <input class="programColumnChoices" value="${escapeTeamHtml((options.choices||[]).join(" | "))}" placeholder="Opción A | Opción B">
+      </div>
+      <div class="programColumnSemanticWrap">
+        <label>Función interna de la plantilla</label>
+        <select class="programColumnSemantic">${semanticOptionsForTemplate(templateKey,data.field_type||"volunteer",inferredSemantic)}</select>
+        <div class="muted">El nombre visible puede cambiar. Esta función interna mantiene las reglas, el render y la lógica automática.</div>
       </div>
       <div class="programColumnActions">
         <button type="button" class="btn secondary moveColumnUp" title="Subir">↑</button>
@@ -13950,7 +14200,19 @@ const FLASH_GUIDE_DATA={
     `;
 
     const type=row.querySelector(".programColumnType");
-    type.addEventListener("change",()=>{row.dataset.type=type.value});
+    const semantic=row.querySelector(".programColumnSemantic");
+    const syncSemantic=()=>{
+      row.dataset.type=type.value;
+      const key=builderProgramTemplateKey();
+      const show=["band","youth-band","media"].includes(key)&&["volunteer","song"].includes(type.value);
+      row.dataset.showSemantic=show?"1":"0";
+      if(semantic){
+        const current=semantic.value||inferSemanticRoleFromName(row.querySelector(".programColumnName")?.value,type.value);
+        semantic.innerHTML=semanticOptionsForTemplate(key,type.value,current);
+      }
+    };
+    type.addEventListener("change",syncSemantic);
+    syncSemantic();
     row.querySelector(".removeProgramColumn").addEventListener("click",()=>{
       if(builderColumns.children.length<=1){
         window.showAppToast?.("La programación debe tener al menos una columna.","info",1400);
@@ -14033,6 +14295,17 @@ const FLASH_GUIDE_DATA={
       const type=row.querySelector(".programColumnType").value;
       const choices=row.querySelector(".programColumnChoices").value
         .split("|").map(x=>x.trim()).filter(Boolean);
+      const baseOptions=(()=>{
+        try{return JSON.parse(row.dataset.baseOptions||"{}")}catch(_){return {}}
+      })();
+      const semanticRole=row.querySelector(".programColumnSemantic")?.value||"";
+      const options={
+        ...baseOptions,
+        ...(type==="list"?{choices}:{}),
+        ...(["band","youth-band","media"].includes(builderProgramTemplateKey())&&["volunteer","song"].includes(type)
+          ?{semantic_role:semanticRole}
+          :{})
+      };
       return {
         id:row.dataset.columnId||null,
         name:row.querySelector(".programColumnName").value.trim(),
@@ -14042,7 +14315,7 @@ const FLASH_GUIDE_DATA={
         fill_enabled:row.querySelector(".programColumnFill").checked,
         rebalance_enabled:row.querySelector(".programColumnRebalance").checked,
         lockable:row.querySelector(".programColumnLock").checked,
-        options:type==="list"?{choices}:{}
+        options
       };
     });
   }
@@ -14166,24 +14439,116 @@ const FLASH_GUIDE_DATA={
     await openCustomProgram(programId);
   }
 
+  function closeDeleteProgramModeModal(){
+    deleteProgramModeModal?.classList.remove("open");
+    deleteProgramModeModal?.setAttribute("aria-hidden","true");
+    pendingDeleteProgramId=null;
+  }
+
+  async function deleteProgramDefinitionOnly(programId){
+    const {error}=await window.supabaseClient
+      .from("program_definitions").delete().eq("id",programId);
+    if(error)throw error;
+  }
+
+  async function deleteProgramWithExclusiveVolunteers(programId){
+    const {data:memberships,error:memberError}=await window.supabaseClient
+      .from("program_volunteers").select("volunteer_id").eq("program_id",programId);
+    if(memberError)throw memberError;
+
+    const volunteerIds=[...new Set((memberships||[]).map(row=>row.volunteer_id).filter(Boolean))];
+    const protectedIds=new Set();
+
+    if(volunteerIds.length){
+      const [
+        {data:otherMemberships,error:e1},
+        {data:legacyRoles,error:e2},
+        {data:assignments,error:e3},
+        {data:primarySongs,error:e4},
+        {data:toneLinks,error:e5}
+      ]=await Promise.all([
+        window.supabaseClient.from("program_volunteers")
+          .select("volunteer_id").in("volunteer_id",volunteerIds).neq("program_id",programId),
+        window.supabaseClient.from("volunteer_roles")
+          .select("volunteer_id").in("volunteer_id",volunteerIds),
+        window.supabaseClient.from("assignments")
+          .select("volunteer_id").in("volunteer_id",volunteerIds),
+        window.supabaseClient.from("songs")
+          .select("primary_singer_id").in("primary_singer_id",volunteerIds),
+        window.supabaseClient.from("song_singer_keys")
+          .select("volunteer_id").in("volunteer_id",volunteerIds)
+      ]);
+
+      for(const error of [e1,e2,e3,e4,e5])if(error)throw error;
+      (otherMemberships||[]).forEach(row=>protectedIds.add(row.volunteer_id));
+      (legacyRoles||[]).forEach(row=>protectedIds.add(row.volunteer_id));
+      (assignments||[]).forEach(row=>protectedIds.add(row.volunteer_id));
+      (primarySongs||[]).forEach(row=>row.primary_singer_id&&protectedIds.add(row.primary_singer_id));
+      (toneLinks||[]).forEach(row=>protectedIds.add(row.volunteer_id));
+    }
+
+    await deleteProgramDefinitionOnly(programId);
+
+    let deletedCount=0;
+    for(const volunteerId of volunteerIds){
+      if(protectedIds.has(volunteerId))continue;
+      const {error}=await window.supabaseClient.from("volunteers").delete().eq("id",volunteerId);
+      if(!error)deletedCount++;
+      else console.warn("Voluntario conservado por referencia:",volunteerId,error.message);
+    }
+    return {deletedCount,preservedCount:volunteerIds.length-deletedCount};
+  }
+
+  async function finalizeProgramDeletion(mode){
+    const programId=pendingDeleteProgramId;
+    const program=customPrograms.find(p=>p.id===programId);
+    if(!programId||!program)return;
+
+    deleteProgramKeepVolunteers.disabled=true;
+    deleteProgramWithVolunteers.disabled=true;
+    try{
+      let result={deletedCount:0,preservedCount:0};
+      if(mode==="with-volunteers"){
+        result=await deleteProgramWithExclusiveVolunteers(programId);
+      }else{
+        await deleteProgramDefinitionOnly(programId);
+      }
+
+      activeCustomProgramId=null;
+      closeDeleteProgramModeModal();
+      closeProgramBuilder();
+      await loadProgramDefinitions();
+      window.activateAppPanel("programs","Programación");
+
+      if(mode==="with-volunteers"){
+        window.showAppToast?.(
+          `Programación eliminada. ${result.deletedCount} voluntario(s) exclusivo(s) eliminado(s) y ${result.preservedCount} conservado(s) por seguridad.`,
+          "success",2800
+        );
+      }else{
+        window.showAppToast?.(
+          "Programación eliminada. Los voluntarios se conservaron y aparecerán como personas existentes al añadirlos a otra programación.",
+          "success",2600
+        );
+      }
+    }catch(error){
+      console.error(error);
+      window.showAppToast?.(error.message||"No se pudo eliminar la programación.","error",2400);
+    }finally{
+      deleteProgramKeepVolunteers.disabled=false;
+      deleteProgramWithVolunteers.disabled=false;
+    }
+  }
+
   async function deleteCurrentProgram(){
     if(!builderEditingProgramId)return;
     const program=customPrograms.find(p=>p.id===builderEditingProgramId);
-    const ok=await window.appConfirm(
-      `¿Eliminar la programación “${program?.name||""}”?\\n\\nSe eliminarán sus fechas y valores.`,
-      {title:"Eliminar programación",confirmText:"Eliminar",tone:"danger",icon:"!"}
-    );
-    if(!ok)return;
-    const {error}=await window.supabaseClient
-      .from("program_definitions").delete().eq("id",builderEditingProgramId);
-    if(error)throw error;
-    activeCustomProgramId=null;
-    closeProgramBuilder();
-    await loadProgramDefinitions();
-    window.activateAppPanel("programs","Programación");
-    window.showAppToast?.("Programación eliminada.","success",1100);
+    if(!program)return;
+    pendingDeleteProgramId=program.id;
+    deleteProgramModeMeta.textContent=`Programación: ${program.name}`;
+    deleteProgramModeModal.classList.add("open");
+    deleteProgramModeModal.setAttribute("aria-hidden","false");
   }
-
 
 
   function customProgramById(id){
@@ -14424,7 +14789,10 @@ const FLASH_GUIDE_DATA={
     function valueText(column,value){
       if(!value)return "—";
       if(column.field_type==="volunteer")return volunteerMap.get(value.volunteer_id)||"—";
-      if(column.field_type==="song")return songMap.get(value.song_id)?.name||"—";
+      if(column.field_type==="song"){
+        const name=songMap.get(value.song_id)?.name||"—";
+        return value.text_value?`${name} (${value.text_value})`:name;
+      }
       if(column.field_type==="number")return value.number_value??"—";
       if(column.field_type==="catalog")return dataItemMap.get(value.option_value)||"—";
       if(column.field_type==="list")return value.option_value||"—";
@@ -14449,7 +14817,7 @@ const FLASH_GUIDE_DATA={
         return `<div class="homeProgramGroup">
           ${volunteerCols.map(c=>`
             <div class="homeProgramLine">
-              <span class="key">${escapeTeamHtml(compactHomeRoleLabel(template,c.name))}</span>
+              <span class="key">${escapeTeamHtml(compactHomeRoleLabel(template,c))}</span>
               <span>${escapeTeamHtml(valueText(c,valueMap.get(c.id)))}</span>
             </div>`).join("")}
           ${songCols.length?`<div class="homeProgramSongs">${
@@ -14465,7 +14833,7 @@ const FLASH_GUIDE_DATA={
 
       return `<div class="homeProgramGroup">${cols.map(c=>`
         <div class="homeProgramLine">
-          <span class="key">${escapeTeamHtml(compactHomeRoleLabel(template,c.name))}</span>
+          <span class="key">${escapeTeamHtml(compactHomeRoleLabel(template,c))}</span>
           <span>${escapeTeamHtml(valueText(c,valueMap.get(c.id)))}</span>
         </div>`).join("")}</div>`;
     }
@@ -15057,7 +15425,10 @@ const FLASH_GUIDE_DATA={
       const val=valueMap.get(`${entryId}|${column.id}`);
       if(!val)return "";
       if(column.field_type==="volunteer")return volunteersMap.get(val.volunteer_id)||"";
-      if(column.field_type==="song")return songsMap.get(val.song_id)||"";
+      if(column.field_type==="song"){
+        const name=songsMap.get(val.song_id)||"";
+        return val.text_value?`${name} (${val.text_value})`:name;
+      }
       if(column.field_type==="number")return val.number_value??"";
       if(column.field_type==="catalog")return dataItemMap.get(val.option_value)||"";
       if(column.field_type==="list")return val.option_value||"";
@@ -15114,7 +15485,7 @@ const FLASH_GUIDE_DATA={
         }else if(displayCol.kind==="responsibilities"){
           const grouped=new Map();
           volunteerCols.forEach(c=>{
-            const key=normalizeTemplateRoleKey(c.name);
+            const key=normalizeTemplateRoleKey(c);
             const value=entry.id==="__empty__"?"":textFor(c,entry.id);
             if(!grouped.has(key))grouped.set(key,[]);
             if(value)grouped.get(key).push(value);
@@ -15770,8 +16141,7 @@ const FLASH_GUIDE_DATA={
         .eq("active",true)
         .order("name"),
       window.supabaseClient.from("program_volunteers")
-        .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,active")
-        .eq("active",true)
+        .select("id,program_id,volunteer_id,min_per_month,max_per_month,avoid_consecutive,active,primary_role_key,secondary_role_keys")
     ]);
 
     if(volError)throw volError;
@@ -15833,6 +16203,14 @@ const FLASH_GUIDE_DATA={
           <div class="customVolunteerMemberRules">
             Mín. ${Number(member.min_per_month)||0} · Máx. ${escapeTeamHtml(max)}
             ${member.avoid_consecutive!==false?" · Evitar consecutivos":""}
+            ${member.primary_role_key?`
+              <div class="programVolunteerRoleLine">
+                Principal: ${escapeTeamHtml(`${semanticRoleEmoji(member.primary_role_key)} ${semanticRoleLabel(member.primary_role_key)}`.trim())}
+                ${(member.secondary_role_keys||[]).length
+                  ?` · También: ${escapeTeamHtml(member.secondary_role_keys.map(role=>semanticRoleLabel(role)).join(", "))}`
+                  :""}
+              </div>
+            `:""}
           </div>
           <div class="customVolunteerMemberActions">
             ${teamEditor()?`
@@ -15864,6 +16242,43 @@ const FLASH_GUIDE_DATA={
         if(activeCustomProgramId===programId)await loadActiveCustomProgram();
       });
     });
+  }
+
+  function populateProgramVolunteerRoleEditor(program,membership=null,pendingCell=null){
+    if(!programVolunteerBandRoles||!programVolunteerPrimaryRole||!programVolunteerSecondaryRoles)return;
+    const roles=bandRoleDefinitions(program);
+    const isBand=roles.length>0&&["band","youth-band"].includes(program?.template_key||"");
+    programVolunteerBandRoles.style.display=isBand?"grid":"none";
+    if(!isBand){
+      programVolunteerPrimaryRole.innerHTML="";
+      programVolunteerSecondaryRoles.innerHTML="";
+      return;
+    }
+
+    const pendingRole=pendingCell?.column?columnSemanticRole(pendingCell.column):"";
+    const selectedPrimary=membership?.primary_role_key||pendingRole||roles[0]?.key||"";
+
+    programVolunteerPrimaryRole.innerHTML="";
+    roles.forEach(role=>{
+      programVolunteerPrimaryRole.add(new Option(`${role.emoji} ${role.label}`.trim(),role.key));
+    });
+    programVolunteerPrimaryRole.value=roles.some(r=>r.key===selectedPrimary)
+      ?selectedPrimary
+      :(roles[0]?.key||"");
+
+    const secondary=new Set(Array.isArray(membership?.secondary_role_keys)?membership.secondary_role_keys:[]);
+    programVolunteerSecondaryRoles.innerHTML=roles.map(role=>`
+      <label>
+        <input type="checkbox" value="${role.key}" ${secondary.has(role.key)?"checked":""}>
+        <span>${escapeTeamHtml(`${role.emoji} ${role.label}`.trim())}</span>
+      </label>
+    `).join("");
+  }
+
+  function selectedSecondaryProgramRoles(){
+    return [...programVolunteerSecondaryRoles.querySelectorAll('input[type="checkbox"]:checked')]
+      .map(input=>input.value)
+      .filter(Boolean);
   }
 
   async function openProgramVolunteerModal(programId,opts={}){
@@ -15915,6 +16330,8 @@ const FLASH_GUIDE_DATA={
       programVolunteerMax.value="";
       programVolunteerAvoid.checked=true;
     }
+
+    populateProgramVolunteerRoleEditor(program,editingMembership,pendingVolunteerCell);
 
     const syncNameState=()=>{
       const usingExisting=!!programVolunteerExisting.value;
@@ -16002,6 +16419,12 @@ const FLASH_GUIDE_DATA={
       min_per_month:min,
       max_per_month:max,
       avoid_consecutive:programVolunteerAvoid.checked,
+      primary_role_key:["band","youth-band"].includes(program.template_key||"")
+        ?(programVolunteerPrimaryRole.value||null)
+        :null,
+      secondary_role_keys:["band","youth-band"].includes(program.template_key||"")
+        ?selectedSecondaryProgramRoles().filter(role=>role!==programVolunteerPrimaryRole.value)
+        :[],
       active:true,
       updated_at:new Date().toISOString()
     };
@@ -16091,6 +16514,40 @@ const FLASH_GUIDE_DATA={
         .eq("program_id",program.id)
     ]);
     if(availabilityError)throw availabilityError;
+
+    let bandHistoryEntries=[];
+    let bandHistoryValues=[];
+    if(["band","youth-band"].includes(program.template_key||"")&&customEntries.length){
+      const sorted=[...customEntries].sort((a,b)=>a.service_date.localeCompare(b.service_date));
+      const first=sorted[0].service_date;
+      const historyStartDate=dObj(first);
+      historyStartDate.setUTCDate(historyStartDate.getUTCDate()-28);
+      const historyStart=iso(
+        historyStartDate.getUTCFullYear(),
+        historyStartDate.getUTCMonth(),
+        historyStartDate.getUTCDate()
+      );
+
+      const {data:historyEntries,error:historyEntryError}=await window.supabaseClient
+        .from("program_entries")
+        .select("id,service_date")
+        .eq("program_id",program.id)
+        .gte("service_date",historyStart)
+        .lt("service_date",first)
+        .order("service_date");
+      if(historyEntryError)throw historyEntryError;
+      bandHistoryEntries=historyEntries||[];
+
+      const historyIds=bandHistoryEntries.map(item=>item.id);
+      if(historyIds.length){
+        const {data:historyValues,error:historyValueError}=await window.supabaseClient
+          .from("program_values")
+          .select("entry_id,column_id,volunteer_id,song_id")
+          .in("entry_id",historyIds);
+        if(historyValueError)throw historyValueError;
+        bandHistoryValues=historyValues||[];
+      }
+    }
 
     const unavailableSet=new Set((availabilityRows||[]).map(r=>`${r.volunteer_id}|${r.unavailable_date}`));
     const activeRules=customProgramRules.filter(r=>r.enabled!==false);
@@ -16186,7 +16643,12 @@ const FLASH_GUIDE_DATA={
         if(row){
           const key=col.field_type==="song"?row.song_id:
                     (col.field_type==="list"||col.field_type==="catalog")?row.option_value:null;
-          if(key)counts.set(`${col.id}|${key}`,(counts.get(`${col.id}|${key}`)||0)+1);
+          if(key){
+            const countKey=col.field_type==="song"&&["band","youth-band"].includes(program.template_key||"")
+              ?`song|${key}`
+              :`${col.id}|${key}`;
+            counts.set(countKey,(counts.get(countKey)||0)+1);
+          }
         }
       });
     });
@@ -16197,9 +16659,14 @@ const FLASH_GUIDE_DATA={
           id:v.id,label:v.name,
           min:Number(v.min_per_month)||0,
           max:v.max_per_month==null?null:Number(v.max_per_month),
-          avoid:v.avoid_consecutive!==false
+          avoid:v.avoid_consecutive!==false,
+          primaryRole:v.primary_role_key||null,
+          secondaryRoles:Array.isArray(v.secondary_role_keys)?v.secondary_role_keys:[]
         })):
-        col.field_type==="song"?customRefSongs.map(s=>({id:s.id,label:s.name,category:s.category||"Media"})):
+        col.field_type==="song"?customRefSongs.map(s=>({
+          id:s.id,label:s.name,category:s.category||"Media",
+          baseKey:s.base_key||"",primarySingerId:s.primary_singer_id||null,tones:s.tones||{}
+        })):
         col.field_type==="list"?(safeOptions(col.options).choices||[]).map(x=>({id:x,label:x})):
         col.field_type==="catalog"?customDataItems
           .filter(item=>item.column_id===col.id&&item.active!==false)
@@ -16255,12 +16722,84 @@ const FLASH_GUIDE_DATA={
 
           const notRepeated=availableChoices.filter(choice=>!usedSongIds.has(choice.id));
           if(notRepeated.length)availableChoices=notRepeated;
+
+          if(["band","youth-band"].includes(program.template_key||"")){
+            const leadId=leadVolunteerIdForEntry(entry.id,payloads);
+            const recentIds=new Set();
+            const entryDate=dObj(entry.service_date);
+
+            customValues.forEach(value=>{
+              if(!value.song_id)return;
+              const sourceEntry=customEntries.find(item=>item.id===value.entry_id);
+              if(!sourceEntry||sourceEntry.service_date>=entry.service_date)return;
+              const days=Math.round((entryDate-dObj(sourceEntry.service_date))/86400000);
+              if(days>=0&&days<21)recentIds.add(value.song_id);
+            });
+            bandHistoryValues.forEach(value=>{
+              if(!value.song_id)return;
+              const sourceEntry=bandHistoryEntries.find(item=>item.id===value.entry_id);
+              if(!sourceEntry)return;
+              const days=Math.round((entryDate-dObj(sourceEntry.service_date))/86400000);
+              if(days>=0&&days<21)recentIds.add(value.song_id);
+            });
+            payloads.forEach(value=>{
+              if(!value.song_id)return;
+              const sourceEntry=customEntries.find(item=>item.id===value.entry_id);
+              if(!sourceEntry||sourceEntry.service_date>=entry.service_date)return;
+              const days=Math.round((entryDate-dObj(sourceEntry.service_date))/86400000);
+              if(days>=0&&days<21)recentIds.add(value.song_id);
+            });
+
+            const outsideWindow=availableChoices.filter(choice=>!recentIds.has(choice.id));
+            if(outsideWindow.length)availableChoices=outsideWindow;
+
+            if(leadId){
+              const singerMatches=availableChoices.filter(choice=>
+                choice.primarySingerId===leadId||Boolean(choice.tones?.[leadId])
+              );
+              if(singerMatches.length)availableChoices=singerMatches;
+            }
+          }
         }
 
         if(col.field_type==="volunteer"){
           availableChoices=availableChoices.filter(choice=>
             !unavailableSet.has(`${choice.id}|${entry.service_date}`)
           );
+
+          if(["band","youth-band"].includes(program.template_key||"")){
+            const roleKey=columnSemanticRole(col);
+            if(roleKey){
+              const eligible=availableChoices.filter(choice=>
+                choice.primaryRole===roleKey||choice.secondaryRoles.includes(roleKey)
+              );
+              if(eligible.length)availableChoices=eligible;
+            }
+
+            const sortedEntries=[...customEntries].sort((a,b)=>a.service_date.localeCompare(b.service_date));
+            const entryIndex=sortedEntries.findIndex(item=>item.id===entry.id);
+            let previousEntryId=null;
+            if(entryIndex>0){
+              previousEntryId=sortedEntries[entryIndex-1].id;
+            }else if(bandHistoryEntries.length){
+              previousEntryId=bandHistoryEntries[bandHistoryEntries.length-1].id;
+            }
+
+            if(previousEntryId){
+              const previousServiceIds=new Set();
+              customValues
+                .filter(value=>value.entry_id===previousEntryId&&value.volunteer_id)
+                .forEach(value=>previousServiceIds.add(value.volunteer_id));
+              bandHistoryValues
+                .filter(value=>value.entry_id===previousEntryId&&value.volunteer_id)
+                .forEach(value=>previousServiceIds.add(value.volunteer_id));
+              payloads
+                .filter(value=>value.entry_id===previousEntryId&&value.volunteer_id)
+                .forEach(value=>previousServiceIds.add(value.volunteer_id));
+              const fresh=availableChoices.filter(choice=>!previousServiceIds.has(choice.id));
+              if(fresh.length)availableChoices=fresh;
+            }
+          }
 
           if(hasRule("unique_same_date",col.id)){
             const notDuplicated=availableChoices.filter(choice=>!alreadyUsedInEntry.has(choice.id));
@@ -16302,6 +16841,12 @@ const FLASH_GUIDE_DATA={
           if(col.field_type==="volunteer"){
             const ac=volunteerCounts.get(a.id)||0;
             const bc=volunteerCounts.get(b.id)||0;
+            const roleKey=columnSemanticRole(col);
+            if(["band","youth-band"].includes(program.template_key||"")&&roleKey){
+              const ap=a.primaryRole===roleKey?0:1;
+              const bp=b.primaryRole===roleKey?0:1;
+              if(ap!==bp)return ap-bp;
+            }
             if(hasRule("balance_assignments",col.id)){
               const aNeeds=ac<a.min?0:1;
               const bNeeds=bc<b.min?0:1;
@@ -16313,6 +16858,12 @@ const FLASH_GUIDE_DATA={
               const bConsecutive=b.avoid&&b.id===previous?1:0;
               if(aConsecutive!==bConsecutive)return aConsecutive-bConsecutive;
             }
+          }else if(col.field_type==="song"&&["band","youth-band"].includes(program.template_key||"")){
+            const ac=counts.get(`song|${a.id}`)||0;
+            const bc=counts.get(`song|${b.id}`)||0;
+            if(ac!==bc)return ac-bc;
+            if(a.id===previous)return 1;
+            if(b.id===previous)return -1;
           }else if(col.field_type==="catalog"){
             const ac=counts.get(`${col.id}|${a.id}`)||0;
             const bc=counts.get(`${col.id}|${b.id}`)||0;
@@ -16346,7 +16897,11 @@ const FLASH_GUIDE_DATA={
           updated_at:new Date().toISOString()
         };
         if(col.field_type==="volunteer")payload.volunteer_id=pick.id;
-        else if(col.field_type==="song")payload.song_id=pick.id;
+        else if(col.field_type==="song"){
+          payload.song_id=pick.id;
+          const song=customRefSongs.find(item=>item.id===pick.id);
+          payload.text_value=songToneForVolunteer(song,leadVolunteerIdForEntry(entry.id,payloads));
+        }
         else if(col.field_type==="list"||col.field_type==="catalog")payload.option_value=pick.id;
         else continue;
 
@@ -16354,7 +16909,10 @@ const FLASH_GUIDE_DATA={
         if(col.field_type==="volunteer"){
           volunteerCounts.set(pick.id,(volunteerCounts.get(pick.id)||0)+1);
         }else{
-          counts.set(`${col.id}|${pick.id}`,(counts.get(`${col.id}|${pick.id}`)||0)+1);
+          const countKey=col.field_type==="song"&&["band","youth-band"].includes(program.template_key||"")
+            ?`song|${pick.id}`
+            :`${col.id}|${pick.id}`;
+          counts.set(countKey,(counts.get(countKey)||0)+1);
         }
         previous=pick.id;
       }
@@ -16488,6 +17046,10 @@ const FLASH_GUIDE_DATA={
       });
     }
   });
+
+  deleteProgramModeCancel?.addEventListener("click",closeDeleteProgramModeModal);
+  deleteProgramKeepVolunteers?.addEventListener("click",()=>finalizeProgramDeletion("keep-volunteers"));
+  deleteProgramWithVolunteers?.addEventListener("click",()=>finalizeProgramDeletion("with-volunteers"));
 
   templateChooserCancel?.addEventListener("click",closeProgramTemplateChooser);
   bandTemplateOptionsCancel?.addEventListener("click",closeBandTemplateOptions);
