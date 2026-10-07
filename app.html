@@ -5739,6 +5739,11 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
 }
 </style>
 
+
+<style id="v80-band-template-and-loading">
+.bandTemplateOptionsCard{width:min(34rem,94vw)!important}
+.bandTemplateOptionsCard input{width:100%}
+</style>
 </head>
 <!-- Flash Program V79 - Inicio correcto + selector de plantillas + render único -->
 <body class="readonly-mode">
@@ -6694,6 +6699,41 @@ body[data-theme="light"] .customProgramTable tbody tr:nth-child(even) td:first-c
   </div>
 </div>
 
+
+<div id="bandTemplateOptionsModal" class="modalBackdrop" aria-hidden="true">
+  <div class="modalCard bandTemplateOptionsCard" role="dialog" aria-modal="true" aria-labelledby="bandTemplateOptionsTitle">
+    <div class="modalHeader">
+      <div>
+        <h2 id="bandTemplateOptionsTitle">Configurar plantilla musical</h2>
+        <div id="bandTemplateOptionsMeta" class="muted">Define cuántos Coros, Teclados y Guitarras tendrá esta programación.</div>
+      </div>
+    </div>
+
+    <div class="programRuleBody">
+      <div>
+        <label>Coros</label>
+        <input id="bandTemplateCoros" type="number" min="0" max="8" value="2">
+      </div>
+      <div>
+        <label>Teclados</label>
+        <input id="bandTemplateTeclados" type="number" min="0" max="4" value="1">
+      </div>
+      <div>
+        <label>Guitarras</label>
+        <input id="bandTemplateGuitarras" type="number" min="0" max="8" value="2">
+      </div>
+      <div>
+        <label>Canciones</label>
+        <input id="bandTemplateCanciones" type="number" min="1" max="8" value="4">
+      </div>
+    </div>
+
+    <div class="modalActions">
+      <button id="bandTemplateOptionsCancel" class="btn secondary" type="button">Cancelar</button>
+      <button id="bandTemplateOptionsCreate" class="btn primary" type="button">Crear</button>
+    </div>
+  </div>
+</div>
 
 <div id="programTemplateChooserModal" class="modalBackdrop" aria-hidden="true">
   <div class="modalCard programTemplateChooserCard" role="dialog" aria-modal="true" aria-labelledby="programTemplateChooserTitle">
@@ -9183,11 +9223,25 @@ async function applySavedMonth(module,Y,M,{silent=false}={}){
  return applyConfirmedMonth(module,Y,M,{silent});
 }
 
+const FLASH_PROGRAM_LOADING_ONCE_KEY="flash-program-loading-once";
+function shouldShowAppLoading(){
+ const isMobile=window.matchMedia("(max-width: 768px)").matches;
+ const seen=sessionStorage.getItem(FLASH_PROGRAM_LOADING_ONCE_KEY)==="1";
+ return isMobile || !seen;
+}
 function setAppLoading(show,text="Estamos cargando la página."){
  const screen=document.getElementById("appLoadingScreen");
  const label=document.getElementById("appLoadingText");
  if(label)label.textContent=text;
- if(screen)screen.style.display=show?"flex":"none";
+ if(!screen)return;
+ if(show){
+   if(shouldShowAppLoading()){
+     screen.style.display="flex";
+     sessionStorage.setItem(FLASH_PROGRAM_LOADING_ONCE_KEY,"1");
+   }
+ }else{
+   screen.style.display="none";
+ }
 }
 
 // =========================================================
@@ -12606,6 +12660,7 @@ const FLASH_GUIDE_DATA={
   let customColumnLocks=[];
   let customProgramRules=[];
   let volunteerTeamProgramId=null;
+  let pendingBandTemplateKey=null;
   let editingProgramVolunteerMembershipId=null;
   let pendingVolunteerCell=null;
   let builderEditingProgramId=null;
@@ -12630,6 +12685,15 @@ const FLASH_GUIDE_DATA={
   const customBody=document.getElementById("customProgramBody");
   const customStatus=document.getElementById("customProgramStatus");
   const editStructureBtn=document.getElementById("editCustomProgramStructure");
+
+  const bandTemplateOptionsModal=document.getElementById("bandTemplateOptionsModal");
+  const bandTemplateOptionsMeta=document.getElementById("bandTemplateOptionsMeta");
+  const bandTemplateCoros=document.getElementById("bandTemplateCoros");
+  const bandTemplateTeclados=document.getElementById("bandTemplateTeclados");
+  const bandTemplateGuitarras=document.getElementById("bandTemplateGuitarras");
+  const bandTemplateCanciones=document.getElementById("bandTemplateCanciones");
+  const bandTemplateOptionsCancel=document.getElementById("bandTemplateOptionsCancel");
+  const bandTemplateOptionsCreate=document.getElementById("bandTemplateOptionsCreate");
 
   const templateChooserModal=document.getElementById("programTemplateChooserModal");
   const templateChooserList=document.getElementById("programTemplateChooserList");
@@ -12752,6 +12816,38 @@ const FLASH_GUIDE_DATA={
     return `${baseName} ${n}`;
   }
 
+  function openBandTemplateOptions(templateKey){
+    pendingBandTemplateKey=templateKey;
+    const isYouth=templateKey==="youth-band";
+    if(bandTemplateOptionsMeta){
+      bandTemplateOptionsMeta.textContent=isYouth
+        ?"Define cuántos Coros, Teclados y Guitarras tendrá esta programación de Banda Jóvenes."
+        :"Define cuántos Coros, Teclados y Guitarras tendrá esta programación de Banda.";
+    }
+    if(bandTemplateCoros)bandTemplateCoros.value="2";
+    if(bandTemplateTeclados)bandTemplateTeclados.value="1";
+    if(bandTemplateGuitarras)bandTemplateGuitarras.value="2";
+    if(bandTemplateCanciones)bandTemplateCanciones.value=isYouth?"3":"4";
+    bandTemplateOptionsModal?.classList.add("open");
+    bandTemplateOptionsModal?.setAttribute("aria-hidden","false");
+    setTimeout(()=>bandTemplateCoros?.focus(),0);
+  }
+
+  function closeBandTemplateOptions(){
+    bandTemplateOptionsModal?.classList.remove("open");
+    bandTemplateOptionsModal?.setAttribute("aria-hidden","true");
+    pendingBandTemplateKey=null;
+  }
+
+  function collectBandTemplateOptions(){
+    return {
+      coros:Math.max(0, Number(bandTemplateCoros?.value)||0),
+      teclados:Math.max(0, Number(bandTemplateTeclados?.value)||0),
+      guitarras:Math.max(0, Number(bandTemplateGuitarras?.value)||0),
+      canciones:Math.max(1, Number(bandTemplateCanciones?.value)||1)
+    };
+  }
+
   function renderTemplateChooser(){
     if(!templateChooserList)return;
     templateChooserList.innerHTML=PROGRAM_TEMPLATES.map(template=>`
@@ -12769,6 +12865,11 @@ const FLASH_GUIDE_DATA={
 
         if(key==="blank"){
           openProgramBuilder(null);
+          return;
+        }
+
+        if(key==="band"||key==="youth-band"){
+          openBandTemplateOptions(key);
           return;
         }
 
@@ -12809,36 +12910,50 @@ const FLASH_GUIDE_DATA={
       {name:"Evitar fechas consecutivas",rule_type:"avoid_consecutive",enabled:true,config:{},sort_order:2}
     ];
 
-    if(templateKey==="band"){
+    if(templateKey==="band"||templateKey==="youth-band"){
       defaultRules.push({
         name:"Mezcla musical Rápida / Media / Lenta",
         rule_type:"song_category_pattern",
         enabled:true,
         sort_order:3,
         config:{
-          patterns:[
-            ["Rápida","Rápida","Lenta","Lenta"],
-            ["Rápida","Media","Lenta","Lenta"],
-            ["Rápida","Rápida","Media","Lenta"]
-          ],
+          patterns:templateKey==="youth-band"
+            ?[
+              ["Rápida","Lenta","Lenta"],
+              ["Media","Lenta","Rápida"],
+              ["Rápida","Media","Lenta"]
+            ]
+            :[
+              ["Rápida","Rápida","Lenta","Lenta"],
+              ["Rápida","Media","Lenta","Lenta"],
+              ["Rápida","Rápida","Media","Lenta"]
+            ],
           shuffle_order:true
         }
       });
     }
 
-    const rows=defaultRules.map(rule=>({
-      ...rule,
-      team_id:window.currentTeam.id,
-      program_id:programId,
-      column_id:null,
-      updated_at:new Date().toISOString()
-    }));
-
-    const {error}=await window.supabaseClient.from("program_rules").insert(rows);
-    if(error)throw error;
+    for(const rule of defaultRules){
+      const payload={
+        ...rule,
+        team_id:window.currentTeam.id,
+        program_id:programId,
+        column_id:null,
+        updated_at:new Date().toISOString()
+      };
+      const {error}=await window.supabaseClient.from("program_rules").insert(payload);
+      if(error){
+        const msg=String(error.message||"");
+        if(rule.rule_type==="song_category_pattern" && /program_rules_rule_type_check/i.test(msg)){
+          console.warn("Tu base de datos aún no permite song_category_pattern. La programación se creó sin esa regla automática.");
+          continue;
+        }
+        throw error;
+      }
+    }
   }
 
-  async function createProgramFromTemplate(templateKey){
+  async function createProgramFromTemplate(templateKey,templateOptions={}){
     if(!teamAdmin()){
       window.showAppToast?.("Solo el Administrador puede crear programaciones.","error",1800);
       return;
@@ -12878,7 +12993,27 @@ const FLASH_GUIDE_DATA={
       .single();
     if(programError)throw programError;
 
-    const columns=template.columns.map(([name,field_type],index)=>({
+    const resolvedColumns=(template.key==="band"||template.key==="youth-band")
+      ?(()=>{
+        const coros=Math.max(0, Number(templateOptions.coros ?? 2));
+        const teclados=Math.max(0, Number(templateOptions.teclados ?? 1));
+        const guitarras=Math.max(0, Number(templateOptions.guitarras ?? 2));
+        const canciones=Math.max(1, Number(templateOptions.canciones ?? (template.key==="youth-band"?3:4)));
+        const list=[["Voz principal","volunteer"]];
+        for(let i=1;i<=coros;i++)list.push([`Coros ${i}`,"volunteer"]);
+        if(teclados<=1){
+          if(teclados===1)list.push(["Piano","volunteer"]);
+        }else{
+          for(let i=1;i<=teclados;i++)list.push([`Teclado ${i}`,"volunteer"]);
+        }
+        for(let i=1;i<=guitarras;i++)list.push([`Guitarra ${i}`,"volunteer"]);
+        list.push(["Bajo","volunteer"],["Batería","volunteer"]);
+        for(let i=1;i<=canciones;i++)list.push([`Canción ${i}`,"song"]);
+        return list;
+      })()
+      :template.columns;
+
+    const columns=resolvedColumns.map(([name,field_type],index)=>({
       team_id:window.currentTeam.id,
       program_id:program.id,
       name,
@@ -12930,7 +13065,7 @@ const FLASH_GUIDE_DATA={
     if(["band","youth-band"].includes(template)){
       if(/^Voz principal$/i.test(clean))return `${clean} 🎙️`;
       if(/^Coros(?:\s+\d+)?$/i.test(clean))return `${clean} 🎤`;
-      if(/^Piano$/i.test(clean))return `${clean} 🎹`;
+      if(/^(Piano|Teclado(?:s)?(?:\s+\d+)?)$/i.test(clean))return `${clean} 🎹`;
       if(/^Guitarra(?:\s+\d+)?$/i.test(clean))return `${clean} 🎸`;
       if(/^Bajo$/i.test(clean))return `${clean} 🪕`;
       if(/^Bater[ií]a$/i.test(clean))return `${clean} 🥁`;
@@ -12941,6 +13076,29 @@ const FLASH_GUIDE_DATA={
       if(/^Diapositivas$/i.test(clean))return `⏹️ Diapositivas`;
     }
     return clean;
+  }
+
+  function normalizeTemplateRoleKey(name){
+    const clean=String(name||"").trim();
+    if(/^Voz principal$/i.test(clean))return "Voz principal";
+    if(/^Coros?(?:\s+\d+)?$/i.test(clean))return "Coros";
+    if(/^(Piano|Teclado(?:s)?(?:\s+\d+)?)$/i.test(clean))return "Teclados";
+    if(/^Guitarra(?:\s+\d+)?$/i.test(clean))return "Guitarras";
+    if(/^Bajo$/i.test(clean))return "Bajo";
+    if(/^Bater[ií]a$/i.test(clean))return "Batería";
+    return clean;
+  }
+
+  function groupedTemplateRoleLabel(name){
+    const key=normalizeTemplateRoleKey(name);
+    return {
+      "Voz principal":"Voz principal 🎙️",
+      "Coros":"Coros 🎤",
+      "Teclados":"Teclados 🎹",
+      "Guitarras":"Guitarras 🎸",
+      "Bajo":"Bajo 🪕",
+      "Batería":"Batería 🥁"
+    }[key]||name;
   }
 
   function compactHomeRoleLabel(template,name){
@@ -14741,11 +14899,19 @@ const FLASH_GUIDE_DATA={
             "700 21px Arial"
           );
         }else if(displayCol.kind==="responsibilities"){
-          const lines=volunteerCols.map(c=>({
-            label:templateRoleLabel(template,c.name),
-            value:entry.id==="__empty__"?"":textFor(c,entry.id)
+          const grouped=new Map();
+          volunteerCols.forEach(c=>{
+            const key=normalizeTemplateRoleKey(c.name);
+            const value=entry.id==="__empty__"?"":textFor(c,entry.id);
+            if(!grouped.has(key))grouped.set(key,[]);
+            if(value)grouped.get(key).push(value);
+          });
+          const order=["Voz principal","Coros","Teclados","Guitarras","Bajo","Batería"];
+          const lines=order.filter(key=>grouped.has(key)).map(key=>({
+            label:groupedTemplateRoleLabel(key),
+            value:(grouped.get(key)||[]).join(" - ")||"—"
           }));
-          drawStack(lines,x,y,widths[i],rowH,180);
+          drawStack(lines,x,y,widths[i],rowH,190);
         }else if(displayCol.kind==="songs"){
           const lines=songCols.map((c,index)=>({
             label:String(index+1),
@@ -15905,6 +16071,22 @@ const FLASH_GUIDE_DATA={
   });
 
   templateChooserCancel?.addEventListener("click",closeProgramTemplateChooser);
+  bandTemplateOptionsCancel?.addEventListener("click",closeBandTemplateOptions);
+  bandTemplateOptionsCreate?.addEventListener("click",async()=>{
+    const key=pendingBandTemplateKey;
+    if(!key)return;
+    bandTemplateOptionsCreate.disabled=true;
+    try{
+      const options=collectBandTemplateOptions();
+      closeBandTemplateOptions();
+      await createProgramFromTemplate(key,options);
+    }catch(error){
+      console.error(error);
+      window.showAppToast?.(error?.message||"No se pudo crear la programación.","error",2200);
+    }finally{
+      bandTemplateOptionsCreate.disabled=false;
+    }
+  });
 
   document.getElementById("programVolunteerCancel")?.addEventListener("click",closeProgramVolunteerModal);
   programVolunteerForm?.addEventListener("submit",async event=>{
