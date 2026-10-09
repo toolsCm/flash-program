@@ -2,7 +2,7 @@
 <!-- FORZAR ACTUALIZACION SUPABASE -->
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V74-FIX-CREAR-PROGRAMACION">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="app-build" content="V74-FIX-CREAR-PROGRAMACION-SAVE-V1-1">
 <title>Flash Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -9619,13 +9619,15 @@ async function fetchScheduleDraft(module,Y,M){
  };
 }
 
-async function saveScheduleDraft(module,{silent=true}={}){
+async function saveScheduleDraft(module,{silent=true,snapshot=null}={}){
  if(!window.supabaseClient||!window.currentProfile)return false;
 
  if(!canEditDatabase())return false;
 
- const {data,Y,M}=moduleScheduleState(module);
+ const {data,Y,M}=snapshot||moduleScheduleState(module);
  if(!Array.isArray(data))return false;
+ const teamId=snapshot?.teamId||window.currentTeam?.id;
+ if(!teamId || teamId!==window.currentTeam?.id)return false;
 
  const key=scheduleDraftKey(module,Y,M);
  const payload={
@@ -9639,7 +9641,7 @@ async function saveScheduleDraft(module,{silent=true}={}){
  const {error}=await window.supabaseClient
    .from("app_settings")
    .upsert({
-     team_id:window.currentTeam?.id,
+     team_id:teamId,
      setting_key:key,
      setting_value:payload,
      updated_at:new Date().toISOString()
@@ -9655,20 +9657,84 @@ async function saveScheduleDraft(module,{silent=true}={}){
  return true;
 }
 
+// V1.1: cola por equipo/módulo/mes para no perder cambios al navegar.
+const draftWriteChains=new Map();
+const draftEpochs=new Map();
+const draftUnsavedKeys=new Set();
+function draftQueueId(module,Y,M,teamId){return `${teamId}:${module}:${Y}:${M}`;}
+function draftStatusSafe(module,message,type){
+ try{setScheduleStatus(module,message,type);}catch(e){console.warn("Estado de borrador:",e);}
+}
 function queueScheduleDraftSave(module,delay=450){
- clearTimeout(draftSaveTimers[module]);
- draftSaveTimers[module]=setTimeout(async()=>{
-   try{
-     await saveScheduleDraft(module,{silent:true});
-   }catch(error){
+ if(!canEditDatabase()||!window.currentTeam?.id)return;
+ const state=moduleScheduleState(module);
+ if(!Array.isArray(state.data))return;
+ const snapshot={Y:state.Y,M:state.M,data:deepCopy(state.data),teamId:window.currentTeam.id};
+ const id=draftQueueId(module,snapshot.Y,snapshot.M,snapshot.teamId);
+ const epoch=draftEpochs.get(id)||0;
+ clearTimeout(draftSaveTimers[id]);
+ draftUnsavedKeys.add(id);
+ draftStatusSafe(module,"Cambios pendientes de guardar…","draft");
+ draftSaveTimers[id]=setTimeout(()=>{
+   delete draftSaveTimers[id];
+   const previous=draftWriteChains.get(id)||Promise.resolve();
+   const job=previous.catch(()=>{}).then(async()=>{
+     if((draftEpochs.get(id)||0)!==epoch)return;
+     if(snapshot.teamId!==window.currentTeam?.id)return;
+     if(!navigator.onLine)throw new Error("Sin conexión a internet");
+     await saveScheduleDraft(module,{silent:true,snapshot});
+     if((draftEpochs.get(id)||0)===epoch && !draftSaveTimers[id]){
+       draftUnsavedKeys.delete(id);
+       draftStatusSafe(module,"Borrador guardado en Supabase.","draft");
+     }
+   });
+   draftWriteChains.set(id,job);
+   job.catch(error=>{
      console.error(`Error autoguardando ${module}:`,error);
-   }
+     if((draftEpochs.get(id)||0)!==epoch)return;
+     draftStatusSafe(module,"No se pudo guardar el borrador. Comprueba tu conexión y vuelve a editar o pulsa Reintentar.","error");
+     showDraftRetryButton(module,id,snapshot);
+   });
  },delay);
 }
-
+function showDraftRetryButton(module,id,snapshot){
+ const box=module==="alabanza"?wstatus:module==="jovenes"?jstatus:mstatus;
+ if(!box||box.querySelector("[data-draft-retry]"))return;
+ const button=document.createElement("button");
+ button.type="button";button.className="btn secondary";button.dataset.draftRetry="";
+ button.textContent="Reintentar guardado";button.style.marginTop="8px";
+ button.addEventListener("click",()=>{
+   if(snapshot.teamId!==window.currentTeam?.id){button.remove();return;}
+   // Retoma la instantánea no guardada del mes correspondiente.
+   queueScheduleSnapshotRetry(module,snapshot);
+ });
+ box.appendChild(button);
+}
+function queueScheduleSnapshotRetry(module,snapshot){
+ const id=draftQueueId(module,snapshot.Y,snapshot.M,snapshot.teamId);
+ const epoch=draftEpochs.get(id)||0;
+ const previous=draftWriteChains.get(id)||Promise.resolve();
+ const job=previous.catch(()=>{}).then(async()=>{
+   if((draftEpochs.get(id)||0)!==epoch)return;
+   await saveScheduleDraft(module,{silent:true,snapshot});
+   draftUnsavedKeys.delete(id);
+   draftStatusSafe(module,"Borrador guardado en Supabase.","draft");
+ });
+ draftWriteChains.set(id,job);
+ job.catch(e=>{console.error("Reintento fallido:",e);draftStatusSafe(module,"El guardado sigue fallando. Conserva la página abierta y revisa la conexión.","error");showDraftRetryButton(module,id,snapshot);});
+}
+window.addEventListener("beforeunload",event=>{
+ if(!draftUnsavedKeys.size)return;
+ event.preventDefault();event.returnValue="";
+});
 async function clearScheduleDraft(module,Y,M){
  if(!window.supabaseClient||!canEditDatabase())return;
 
+ const id=draftQueueId(module,Y,M,window.currentTeam?.id);
+ clearTimeout(draftSaveTimers[id]);delete draftSaveTimers[id];
+ draftEpochs.set(id,(draftEpochs.get(id)||0)+1);
+ // Esperar escrituras anteriores antes de borrar el borrador confirmado.
+ try{await (draftWriteChains.get(id)||Promise.resolve());}catch(e){console.warn("Escritura anterior:",e);}
  const key=scheduleDraftKey(module,Y,M);
  const {error}=await window.supabaseClient
    .from("app_settings")
